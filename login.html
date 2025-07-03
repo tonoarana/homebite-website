@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeBite - Iniciar Sesión</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="logo.png" alt="HomeBite Logo">
+                <h1>HomeBite</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" data-translate-key="Inicio">Inicio</a></li>
+                    <li><a href="map.html" data-translate-key="Cooks Map">Cooks Map</a></li>
+                    <li><a href="reviews.html" data-translate-key="Reseñas">Reseñas</a></li>
+                    <li><a href="profile.html" data-translate-key="Cooks Profile">Cooks Profile</a></li>
+                    <li><a href="login.html" class="active" data-translate-key="Iniciar Sesión">Iniciar Sesión</a></li>
+                    <li><a href="register.html" class="button" data-translate-key="Regístrate">Regístrate</a></li>
+                    <li><a href="checkout.html" data-translate-key="Pagar">Pagar</a></li>
+                </ul>
+                <button id="languageToggle" class="button language-toggle">ES / EN</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="form-page-main">
+        <div class="container form-container">
+            <img src="logo.png" alt="HomeBite Logo" class="form-logo">
+            <h2 id="loginTitle">Inicia Sesión en HomeBite</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="login-email" id="emailLabel">Correo Electrónico:</label>
+                    <input type="email" id="login-email" class="input-field" placeholder="tu@ejemplo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password" id="passwordLabel">Contraseña:</label>
+                    <input type="password" id="login-password" class="input-field" placeholder="Tu contraseña" required>
+                </div>
+                <button type="submit" class="button" id="loginButton">Iniciar Sesión</button>
+                <div id="message" class="form-message"></div>
+            </form>
+            <p class="form-link" id="noAccountText">¿No tienes una cuenta? <a href="register.html" id="registerLink">Regístrate aquí</a></p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 HomeBite. Todos los derechos reservados.</p>
+            <ul>
+                <li><a href="#" data-translate-key="Privacidad">Privacidad</a></li>
+                <li><a href="#" data-translate-key="Terminos">Términos</a></li>
+                <li><a href="#" data-translate-key="Contacto">Contacto</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const languageToggle = document.getElementById('languageToggle');
+            const htmlTag = document.documentElement;
+
+            // Define las traducciones para esta página (login.html)
+            const translations = {
+                'es': {
+                    'Inicio': 'Inicio',
+                    'Cooks Map': 'Mapa de Cocineros',
+                    'Reseñas': 'Reseñas',
+                    'Cooks Profile': 'Mi Perfil',
+                    'Iniciar Sesión': 'Iniciar Sesión',
+                    'Regístrate': 'Regístrate',
+                    'Pagar': 'Pagar',
+                    'loginTitle': 'Inicia Sesión en HomeBite',
+                    'emailLabel': 'Correo Electrónico:',
+                    'passwordLabel': 'Contraseña:',
+                    'loginButton': 'Iniciar Sesión',
+                    'noAccountText': '¿No tienes una cuenta? ',
+                    'registerLink': 'Regístrate aquí',
+                    'loginSuccess': '¡Inicio de sesión exitoso!',
+                    'loginError': 'Credenciales incorrectas. Inténtalo de nuevo.',
+                    'Privacidad': 'Privacidad',
+                    'Terminos': 'Términos',
+                    'Contacto': 'Contacto'
+                },
+                'en': {
+                    'Inicio': 'Home',
+                    'Cooks Map': 'Cooks Map',
+                    'Reseñas': 'Reviews',
+                    'Cooks Profile': 'Cooks Profile',
+                    'Iniciar Sesión': 'Log In',
+                    'Regístrate': 'Sign Up',
+                    'Pagar': 'Checkout',
+                    'loginTitle': 'Log In to HomeBite',
+                    'emailLabel': 'Email:',
+                    'passwordLabel': 'Password:',
+                    'loginButton': 'Log In',
+                    'noAccountText': 'Don\'t have an account? ',
+                    'registerLink': 'Sign up here',
+                    'loginSuccess': 'Login successful!',
+                    'loginError': 'Incorrect credentials. Please try again.',
+                    'Privacidad': 'Privacy',
+                    'Terminos': 'Terms',
+                    'Contacto': 'Contact'
+                }
+            };
+
+            function applyTranslations(lang) {
+                document.querySelectorAll('[data-translate-key]').forEach(element => {
+                    const key = element.getAttribute('data-translate-key');
+                    if (translations[lang][key]) {
+                        if (element.tagName === 'A' && element.classList.contains('button') && key === 'Regístrate') {
+                             element.textContent = translations[lang][key];
+                        } else {
+                            element.textContent = translations[lang][key];
+                        }
+                    }
+                });
+
+                for (const id in translations[lang]) {
+                    const element = document.getElementById(id);
+                    if (element && !element.hasAttribute('data-translate-key')) {
+                        // Special handling for 'noAccountText' and 'registerLink' as they are part of the same paragraph
+                        if (id === 'noAccountText') {
+                            // Ensure it only updates the text node, not the child <a>
+                            const registerLinkElement = document.getElementById('registerLink');
+                            if (registerLinkElement) {
+                                element.innerHTML = translations[lang]['noAccountText'] + `<a href="register.html" id="registerLink">${translations[lang]['registerLink']}</a>`;
+                            } else {
+                                element.textContent = translations[lang][id];
+                            }
+                        } else if (id === 'registerLink') {
+                            // This is handled by noAccountText innerHTML, so do nothing here to avoid double processing
+                        } else {
+                            element.textContent = translations[lang][id];
+                        }
+                    }
+                }
+            }
+
+            // **Persistencia de Idioma con localStorage**
+            let currentLang = localStorage.getItem('userLang') || htmlTag.lang;
+            htmlTag.lang = currentLang;
+
+            languageToggle.textContent = (currentLang === 'es' ? 'ES / EN' : 'EN / ES');
+            applyTranslations(currentLang);
+
+            languageToggle.addEventListener('click', () => {
+                if (currentLang === 'es') {
+                    htmlTag.lang = 'en';
+                    currentLang = 'en';
+                    languageToggle.textContent = 'EN / ES';
+                } else {
+                    htmlTag.lang = 'es';
+                    currentLang = 'es';
+                    languageToggle.textContent = 'ES / EN';
+                }
+                applyTranslations(currentLang);
+                localStorage.setItem('userLang', currentLang);
+            });
+
+            // Lógica del formulario de inicio de sesión
+            const loginForm = document.getElementById('loginForm');
+            const messageDiv = document.getElementById('message');
+
+            loginForm.addEventListener('submit', (event) => {
+                event.preventDefault(); // Evita el envío predeterminado del formulario
+
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                // Simulación de validación de inicio de sesión
+                if (email === 'test@example.com' && password === 'password123') {
+                    messageDiv.textContent = translations[currentLang]['loginSuccess'];
+                    messageDiv.className = 'form-message success';
+                    // Redirigir o realizar otras acciones después del login exitoso
+                    // alert('Inicio de sesión exitoso!');
+                    // window.location.href = 'profile.html'; // Redirigir al perfil del usuario
+                } else {
+                    messageDiv.textContent = translations[currentLang]['loginError'];
+                    messageDiv.className = 'form-message error';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

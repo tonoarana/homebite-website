@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeBite - Mapa de Cocineros</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="logo.png" alt="HomeBite Logo">
+                <h1>HomeBite</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" data-translate-key="Inicio">Inicio</a></li>
+                    <li><a href="map.html" class="active" data-translate-key="Cooks Map">Cooks Map</a></li>
+                    <li><a href="reviews.html" data-translate-key="Reseñas">Reseñas</a></li>
+                    <li><a href="profile.html" data-translate-key="Cooks Profile">Cooks Profile</a></li>
+                    <li><a href="login.html" data-translate-key="Iniciar Sesión">Iniciar Sesión</a></li>
+                    <li><a href="register.html" class="button" data-translate-key="Regístrate">Regístrate</a></li>
+                    <li><a href="checkout.html" data-translate-key="Pagar">Pagar</a></li>
+                </ul>
+                <button id="languageToggle" class="button language-toggle">ES / EN</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="map-page-main">
+        <div class="container map-container">
+            <h2 id="mapTitle">Mapa de Cocineros Cercanos</h2>
+            <p id="mapIntro">Explora a los cocineros de tu comunidad y descubre deliciosas opciones caseras. ¡Puedes verlos en el mapa y descubrir si ofrecen recogida, delivery o si te invitan a comer en casa!</p>
+
+            <div class="map-placeholder">
+                <p id="mapPlaceholderText">El mapa interactivo aparecerá aquí.</p>
+                <div class="map-icon">📍</div>
+                <p id="mapComingSoon">¡Pronto podrás ver a tus cocineros favoritos en el mapa!</p>
+            </div>
+
+            <a href="index.html" class="button button-secondary back-button" id="backToHomeButton">Volver al Inicio</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 HomeBite. Todos los derechos reservados.</p>
+            <ul>
+                <li><a href="#" data-translate-key="Privacidad">Privacidad</a></li>
+                <li><a href="#" data-translate-key="Terminos">Términos</a></li>
+                <li><a href="#" data-translate-key="Contacto">Contacto</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const languageToggle = document.getElementById('languageToggle');
+            const htmlTag = document.documentElement;
+
+            // Define las traducciones para esta página (map.html)
+            const translations = {
+                'es': {
+                    'Inicio': 'Inicio',
+                    'Cooks Map': 'Mapa de Cocineros',
+                    'Reseñas': 'Reseñas',
+                    'Cooks Profile': 'Mi Perfil',
+                    'Iniciar Sesión': 'Iniciar Sesión',
+                    'Regístrate': 'Regístrate',
+                    'Pagar': 'Pagar',
+                    'mapTitle': 'Mapa de Cocineros Cercanos',
+                    'mapIntro': 'Explora a los cocineros de tu comunidad y descubre deliciosas opciones caseras. ¡Puedes verlos en el mapa y descubrir si ofrecen recogida, delivery o si te invitan a comer en casa!',
+                    'mapPlaceholderText': 'El mapa interactivo aparecerá aquí.',
+                    'mapComingSoon': '¡Pronto podrás ver a tus cocineros favoritos en el mapa!',
+                    'backToHomeButton': 'Volver al Inicio',
+                    'Privacidad': 'Privacidad',
+                    'Terminos': 'Términos',
+                    'Contacto': 'Contacto'
+                },
+                'en': {
+                    'Inicio': 'Home',
+                    'Cooks Map': 'Cooks Map',
+                    'Reseñas': 'Reviews',
+                    'Cooks Profile': 'Cooks Profile',
+                    'Iniciar Sesión': 'Log In',
+                    'Regístrate': 'Sign Up',
+                    'Pagar': 'Checkout',
+                    'mapTitle': 'Nearby Cooks Map',
+                    'mapIntro': 'Explore cooks in your community and discover delicious homemade options. You can see them on the map and find out if they offer pickup, delivery, or even invite you to eat at their home!',
+                    'mapPlaceholderText': 'The interactive map will appear here.',
+                    'mapComingSoon': 'Soon you\'ll be able to see your favorite cooks on the map!',
+                    'backToHomeButton': 'Back to Home',
+                    'Privacidad': 'Privacy',
+                    'Terminos': 'Terms',
+                    'Contacto': 'Contact'
+                }
+            };
+
+            function applyTranslations(lang) {
+                // Traducir elementos de navegación y footer usando data-translate-key
+                document.querySelectorAll('[data-translate-key]').forEach(element => {
+                    const key = element.getAttribute('data-translate-key');
+                    if (translations[lang][key]) {
+                        if (element.tagName === 'A' && element.classList.contains('button') && key === 'Regístrate') {
+                             element.textContent = translations[lang][key];
+                        } else {
+                            element.textContent = translations[lang][key];
+                        }
+                    }
+                });
+
+                // Traducir elementos por ID
+                for (const id in translations[lang]) {
+                    const element = document.getElementById(id);
+                    if (element && !element.hasAttribute('data-translate-key')) {
+                        element.textContent = translations[lang][id];
+                    }
+                }
+            }
+
+            // **Nuevo: Leer el idioma desde localStorage al cargar la página**
+            let currentLang = localStorage.getItem('userLang') || htmlTag.lang; // Si no hay en localStorage, usa el predeterminado del HTML
+            htmlTag.lang = currentLang; // Asegura que la etiqueta html tenga el lang correcto al inicio
+
+            languageToggle.textContent = (currentLang === 'es' ? 'ES / EN' : 'EN / ES');
+            applyTranslations(currentLang);
+
+            languageToggle.addEventListener('click', () => {
+                if (currentLang === 'es') {
+                    htmlTag.lang = 'en';
+                    currentLang = 'en';
+                    languageToggle.textContent = 'EN / ES';
+                } else {
+                    htmlTag.lang = 'es';
+                    currentLang = 'es';
+                    languageToggle.textContent = 'ES / EN';
+                }
+                applyTranslations(currentLang);
+                // **Nuevo: Guardar el idioma seleccionado en localStorage**
+                localStorage.setItem('userLang', currentLang);
+            });
+        });
+    </script>
+</body>
+</html>

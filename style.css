@@ -1002,4 +1002,39 @@ header nav {
     margin-top: 2em;
     text-align: center;
 }
+/* --- Estilos específicos para la página del mapa --- */
+
+.map-page-header {
+    text-align: center;
+    padding: 20px;
+    background-color: #e0f2f1; /* Un color de fondo suave */
+    border-bottom: 1px solid #b2dfdb;
+}
+
+.map-page-header h1 {
+    color: #00796B; /* Un verde oscuro */
+    margin-bottom: 10px;
+}
+
+.map-page-header p {
+    color: #4CAF50;
+    font-size: 1.1em;
+}
+
+/* Reglas para el logo específico en la página del mapa */
+.map-page-header .logo {
+    width: 150px; /* Ajusta este valor para controlar el tamaño del logo */
+    height: auto; /* Mantiene la proporción del logo */
+    display: block; /* Asegura que el logo ocupe su propia línea */
+    margin: 0 auto 20px auto; /* Centra el logo y le da un margen inferior */
+}
+
+/* Este estilo es crucial para que el mapa tenga un tamaño visible */
+#map-container {
+    height: 500px; /* Altura del mapa */
+    width: 100%;   /* Ancho del mapa */
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 Qué hace este nuevo código

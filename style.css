@@ -102,3 +102,19 @@ footer {
     color: white;
     margin-top: 30px;
 }
+/* Estilos específicos para el logo en la página del mapa */
+.map-page-header .logo {
+    width: 150px; /* Ajusta este valor para controlar el tamaño */
+    height: auto; /* Mantiene la proporción */
+    display: block; /* Asegura que ocupe su propia línea */
+    margin: 0 auto 20px auto; /* Centra el logo y le da un margen inferior */
+}
+
+/* Asegúrate de que tu map-container tenga una altura definida */
+#map-container {
+    height: 500px; /* Ajusta la altura si lo necesitas */
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

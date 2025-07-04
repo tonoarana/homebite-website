@@ -1,34 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HomeBite - Mapa de Cocineros</title>
     <link rel="stylesheet" href="style.css">
+    <script src="map-logic.js" defer></script>
     <style>
-        /* Estilo para asegurar que el mapa se vea */
+        /* Puedes mover estos estilos al final de style.css si lo prefieres para una mejor organización */
+        /* Asegúrate de que el contenedor del mapa tenga una altura definida */
         #map-container {
-            height: 500px; /* Altura del mapa */
-            width: 100%; /* Ancho del mapa */
-            margin-top: 20px; /* Espacio para separar del título */
-            border-radius: 8px; /* Bordes redondeados para el mapa */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destacarlo */
+            height: 500px; /* Ajusta la altura si lo necesitas */
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 <body>
-    <div class="container map-container">
+    <header>
         <img src="logo.png" alt="HomeBite Logo" class="logo">
-        <h2>Mapa de Cocineros Cercanos</h2>
-        <p class="map-intro">Explora a los cocineros de tu comunidad y descubre deliciosas opciones caseras.</p>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="map.html">Mapa de Cocineros</a>
+            </nav>
+    </header>
 
-        <div id="map-container"></div>
-
-        <a href="index.html" class="back-link">Volver al Inicio</a>
+    <div class="map-page-header">
+        <img src="logo.png" alt="HomeBite Logo" class="logo">
+        <h1>Mapa de Cocineros Cercanos</h1>
+        <p>Explora a los cocineros de tu comunidad y descubre deliciosas opciones caseras.</p>
     </div>
 
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5TId1SoPW0eOtIQ4vSj6NT-Z-IL1cBUw&callback=initMap"></script>
+    <div class="container">
+        <div id="map-container"></div>
+    </div>
 
-    <script src="map-logic.js"></script>
+    <footer>
+        <p>&copy; 2025 HomeBite. Todos los derechos reservados.</p>
+    </footer>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
 </body>
 </html>

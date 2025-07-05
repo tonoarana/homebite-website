@@ -1,131 +1,174 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>HomeBite - El Marketplace de la Comida Casera Local</title>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* Estilos básicos para este ejemplo */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh; /* Asegura que ocupe al menos toda la altura de la ventana */
-        }
-        header {
-            background-color: #f8f8f8;
-            padding: 10px 20px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header .logo a {
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-            font-size: 20px;
-        }
-        header nav a {
-            margin-left: 15px;
-            text-decoration: none;
-            color: #007bff;
-        }
-        main#main-content-area {
-            flex-grow: 1; /* Hace que ocupe todo el espacio disponible */
-            padding: 20px;
-            box-sizing: border-box; /* Incluye padding en el tamaño */
-            overflow-y: auto; /* Permite scroll si el contenido es muy largo */
-        }
-    </style>
-
-    <script>
-        let map;
-        let marker; // Variable para el marcador
-
-        function initMap() {
-            // Asegúrate de que el div #map existe antes de intentar inicializar el mapa
-            const mapElement = document.getElementById("map");
-            if (!mapElement) {
-                console.error("El elemento con id 'map' no fue encontrado. El mapa no puede ser inicializado.");
-                return;
-            }
-
-            // Coordenadas de Nueva York (centro aproximado)
-            const newYork = { lat: 40.7128, lng: -74.0060 };
-
-            // Opciones del mapa
-            map = new google.maps.Map(mapElement, {
-                center: newYork,
-                zoom: 12, // Nivel de zoom inicial
-                mapTypeId: "roadmap", // Tipo de mapa (roadmap, satellite, hybrid, terrain)
-            });
-
-            // Añadir un marcador en Nueva York
-            marker = new google.maps.Marker({
-                position: newYork,
-                map: map,
-                title: "Nueva York", // Título del marcador
-            });
-
-            console.log("Mapa de Google inicializado.");
-        }
-    </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5TId1SoPW0eOtIQ4vSj6NT-Z-IL1cBUw&callback=initMap"></script>
+    <title>HomeBite - Comida Casera Cerca de Ti</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.png" type="image/png">
 </head>
 <body>
     <header>
-        <div class="logo">
-            <a href="#" onclick="loadContent('home-content.html'); return false;">HomeBite</a>
+        <div class="container">
+            <div class="logo">
+                <img src="logo.png" alt="HomeBite Logo">
+                <h1>HomeBite</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active" data-translate-key="Inicio">Inicio</a></li>
+                    <li><a href="map.html" data-translate-key="Cooks Map">Cooks Map</a></li>
+                    <li><a href="reviews.html" data-translate-key="Reseñas">Reseñas</a></li>
+                    <li><a href="profile.html" data-translate-key="Cooks Profile">Cooks Profile</a></li>
+                    <li><a href="login.html" data-translate-key="Iniciar Sesión">Iniciar Sesión</a></li>
+                    <li><a href="register.html" class="button" data-translate-key="Regístrate">Regístrate</a></li>
+                    <li><a href="checkout.html" data-translate-key="Pagar">Pagar</a></li>
+                </ul>
+                <button id="languageToggle" class="button language-toggle">ES / EN</button>
+            </nav>
         </div>
-        <nav>
-            <a href="#" onclick="loadContent('home-content.html'); return false;">Home</a>
-            <a href="#" onclick="loadContent('map.html'); return false;">Mapa</a>
-            <a href="profile.html">Perfil</a> <a href="reviews.html">Reseñas</a> </nav>
     </header>
 
-    <main id="main-content-area">
-        <h2>Bienvenido a HomeBite</h2>
-        <p>Explora la comida casera más deliciosa cerca de ti.</p>
-        <p>Haz clic en "Mapa" para ver a los cocineros disponibles.</p>
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h2 id="heroTitle">Descubre la Mejor Comida Casera Cerca de Ti</h2>
+                <p id="heroSubtitle">Conéctate con cocineros locales y explora platillos únicos!</p>
+                <a href="map.html" class="button" id="exploreCooksButton">Explorar Cocineros Ahora</a>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h3 id="howItWorksTitle">¿Cómo funciona HomeBite?</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <h4 id="feature1Title">Encuentra tu Cocinero Ideal</h4>
+                        <p id="feature1Text">Usa nuestro mapa interactivo para localizar chefs y ver sus menús directamente en tu área.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4 id="feature2Title">Disfruta como Prefieras</h4>
+                        <p id="feature2Text">Recoge en casa del cocinero, pide delivery, o incluso ¡experimenta un pequeño restaurante en su hogar!</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4 id="feature3Title">Apoya lo Local</h4>
+                        <p id="feature3Text">Cada compra ayuda a emprendedores culinarios a crecer y a compartir su pasión por la comida casera.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 HomeBite. Todos los derechos reservados.</p>
+            <ul>
+                <li><a href="#" data-translate-key="Privacidad">Privacidad</a></li>
+                <li><a href="#" data-translate-key="Terminos">Términos</a></li>
+                <li><a href="#" data-translate-key="Contacto">Contacto</a></li>
+            </ul>
+        </div>
+    </footer>
+
     <script>
-        async function loadContent(page) {
-            const contentArea = document.getElementById('main-content-area');
-            if (!contentArea) {
-                console.error("El elemento con id 'main-content-area' no fue encontrado.");
-                return;
+        document.addEventListener('DOMContentLoaded', () => {
+            const languageToggle = document.getElementById('languageToggle');
+            const htmlTag = document.documentElement;
+
+            // Define las traducciones para esta página (index.html)
+            const translations = {
+                'es': {
+                    'Inicio': 'Inicio',
+                    'Cooks Map': 'Mapa de Cocineros',
+                    'Reseñas': 'Reseñas',
+                    'Cooks Profile': 'Mi Perfil',
+                    'Iniciar Sesión': 'Iniciar Sesión',
+                    'Regístrate': 'Regístrate',
+                    'Pagar': 'Pagar',
+                    'heroTitle': 'Descubre la Mejor Comida Casera Cerca de Ti',
+                    'heroSubtitle': 'Conéctate con cocineros locales y explora platillos únicos!',
+                    'exploreCooksButton': 'Explorar Cocineros Ahora',
+                    'howItWorksTitle': '¿Cómo funciona HomeBite?',
+                    'feature1Title': 'Encuentra tu Cocinero Ideal',
+                    'feature1Text': 'Usa nuestro mapa interactivo para localizar chefs y ver sus menús directamente en tu área.',
+                    'feature2Title': 'Disfruta como Prefieras',
+                    'feature2Text': 'Recoge en casa del cocinero, pide delivery, o incluso ¡experimenta un pequeño restaurante en su hogar!',
+                    'feature3Title': 'Apoya lo Local',
+                    'feature3Text': 'Cada compra ayuda a emprendedores culinarios a crecer y a compartir su pasión por la comida casera.',
+                    'Privacidad': 'Privacidad',
+                    'Terminos': 'Términos',
+                    'Contacto': 'Contacto'
+                },
+                'en': {
+                    'Inicio': 'Home',
+                    'Cooks Map': 'Cooks Map',
+                    'Reseñas': 'Reviews',
+                    'Cooks Profile': 'Cooks Profile',
+                    'Iniciar Sesión': 'Log In',
+                    'Regístrate': 'Sign Up',
+                    'Pagar': 'Checkout',
+                    'heroTitle': 'Discover the Best Homemade Food Near You',
+                    'heroSubtitle': 'Connect with local cooks and explore unique dishes!',
+                    'exploreCooksButton': 'Explore Cooks Now',
+                    'howItWorksTitle': 'How does HomeBite work?',
+                    'feature1Title': 'Find Your Ideal Cook',
+                    'feature1Text': 'Use our interactive map to locate chefs and view their menus directly in your area.',
+                    'feature2Title': 'Enjoy as You Prefer',
+                    'feature2Text': 'Pick up at the cook\'s home, order delivery, or even experience a small restaurant at their home!',
+                    'feature3Title': 'Support Local',
+                    'feature3Text': 'Every purchase helps culinary entrepreneurs grow and share their passion for homemade food.',
+                    'Privacidad': 'Privacy',
+                    'Terminos': 'Terms',
+                    'Contacto': 'Contact'
+                }
+            };
+
+            function applyTranslations(lang) {
+                // Traducir elementos de navegación y footer usando data-translate-key
+                document.querySelectorAll('[data-translate-key]').forEach(element => {
+                    const key = element.getAttribute('data-translate-key');
+                    if (translations[lang][key]) {
+                        // Special handling for the "Regístrate" button to keep its class
+                        if (element.tagName === 'A' && element.classList.contains('button') && key === 'Regístrate') {
+                             element.textContent = translations[lang][key];
+                        } else {
+                            element.textContent = translations[lang][key];
+                        }
+                    }
+                });
+
+                // Traducir elementos por ID
+                for (const id in translations[lang]) {
+                    const element = document.getElementById(id);
+                    // Ensure it's not already handled by data-translate-key to avoid double processing
+                    if (element && !element.hasAttribute('data-translate-key')) {
+                        element.textContent = translations[lang][id];
+                    }
+                }
             }
 
-            try {
-                const response = await fetch(page);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+            // **Nuevo: Leer el idioma desde localStorage al cargar la página**
+            let currentLang = localStorage.getItem('userLang') || htmlTag.lang; // Si no hay en localStorage, usa el predeterminado del HTML
+            htmlTag.lang = currentLang; // Asegura que la etiqueta html tenga el lang correcto al inicio
+
+            languageToggle.textContent = (currentLang === 'es' ? 'ES / EN' : 'EN / ES');
+            applyTranslations(currentLang);
+
+            languageToggle.addEventListener('click', () => {
+                if (currentLang === 'es') {
+                    htmlTag.lang = 'en';
+                    currentLang = 'en';
+                    languageToggle.textContent = 'EN / ES';
+                } else {
+                    htmlTag.lang = 'es';
+                    currentLang = 'es';
+                    languageToggle.textContent = 'ES / EN';
                 }
-                const html = await response.text();
-                contentArea.innerHTML = html;
-
-                // Si la página cargada es 'map.html' y la API de Google Maps ya está disponible,
-                // re-inicializamos el mapa.
-                if (page === 'map.html' && typeof google !== 'undefined' && typeof initMap === 'function') {
-                    // Es bueno añadir un pequeño retraso para asegurar que el DOM se haya actualizado
-                    setTimeout(() => {
-                        initMap();
-                    }, 50);
-                }
-
-            } catch (error) {
-                console.error("Error al cargar el contenido:", error);
-                contentArea.innerHTML = "<p>Error al cargar la página.</p>";
-            }
-        }
-
-        // Opcional: Cargar el mapa por defecto al cargar la página index.html
-        // Si quieres que el mapa sea lo primero que se vea, descomenta la siguiente línea:
-        // loadContent('map.html');
+                applyTranslations(currentLang);
+                // **Nuevo: Guardar el idioma seleccionado en localStorage**
+                localStorage.setItem('userLang', currentLang);
+            });
+        });
     </script>
 </body>
 </html>

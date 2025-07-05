@@ -34,12 +34,7 @@
             <h2 id="mapTitle">Mapa de Cocineros Cercanos</h2>
             <p id="mapIntro">Explora a los cocineros de tu comunidad y descubre deliciosas opciones caseras. ¡Puedes verlos en el mapa y descubrir si ofrecen recogida, delivery o si te invitan a comer en casa!</p>
 
-            <div class="map-placeholder">
-                <p id="mapPlaceholderText">El mapa interactivo aparecerá aquí.</p>
-                <div class="map-icon">📍</div>
-                <p id="mapComingSoon">¡Pronto podrás ver a tus cocineros favoritos en el mapa!</p>
-            </div>
-
+            <div id="map-container" style="height: 500px; width: 100%;"></div>
             <a href="index.html" class="button button-secondary back-button" id="backToHomeButton">Volver al Inicio</a>
         </div>
     </main>
@@ -54,6 +49,10 @@
             </ul>
         </div>
     </footer>
+
+    <script src="map-logic.js" defer></script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5TId1SoPW0eOtIQ4vSj6NT-Z-IL1cBUw&callback=initMap"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -72,8 +71,8 @@
                     'Pagar': 'Pagar',
                     'mapTitle': 'Mapa de Cocineros Cercanos',
                     'mapIntro': 'Explora a los cocineros de tu comunidad y descubre deliciosas opciones caseras. ¡Puedes verlos en el mapa y descubrir si ofrecen recogida, delivery o si te invitan a comer en casa!',
-                    'mapPlaceholderText': 'El mapa interactivo aparecerá aquí.',
-                    'mapComingSoon': '¡Pronto podrás ver a tus cocineros favoritos en el mapa!',
+                    'mapPlaceholderText': 'El mapa interactivo aparecerá aquí.', // Este ya no es necesario si el mapa carga
+                    'mapComingSoon': '¡Pronto podrás ver a tus cocineros favoritos en el mapa!', // Este ya no es necesario si el mapa carga
                     'backToHomeButton': 'Volver al Inicio',
                     'Privacidad': 'Privacidad',
                     'Terminos': 'Términos',
@@ -89,8 +88,8 @@
                     'Pagar': 'Checkout',
                     'mapTitle': 'Nearby Cooks Map',
                     'mapIntro': 'Explore cooks in your community and discover delicious homemade options. You can see them on the map and find out if they offer pickup, delivery, or even invite you to eat at their home!',
-                    'mapPlaceholderText': 'The interactive map will appear here.',
-                    'mapComingSoon': 'Soon you\'ll be able to see your favorite cooks on the map!',
+                    'mapPlaceholderText': 'The interactive map will appear here.', // Este ya no es necesario si el mapa carga
+                    'mapComingSoon': 'Soon you\'ll be able to see your favorite cooks on the map!', // Este ya no es necesario si el mapa carga
                     'backToHomeButton': 'Back to Home',
                     'Privacidad': 'Privacy',
                     'Terminos': 'Terms',

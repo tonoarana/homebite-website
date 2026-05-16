@@ -1092,6 +1092,12 @@
           <div class="role-btn" onclick="selectRole(this,'cocinero')">👨‍🍳 Cocinero</div>
         </div>
       </div>
+      <div class="form-group">
+        <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:13px;color:var(--text-muted)">
+          <input type="checkbox" id="accept-terms" style="margin-top:2px;flex-shrink:0;accent-color:var(--orange)">
+          <span>Acepto los <a onclick="showPage('terminos')" style="color:var(--orange);cursor:pointer;font-weight:600">Términos de Servicio</a> y la <a onclick="showPage('privacidad')" style="color:var(--orange);cursor:pointer;font-weight:600">Política de Privacidad</a> de HomeBite</span>
+        </label>
+      </div>
       <button class="btn-submit" onclick="showToast('🎉 Cuenta creada exitosamente')">Crear Cuenta</button>
       <div class="divider"><div class="divider-line"></div><span class="divider-text">o regístrate con</span><div class="divider-line"></div></div>
       <button class="social-btn">🌐 Continuar con Google</button>
@@ -1645,6 +1651,183 @@
 
     <button class="btn-submit" onclick="saveDish()">💾 Guardar Platillo</button>
   </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TÉRMINOS DE SERVICIO — Internacional
+══════════════════════════════════════════ -->
+<div id="page-terminos" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Terms of Service / Términos de Servicio</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Last updated / Última actualización: May 2026</p>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">HomeBite LLC · Wyoming, United States</p>
+
+    <!-- Aviso destacado -->
+    <div style="background:#FFF8F0;border-left:4px solid var(--orange);border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:28px;font-size:14px;line-height:1.7">
+      <strong>⚠️ Please read carefully before using HomeBite.</strong><br>
+      By creating an account or using this platform, you agree to these terms in full. If you do not agree, do not use HomeBite.<br><br>
+      <strong>Al crear una cuenta o usar esta plataforma, aceptas estos términos en su totalidad.</strong>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:28px;font-size:14px;line-height:1.8;color:var(--text)">
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">1. About HomeBite / Sobre HomeBite</h3>
+        <p>HomeBite LLC ("HomeBite", "we", "us") is a technology company incorporated in Wyoming, United States. HomeBite operates an online marketplace platform that connects independent home cooks ("Cooks") with local customers ("Clients") who seek home-cooked meals.</p>
+        <p style="margin-top:8px"><strong>HomeBite is a platform — not a food provider, restaurant, delivery service, employer, or payment processor for food transactions.</strong> HomeBite's role is limited to providing software tools for discovery, visibility, and communication between Cooks and Clients.</p>
+      </div>
+
+      <div style="background:#F0F7FF;border-radius:12px;padding:16px 20px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. 🛡️ Platform Shield — No Liability for Food Transactions</h3>
+        <p>This is the most important section. <strong>HomeBite does not process, handle, or guarantee food payments.</strong> All payments for food occur directly between Clients and Cooks using external methods (bank transfer, Venmo, PayPal, Zelle, WhatsApp, cash, etc.).</p>
+        <p style="margin-top:8px">HomeBite is not responsible for and expressly disclaims all liability related to:</p>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
+          <li>Food quality, safety, allergens, or health consequences</li>
+          <li>Foodborne illness or injury from consuming meals purchased through the platform</li>
+          <li>Disputes between Clients and Cooks regarding food, payment, or delivery</li>
+          <li>Non-delivery or late delivery of food orders</li>
+          <li>The accuracy of Cook profiles, descriptions, or pricing</li>
+          <li>Compliance by Cooks with local food safety, health, or business regulations</li>
+        </ul>
+        <p style="margin-top:10px">This limitation applies globally regardless of the country where the transaction occurs.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">3. Cook Responsibilities / Responsabilidades del Cocinero</h3>
+        <p>By registering as a Cook, you represent and warrant that:</p>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
+          <li>You are solely responsible for complying with all local, state, national, and international laws regarding home food preparation, food safety, business licenses, and tax obligations in your jurisdiction</li>
+          <li>You have obtained all required permits, licenses, and certifications required by your local government</li>
+          <li>You will accurately represent your food, ingredients, allergens, and pricing</li>
+          <li>You will honor agreements made directly with Clients</li>
+          <li>You are an independent contractor, not an employee, agent, or partner of HomeBite</li>
+        </ul>
+        <p style="margin-top:8px">HomeBite does not verify food safety certifications, business licenses, or regulatory compliance. <strong>The Cook assumes full legal and financial responsibility for food prepared and sold.</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">4. Membership / Membresía</h3>
+        <p>Cooks receive a <strong>free 30-day trial</strong>. After the trial, HomeBite charges a monthly membership fee of <strong>$15 USD/month</strong> (or local equivalent) to maintain an active, visible profile on the platform.</p>
+        <p style="margin-top:8px">If payment fails or the membership is canceled, the Cook's profile will be deactivated until the membership is reinstated. The membership fee is the <strong>only</strong> payment HomeBite charges. HomeBite does not charge commissions on food sales.</p>
+        <p style="margin-top:8px">Membership fees are non-refundable except where required by applicable law.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">5. Client Acknowledgment / Reconocimiento del Cliente</h3>
+        <p>By using HomeBite as a Client, you acknowledge and agree that:</p>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
+          <li>You are transacting directly with the Cook, not with HomeBite</li>
+          <li>HomeBite is not responsible for food quality, safety, or fulfillment</li>
+          <li>You assume all risk associated with purchasing and consuming food from independent home cooks</li>
+          <li>Any disputes must be resolved directly with the Cook</li>
+        </ul>
+      </div>
+
+      <div style="background:#FFF0F0;border-radius:12px;padding:16px 20px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">6. ⚖️ LIMITATION OF LIABILITY — CRITICAL</h3>
+        <p><strong>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, HOMEBITE LLC, ITS OFFICERS, DIRECTORS, EMPLOYEES, AND AGENTS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA, GOODWILL, OR OTHER INTANGIBLE LOSSES.</strong></p>
+        <p style="margin-top:8px">In no event shall HomeBite's total liability to any party exceed the greater of: (a) the amount paid by that party to HomeBite in the 12 months prior to the claim, or (b) $100 USD.</p>
+        <p style="margin-top:8px">This limitation applies regardless of the legal theory (contract, tort, negligence, strict liability, etc.) and even if HomeBite has been advised of the possibility of such damages.</p>
+      </div>
+
+      <div style="background:#F0FFF4;border-radius:12px;padding:16px 20px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">7. ⚖️ Dispute Resolution — Mandatory Arbitration</h3>
+        <p><strong>PLEASE READ THIS SECTION CAREFULLY. IT AFFECTS YOUR LEGAL RIGHTS.</strong></p>
+        <p style="margin-top:8px">Any dispute, claim, or controversy arising from or relating to these Terms or your use of HomeBite shall be resolved exclusively through <strong>binding individual arbitration</strong> administered by the American Arbitration Association (AAA) under its Consumer Arbitration Rules.</p>
+        <p style="margin-top:8px"><strong>Class Action Waiver:</strong> You agree to resolve disputes individually. <strong>You waive your right to participate in class action lawsuits or class-wide arbitration</strong> against HomeBite.</p>
+        <p style="margin-top:8px">Exceptions: Either party may seek injunctive relief in a court of competent jurisdiction to prevent irreparable harm.</p>
+      </div>
+
+      <div style="background:#F0F4FF;border-radius:12px;padding:16px 20px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">8. 🌎 Governing Law & Jurisdiction</h3>
+        <p>These Terms are governed by the laws of the <strong>State of Wyoming, United States</strong>, without regard to conflict of law principles. Any legal proceedings not subject to arbitration shall be brought exclusively in the state or federal courts located in <strong>Wyoming, United States</strong>.</p>
+        <p style="margin-top:8px">By using HomeBite from any country, you consent to this jurisdiction. This applies to users in Paraguay, Mexico, Spain, the United States, and all other countries where HomeBite operates.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">9. International Use / Uso Internacional</h3>
+        <p>HomeBite operates globally. Users are responsible for compliance with their local laws. HomeBite makes no representation that the platform is appropriate or lawful in all jurisdictions. If use of HomeBite is prohibited in your country, you must not use it.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">10. Indemnification / Indemnización</h3>
+        <p>You agree to defend, indemnify, and hold harmless HomeBite LLC and its affiliates from any claims, liabilities, damages, losses, and expenses (including legal fees) arising from: (a) your use of the platform; (b) food you prepare or purchase; (c) your violation of these Terms; or (d) your violation of any applicable law.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">11. Modifications / Modificaciones</h3>
+        <p>HomeBite reserves the right to modify these Terms at any time. We will provide at least 15 days' notice before material changes take effect. Continued use of the platform after changes constitutes acceptance.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">12. Contact / Contacto</h3>
+        <p>HomeBite LLC<br>
+        Wyoming, United States<br>
+        Email: <strong>legal@homebite.app</strong></p>
+      </div>
+
+      <div style="background:var(--warm);border-radius:12px;padding:16px 20px;font-size:13px;color:var(--text-muted)">
+        ⚠️ <strong>Note:</strong> These Terms are designed for international use but do not replace legal advice. HomeBite recommends consulting a startup attorney before launching commercially in new markets.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     POLÍTICA DE PRIVACIDAD
+══════════════════════════════════════════ -->
+<div id="page-privacidad" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Política de Privacidad</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Última actualización: Mayo 2026 · HomeBite</p>
+
+    <div style="display:flex;flex-direction:column;gap:24px;font-size:15px;line-height:1.75;color:var(--text)">
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--brown);margin-bottom:8px">1. Datos que recopilamos</h3>
+        <p>Recopilamos: nombre, correo electrónico, tipo de usuario (cliente/cocinero), ubicación aproximada (solo con tu permiso), platillos y descripción del perfil del cocinero, métodos de contacto y pago externos que el cocinero elija publicar.</p>
+        <p style="margin-top:8px"><strong>No recopilamos</strong> datos de tarjetas de crédito de clientes para compras de comida. Los pagos de membresía se procesan mediante Stripe de forma segura.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--brown);margin-bottom:8px">2. Cómo usamos tus datos</h3>
+        <p>Usamos tus datos para mostrar tu perfil en el mapa, gestionar tu membresía, enviarte notificaciones importantes sobre tu cuenta y mejorar la plataforma. No vendemos tus datos a terceros.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--brown);margin-bottom:8px">3. Ubicación</h3>
+        <p>La ubicación se usa únicamente para mostrar cocineros cercanos al cliente y para que el cocinero aparezca en el mapa. La ubicación exacta del cocinero nunca se muestra públicamente; solo se muestra una ubicación aproximada por zona.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--brown);margin-bottom:8px">4. Tus derechos</h3>
+        <p>Puedes solicitar en cualquier momento: acceder a tus datos, corregirlos, eliminar tu cuenta o exportar tu información. Escríbenos a <strong>privacidad@homebite.app</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--brown);margin-bottom:8px">5. Cookies</h3>
+        <p>Usamos cookies técnicas necesarias para el funcionamiento de la sesión. No usamos cookies de seguimiento publicitario.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FOOTER con links legales
+══════════════════════════════════════════ -->
+<div style="background:var(--brown);color:rgba(255,255,255,0.6);text-align:center;padding:24px 20px 100px;font-size:13px">
+  <div style="font-family:'Playfair Display',serif;font-size:16px;color:white;margin-bottom:8px">HomeBite</div>
+  <div style="margin-bottom:12px">Plataforma de comida casera local · Solo cobramos membresía al cocinero</div>
+  <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
+    <button onclick="showPage('terminos')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:13px;cursor:pointer;text-decoration:underline">Términos de Servicio</button>
+    <button onclick="showPage('privacidad')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:13px;cursor:pointer;text-decoration:underline">Política de Privacidad</button>
+    <span>legal@homebite.app</span>
+  </div>
+  <div style="margin-top:12px;font-size:11px">© 2026 HomeBite · José Arana · Todos los derechos reservados</div>
 </div>
 
 <!-- MOBILE BOTTOM NAV -->

@@ -721,7 +721,13 @@
       🛒 Carrito
       <span class="cart-badge" id="cart-badge" style="display:none">0</span>
     </button>
-    <button class="nav-lang">ES</button>
+    <button class="nav-lang" id="desktop-lang-btn" onclick="toggleDesktopLang()" style="position:relative">🇪🇸 ES</button>
+  </div>
+  <!-- Desktop lang dropdown -->
+  <div id="desktop-lang-drop" style="display:none;position:absolute;top:60px;right:16px;background:white;border:1px solid var(--border);border-radius:12px;padding:8px;box-shadow:var(--shadow-lg);z-index:200;min-width:140px">
+    <button onclick="setLang('es');closeDesktopLang()" style="width:100%;text-align:left;background:none;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500">🇪🇸 Español</button>
+    <button onclick="setLang('en');closeDesktopLang()" style="width:100%;text-align:left;background:none;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500">🇺🇸 English</button>
+    <button onclick="setLang('pt');closeDesktopLang()" style="width:100%;text-align:left;background:none;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500">🇧🇷 Português</button>
   </div>
 </nav>
 
@@ -1833,20 +1839,55 @@
 <!-- MOBILE BOTTOM NAV -->
 <div class="mobile-nav" id="mobile-nav">
   <button onclick="showPage('home')" id="mn-home">
-    <span class="mn-icon">🏠</span>Inicio
+    <span class="mn-icon">🏠</span><span class="mn-label" data-i18n="nav-home">Inicio</span>
   </button>
   <button onclick="showPage('map')" id="mn-map">
-    <span class="mn-icon">🗺️</span>Mapa
+    <span class="mn-icon">🗺️</span><span class="mn-label" data-i18n="nav-map">Mapa</span>
   </button>
   <button onclick="showPage('profile')" id="mn-profile">
-    <span class="mn-icon">👨‍🍳</span>Cocineros
+    <span class="mn-icon">👨‍🍳</span><span class="mn-label" data-i18n="nav-profile">Cocineros</span>
   </button>
   <button onclick="showPage('dashboard')" id="mn-dashboard">
-    <span class="mn-icon">📋</span>Mi Menú
+    <span class="mn-icon">📋</span><span class="mn-label" data-i18n="nav-dashboard">Mi Menú</span>
   </button>
-  <button onclick="toggleCart()" id="mn-cart">
-    <span class="mn-icon">🛒</span>Carrito
+  <button onclick="toggleMobileMenu()" id="mn-more">
+    <span class="mn-icon">☰</span><span class="mn-label" data-i18n="nav-more">Más</span>
   </button>
+</div>
+
+<!-- MOBILE MORE MENU -->
+<div id="mobile-more-menu" style="display:none;position:fixed;bottom:70px;left:0;right:0;z-index:99;background:white;border-top:1px solid var(--border);box-shadow:0 -4px 24px rgba(0,0,0,0.12);border-radius:20px 20px 0 0;padding:20px 16px 8px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+    <button onclick="showPage('membresia');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">👨‍🍳</span>Para Cocineros
+    </button>
+    <button onclick="showPage('pago-membresia');closeMobileMenu()" style="background:#FFF3EE;border:1px solid #F4C9A8;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);-webkit-appearance:none">
+      <span style="font-size:22px">💳</span>Membresía
+    </button>
+    <button onclick="showPage('login');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">🔑</span>Iniciar Sesión
+    </button>
+    <button onclick="showPage('register');closeMobileMenu()" style="background:#4CAF50;border:none;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:white;-webkit-appearance:none">
+      <span style="font-size:22px">✨</span>Regístrate
+    </button>
+    <button onclick="showPage('reviews');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">⭐</span>Reseñas
+    </button>
+    <button onclick="showPage('terminos');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">⚖️</span>Términos
+    </button>
+  </div>
+
+  <!-- Selector de idioma -->
+  <div style="border-top:1px solid var(--border);padding-top:14px">
+    <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🌎 Idioma / Language</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="setLang('es');closeMobileMenu()" id="lang-btn-es" style="background:var(--orange);color:white;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none">🇪🇸 Español</button>
+      <button onclick="setLang('en');closeMobileMenu()" id="lang-btn-en" style="background:var(--warm);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;-webkit-appearance:none">🇺🇸 English</button>
+      <button onclick="setLang('pt');closeMobileMenu()" id="lang-btn-pt" style="background:var(--warm);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;-webkit-appearance:none">🇧🇷 Português</button>
+    </div>
+  </div>
+  <button onclick="closeMobileMenu()" style="width:100%;margin-top:14px;background:none;border:none;font-size:13px;color:var(--text-muted);cursor:pointer;padding:8px;-webkit-appearance:none">✕ Cerrar</button>
 </div>
 
 <!-- TOAST -->
@@ -2507,8 +2548,22 @@ function toggleAvailable() {
   showToast(cookAvailable ? '🟢 Estás disponible en el mapa' : '⛔ Te ocultaste del mapa');
 }
 
-// Emoji picker clicks
+function toggleDesktopLang() {
+  const d = document.getElementById('desktop-lang-drop');
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
+function closeDesktopLang() {
+  document.getElementById('desktop-lang-drop').style.display = 'none';
+}
+// Close dropdown when clicking outside
 document.addEventListener('click', e => {
+  if (!e.target.closest('#desktop-lang-btn') && !e.target.closest('#desktop-lang-drop')) {
+    const d = document.getElementById('desktop-lang-drop');
+    if (d) d.style.display = 'none';
+  }
+  if (!e.target.closest('#mobile-more-menu') && !e.target.closest('#mn-more')) {
+    closeMobileMenu();
+  }
   if (e.target.closest('#emoji-picker') && e.target.tagName === 'SPAN') {
     document.getElementById('dish-emoji').value = e.target.textContent;
     document.querySelectorAll('#emoji-picker span').forEach(s => s.style.background = '');
@@ -2516,6 +2571,113 @@ document.addEventListener('click', e => {
     e.target.style.borderRadius = '6px';
   }
 });
+
+function toggleMobileMenu() {
+  const m = document.getElementById('mobile-more-menu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-more-menu').style.display = 'none';
+}
+
+// ════════════════════════════════════════
+// LANGUAGE SWITCHER
+// ════════════════════════════════════════
+const translations = {
+  es: {
+    'home-title': 'Bienvenido a',
+    'home-subtitle': 'Elige cómo quieres usar la plataforma',
+    'client-title': 'Soy Cliente',
+    'client-desc': 'Quiero encontrar cocineros y pedir comida casera',
+    'client-btn': 'Buscar Cocineros →',
+    'cook-title': 'Soy Cocinero',
+    'cook-desc': 'Quiero publicar mi menú y conseguir clientes',
+    'cook-btn': 'Ver Planes →',
+    'map-title': 'Mapa de Cocineros Cercanos',
+    'map-desc': 'Cocineros reales en tu área. Haz clic en un pin para ver su perfil y pedir.',
+    'locate-btn': '📍 Mostrar mi ubicación',
+    'nav-home': 'Inicio',
+    'nav-map': 'Mapa',
+    'nav-profile': 'Cocineros',
+    'nav-dashboard': 'Mi Menú',
+    'nav-more': 'Más',
+    'note': '💡 Clientes pagan directo al cocinero · HomeBite cobra membresía solo al cocinero',
+  },
+  en: {
+    'home-title': 'Welcome to',
+    'home-subtitle': 'Choose how you want to use the platform',
+    'client-title': 'I\'m a Client',
+    'client-desc': 'I want to find home cooks and order food',
+    'client-btn': 'Find Cooks →',
+    'cook-title': 'I\'m a Cook',
+    'cook-desc': 'I want to publish my menu and get clients',
+    'cook-btn': 'See Plans →',
+    'map-title': 'Nearby Cooks Map',
+    'map-desc': 'Real cooks in your area. Tap a pin to see their profile and order.',
+    'locate-btn': '📍 Show my location',
+    'nav-home': 'Home',
+    'nav-map': 'Map',
+    'nav-profile': 'Cooks',
+    'nav-dashboard': 'My Menu',
+    'nav-more': 'More',
+    'note': '💡 Clients pay the cook directly · HomeBite only charges cooks a membership fee',
+  },
+  pt: {
+    'home-title': 'Bem-vindo ao',
+    'home-subtitle': 'Escolha como deseja usar a plataforma',
+    'client-title': 'Sou Cliente',
+    'client-desc': 'Quero encontrar cozinheiros e pedir comida caseira',
+    'client-btn': 'Buscar Cozinheiros →',
+    'cook-title': 'Sou Cozinheiro',
+    'cook-desc': 'Quero publicar meu menu e conseguir clientes',
+    'cook-btn': 'Ver Planos →',
+    'map-title': 'Mapa de Cozinheiros Próximos',
+    'map-desc': 'Cozinheiros reais na sua área. Toque em um pin para ver o perfil e pedir.',
+    'locate-btn': '📍 Mostrar minha localização',
+    'nav-home': 'Início',
+    'nav-map': 'Mapa',
+    'nav-profile': 'Cozinheiros',
+    'nav-dashboard': 'Meu Menu',
+    'nav-more': 'Mais',
+    'note': '💡 Clientes pagam direto ao cozinheiro · HomeBite cobra apenas a adesão do cozinheiro',
+  }
+};
+
+let currentLang = 'es';
+
+function setLang(lang) {
+  currentLang = lang;
+  const t = translations[lang];
+
+  // Update language buttons
+  ['es','en','pt'].forEach(l => {
+    const btn = document.getElementById('lang-btn-'+l);
+    if (btn) {
+      btn.style.background = l === lang ? 'var(--orange)' : 'var(--warm)';
+      btn.style.color = l === lang ? 'white' : 'var(--text)';
+      btn.style.border = l === lang ? 'none' : '1px solid var(--border)';
+    }
+  });
+
+  // Update desktop lang button
+  const desktopLang = document.getElementById('desktop-lang-btn');
+  if (desktopLang) desktopLang.textContent = lang === 'es' ? '🇪🇸 ES' : lang === 'en' ? '🇺🇸 EN' : '🇧🇷 PT';
+
+  // Update translatable elements
+  const els = document.querySelectorAll('[data-i18n]');
+  els.forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key]) el.textContent = t[key];
+  });
+
+  // Update mobile nav labels
+  document.querySelectorAll('.mn-label').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key]) el.textContent = t[key];
+  });
+
+  showToast(lang === 'es' ? '🇪🇸 Español activado' : lang === 'en' ? '🇺🇸 English activated' : '🇧🇷 Português ativado');
+}
 
 // ════════════════════════════════════════
 // INIT

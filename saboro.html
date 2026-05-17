@@ -880,6 +880,7 @@
       <button class="filter-btn active" onclick="filterMapLeaflet(this,'todos')">Todos</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'delivery')">🛵 Delivery</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'recogida')">🏠 Recogida</button>
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'cena')">🕯️ Cena en casa</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'mexicana')">🌮 Mexicana</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'italiana')">🍝 Italiana</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'asiatica')">🍜 Asiática</button>
@@ -894,9 +895,10 @@
     <div id="leaflet-map" style="height:420px;border-radius:20px;overflow:hidden;border:1px solid var(--border);z-index:1"></div>
 
     <div class="map-legend" style="margin-top:12px">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> Cocinero disponible</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> Con delivery</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Solo recogida</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#9B59B6"></div> Cena privada</div>
       <div class="legend-item"><div class="legend-dot" style="background:#2196F3"></div> Tu ubicación</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Con delivery</div>
     </div>
 
     <div class="map-list" id="map-cook-list" style="margin-top:24px"></div>
@@ -951,7 +953,7 @@
           <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--text-muted)">
             <div>🛵 Delivery — hasta 5km</div>
             <div>🏠 Recogida en domicilio</div>
-            <div>🕯️ Cena privada (reserva)</div>
+            <div>🕯️ Cena privada en casa del cocinero</div>
           </div>
         </div>
         <div class="sidebar-card">
@@ -1166,8 +1168,19 @@
           </div>
           <div class="pm-check" id="del-check-pickup"></div>
         </div>
+        <div class="delivery-opt" id="del-cena" onclick="selectDelivery2('cena')">
+          <div class="delivery-opt-icon">🕯️</div>
+          <div class="delivery-opt-info">
+            <div class="delivery-opt-name">Cena privada en casa del cocinero</div>
+            <div class="delivery-opt-desc">Experiencia única · Requiere reserva con anticipación</div>
+          </div>
+          <div class="pm-check" id="del-check-cena"></div>
+        </div>
       </div>
-      <div id="del-address-block" style="margin-bottom:20px">
+      <!-- Nota cena privada -->
+      <div id="cena-note" style="display:none;background:#F5EFF9;border:1px solid #C39BD3;border-radius:12px;padding:14px 16px;margin-top:-8px;margin-bottom:12px;font-size:13px;color:#6C3483;line-height:1.6">
+        🕯️ <strong>Cena privada:</strong> El cocinero te contactará para confirmar fecha, hora, número de personas y precio. Esta opción requiere reserva con al menos 24 horas de anticipación.
+      </div>
         <div class="form-group">
           <label class="form-label">Tu dirección de entrega</label>
           <input class="form-input" id="del-address" type="text" placeholder="Calle, número, colonia">
@@ -1577,8 +1590,20 @@
       </div>
     </div>
 
-    <!-- Toggle disponibilidad -->
-    <div style="background:var(--warm);border-radius:14px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div style="background:var(--warm);border-radius:14px;padding:16px 20px;margin-bottom:24px">
+      <div style="font-weight:700;font-size:15px;color:var(--brown);margin-bottom:12px">Mis opciones de entrega</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:14px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" checked style="accent-color:var(--orange);width:16px;height:16px"> 🛵 Ofrezco Delivery
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" checked style="accent-color:var(--orange);width:16px;height:16px"> 🏠 Ofrezco Recogida en domicilio
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" style="accent-color:#9B59B6;width:16px;height:16px"> 🕯️ Ofrezco Cena privada en mi casa
+        </label>
+      </div>
+    </div>
       <div>
         <div style="font-weight:600;font-size:15px;color:var(--brown)">Estoy disponible hoy</div>
         <div style="font-size:13px;color:var(--text-muted)">Los clientes pueden verte en el mapa</div>
@@ -1782,40 +1807,153 @@
 </div>
 
 <!-- ══════════════════════════════════════════
-     POLÍTICA DE PRIVACIDAD
+     POLÍTICA DE PRIVACIDAD — Internacional
 ══════════════════════════════════════════ -->
 <div id="page-privacidad" class="page">
   <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
     <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
-    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Política de Privacidad</h1>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Última actualización: Mayo 2026 · Saboro</p>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Privacy Policy / Política de Privacidad</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Last updated / Última actualización: Mayo 2026</p>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Saboro LLC · Wyoming, United States</p>
 
-    <div style="display:flex;flex-direction:column;gap:24px;font-size:15px;line-height:1.75;color:var(--text)">
+    <div style="background:#F0F4FF;border-left:4px solid #4A90D9;border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:28px;font-size:14px;line-height:1.7">
+      <strong>📋 Resumen simple:</strong> Saboro recopila solo lo necesario para funcionar. <strong>No vendemos tus datos.</strong> No procesamos pagos de comida. Los pagos de membresía van por Stripe (seguro, PCI-DSS). Puedes eliminar tu cuenta en cualquier momento.
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:28px;font-size:14px;line-height:1.8;color:var(--text)">
 
       <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--brown);margin-bottom:8px">1. Datos que recopilamos</h3>
-        <p>Recopilamos: nombre, correo electrónico, tipo de usuario (cliente/cocinero), ubicación aproximada (solo con tu permiso), platillos y descripción del perfil del cocinero, métodos de contacto y pago externos que el cocinero elija publicar.</p>
-        <p style="margin-top:8px"><strong>No recopilamos</strong> datos de tarjetas de crédito de clientes para compras de comida. Los pagos de membresía se procesan mediante Stripe de forma segura.</p>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">1. Información que recopilamos</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>📧 Información de cuenta</strong><br>
+            Nombre completo, correo electrónico, tipo de usuario (cliente/cocinero), foto de perfil (opcional), ciudad o zona aproximada.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>🍽️ Información del cocinero</strong><br>
+            Nombre del negocio, descripción, platillos y precios, fotos de platillos, métodos de contacto y pago que el cocinero elija publicar públicamente, horarios de disponibilidad.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>💳 Información de pago (solo membresía)</strong><br>
+            Los pagos de membresía son procesados por <strong>Stripe</strong>. Saboro almacena únicamente el identificador de la transacción y el estado del pago. <strong>Nunca almacenamos números de tarjeta, CVV, ni credenciales bancarias.</strong>
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>📍 Ubicación</strong><br>
+            Solo con tu permiso explícito. Se usa para mostrar cocineros cercanos y para que el cocinero aparezca en el mapa. La ubicación exacta del cocinero nunca es pública — solo se muestra una zona aproximada.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>📱 Información del dispositivo</strong><br>
+            Modelo de dispositivo, versión del sistema operativo, versión de la app, token de notificaciones push (solo si las activas). No rastreamos tu actividad fuera de Saboro.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>📸 Contenido generado por el usuario</strong><br>
+            Fotos de platillos, reseñas y calificaciones que publicas voluntariamente.
+          </div>
+        </div>
       </div>
 
       <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--brown);margin-bottom:8px">2. Cómo usamos tus datos</h3>
-        <p>Usamos tus datos para mostrar tu perfil en el mapa, gestionar tu membresía, enviarte notificaciones importantes sobre tu cuenta y mejorar la plataforma. No vendemos tus datos a terceros.</p>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">2. Cómo usamos tu información</h3>
+        <ul style="margin:0 0 0 20px;display:flex;flex-direction:column;gap:8px">
+          <li>Crear y gestionar tu cuenta</li>
+          <li>Mostrar el perfil del cocinero en el mapa para que los clientes lo encuentren</li>
+          <li>Procesar el pago de membresía mensual</li>
+          <li>Enviarte notificaciones importantes sobre tu cuenta</li>
+          <li>Mejorar la plataforma, detectar errores y prevenir fraude</li>
+          <li>Cumplir con obligaciones legales internacionales</li>
+        </ul>
+        <p style="margin-top:10px;background:#F0FFF4;padding:12px;border-radius:10px"><strong>Lo que NO hacemos:</strong> No vendemos tu información. No la usamos para publicidad de terceros. No compartimos datos de clientes con cocineros más allá de lo acordado en un pedido.</p>
       </div>
 
       <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--brown);margin-bottom:8px">3. Ubicación</h3>
-        <p>La ubicación se usa únicamente para mostrar cocineros cercanos al cliente y para que el cocinero aparezca en el mapa. La ubicación exacta del cocinero nunca se muestra públicamente; solo se muestra una ubicación aproximada por zona.</p>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">3. Con quién compartimos tu información</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
+            <span style="font-size:20px">💳</span>
+            <div><strong>Stripe</strong> — procesamiento de pagos de membresía. <a href="https://stripe.com/privacy" target="_blank" style="color:var(--orange)">Ver su política de privacidad</a></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
+            <span style="font-size:20px">🗄️</span>
+            <div><strong>Supabase</strong> — base de datos y autenticación segura. Datos almacenados en servidores con cifrado.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
+            <span style="font-size:20px">🗺️</span>
+            <div><strong>OpenStreetMap / Leaflet</strong> — visualización del mapa. No comparten datos de usuario.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
+            <span style="font-size:20px">🔔</span>
+            <div><strong>FCM / APNs</strong> — notificaciones push de Apple y Google, solo si las activas.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#FFF0F0;border-radius:10px">
+            <span style="font-size:20px">⚖️</span>
+            <div><strong>Autoridades legales</strong> — solo cuando sea requerido por ley aplicable, con orden judicial.</div>
+          </div>
+        </div>
       </div>
 
       <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--brown);margin-bottom:8px">4. Tus derechos</h3>
-        <p>Puedes solicitar en cualquier momento: acceder a tus datos, corregirlos, eliminar tu cuenta o exportar tu información. Escríbenos a <strong>privacidad@saboro.app</strong></p>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">4. 📸 Acceso a cámara y fotos</h3>
+        <p>Saboro solicita acceso a tu cámara y galería <strong>únicamente para estos fines:</strong></p>
+        <ul style="margin:10px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li><strong>Cocineros:</strong> subir foto de perfil y fotos de platillos para su menú</li>
+          <li><strong>Clientes:</strong> nunca se solicita acceso a cámara o galería</li>
+        </ul>
+        <p style="margin-top:10px">Las fotos se almacenan de forma segura y se muestran únicamente dentro de Saboro. <strong>No usamos tu cámara para ningún otro propósito y no compartimos tus fotos con anunciantes.</strong></p>
       </div>
 
       <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--brown);margin-bottom:8px">5. Cookies</h3>
-        <p>Usamos cookies técnicas necesarias para el funcionamiento de la sesión. No usamos cookies de seguimiento publicitario.</p>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">5. Retención de datos</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Cuenta activa:</strong> Conservamos tu información mientras tu cuenta esté activa.</div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Cuenta eliminada:</strong> Eliminamos tu perfil e información personal en 30 días. Los registros de pago de membresía se conservan hasta 7 años por obligaciones fiscales y contables.</div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Contenido público:</strong> Las reseñas que escribiste pueden permanecer anonimizadas después de eliminar tu cuenta.</div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">6. 🔒 Seguridad</h3>
+        <ul style="margin:0 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li>Todo el tráfico entre tu dispositivo y nuestros servidores está cifrado con <strong>HTTPS / TLS</strong></li>
+          <li>Las contraseñas se almacenan con hash seguro (bcrypt), nunca en texto plano</li>
+          <li>Los pagos son manejados por Stripe bajo infraestructura <strong>PCI-DSS</strong> certificada</li>
+          <li>Acceso a datos internos restringido solo al personal autorizado de Saboro</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">7. 👶 Menores de edad</h3>
+        <p>Saboro <strong>no está dirigido a personas menores de 18 años.</strong> No recopilamos conscientemente información de menores. Si descubrimos que un menor ha creado una cuenta, la eliminaremos inmediatamente. Si eres padre/madre y crees que tu hijo tiene una cuenta, contáctanos en <strong>soporte@saboro.app</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">8. 🌎 Tus derechos (GDPR / CCPA)</h3>
+        <p>Dependiendo de tu país, tienes los siguientes derechos sobre tus datos:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>✅ Acceso</strong><br>Ver qué datos tenemos sobre ti</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>✏️ Corrección</strong><br>Corregir datos incorrectos</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>🗑️ Eliminación</strong><br>Borrar tu cuenta y datos</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>📦 Portabilidad</strong><br>Exportar tus datos</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>🚫 Oposición</strong><br>Oponerte al procesamiento</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>🔔 Notificaciones</strong><br>Desactivar desde ajustes</div>
+        </div>
+        <p style="margin-top:12px">Para ejercer cualquier derecho: <strong>privacidad@saboro.app</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">9. Cookies</h3>
+        <p>Usamos únicamente cookies técnicas necesarias para mantener tu sesión activa. <strong>No usamos cookies de publicidad ni de seguimiento de terceros.</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">10. Cambios a esta política</h3>
+        <p>Podemos actualizar esta política. Te notificaremos por correo o dentro de la app con al menos <strong>15 días de anticipación</strong> antes de cambios importantes.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">11. Contacto</h3>
+        <p>Saboro LLC · Wyoming, United States<br>
+        📧 Privacidad: <strong>privacidad@saboro.app</strong><br>
+        📧 Soporte general: <strong>soporte@saboro.app</strong></p>
       </div>
 
     </div>
@@ -1828,12 +1966,16 @@
 <div style="background:var(--brown);color:rgba(255,255,255,0.6);text-align:center;padding:24px 20px 100px;font-size:13px">
   <div style="font-family:'Playfair Display',serif;font-size:16px;color:white;margin-bottom:8px">Saboro</div>
   <div style="margin-bottom:12px">Plataforma de comida casera local · Solo cobramos membresía al cocinero</div>
-  <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
-    <button onclick="showPage('terminos')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:13px;cursor:pointer;text-decoration:underline">Términos de Servicio</button>
-    <button onclick="showPage('privacidad')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:13px;cursor:pointer;text-decoration:underline">Política de Privacidad</button>
-    <span>legal@saboro.app</span>
+  <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+    <button onclick="showPage('terminos')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">⚖️ Términos</button>
+    <button onclick="showPage('privacidad')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">🔒 Privacidad</button>
+    <button onclick="showPage('cancelaciones')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">❌ Cancelaciones</button>
+    <button onclick="showPage('reembolsos')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">💰 Reembolsos</button>
+    <button onclick="showPage('delivery')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">🛵 Delivery</button>
+    <button onclick="showPage('contenido')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">📸 Contenido</button>
   </div>
-  <div style="margin-top:12px;font-size:11px">© 2026 Saboro · José Arana · Todos los derechos reservados</div>
+  <div style="margin-top:10px">soporte@saboro.app · legal@saboro.app</div>
+  <div style="margin-top:8px;font-size:11px">© 2026 Saboro LLC · Wyoming, United States · Todos los derechos reservados</div>
 </div>
 
 <!-- MOBILE BOTTOM NAV -->
@@ -1876,6 +2018,18 @@
     <button onclick="showPage('terminos');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
       <span style="font-size:22px">⚖️</span>Términos
     </button>
+    <button onclick="showPage('privacidad');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">🔒</span>Privacidad
+    </button>
+    <button onclick="showPage('cancelaciones');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">❌</span>Cancelaciones
+    </button>
+    <button onclick="showPage('reembolsos');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">💰</span>Reembolsos
+    </button>
+    <button onclick="showPage('delivery');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">🛵</span>Delivery
+    </button>
   </div>
 
   <!-- Selector de idioma -->
@@ -1890,8 +2044,183 @@
   <button onclick="closeMobileMenu()" style="width:100%;margin-top:14px;background:none;border:none;font-size:13px;color:var(--text-muted);cursor:pointer;padding:8px;-webkit-appearance:none">✕ Cerrar</button>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<!-- ══════════════════════════════════════════
+     POLÍTICA DE CANCELACIONES
+══════════════════════════════════════════ -->
+<div id="page-cancelaciones" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Política de Cancelaciones</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Última actualización: Mayo 2026 · Saboro LLC</p>
+    <div style="display:flex;flex-direction:column;gap:24px;font-size:14px;line-height:1.8;color:var(--text)">
+      <div style="background:#FFF8F0;border-left:4px solid var(--orange);border-radius:0 12px 12px 0;padding:16px 20px">
+        <strong>⚠️ Importante:</strong> Saboro no procesa pagos de comida. Las cancelaciones y reembolsos se acuerdan <strong>directamente entre el cliente y el cocinero</strong>. Saboro no puede intervenir ni garantizar reembolsos por pedidos de comida.
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">1. Cancelación por parte del cliente</h3>
+        <p>El cliente puede solicitar la cancelación de un pedido directamente al cocinero antes de que la preparación haya comenzado. Una vez que el cocinero confirma que comenzó la preparación, la cancelación queda a discreción del cocinero.</p>
+        <ul style="margin:10px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li><strong>Antes de aceptación del cocinero:</strong> Cancelación libre, sin cargo</li>
+          <li><strong>Después de aceptación, antes de preparación:</strong> A negociar con el cocinero</li>
+          <li><strong>Durante o después de preparación:</strong> El cocinero puede retener el pago total</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. Cancelación por parte del cocinero</h3>
+        <p>Si el cocinero no puede completar un pedido aceptado, debe notificar al cliente inmediatamente y acordar un reembolso completo. Los cocineros que cancelen pedidos frecuentemente pueden ser suspendidos de la plataforma.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">3. Pedidos sin respuesta</h3>
+        <p>Si el cocinero no responde a un pedido dentro de <strong>2 horas</strong>, el pedido se considera auto-cancelado. El cliente no tiene obligación de pago en este caso.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">4. Membresía Saboro</h3>
+        <p>Las membresías de cocineros son <strong>no reembolsables</strong> una vez activadas, excepto donde lo requiera la ley aplicable. Puedes cancelar tu membresía en cualquier momento — tu perfil permanecerá activo hasta el fin del período pagado.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">5. Disputas</h3>
+        <p>Saboro no arbitra disputas entre clientes y cocineros sobre pedidos de comida. Te recomendamos resolver cualquier disputa directamente. Para disputas sobre membresías, contáctanos en <strong>soporte@saboro.app</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     POLÍTICA DE REEMBOLSOS
+══════════════════════════════════════════ -->
+<div id="page-reembolsos" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Política de Reembolsos</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Última actualización: Mayo 2026 · Saboro LLC</p>
+    <div style="display:flex;flex-direction:column;gap:24px;font-size:14px;line-height:1.8;color:var(--text)">
+      <div style="background:#F0FFF4;border-left:4px solid var(--green);border-radius:0 12px 12px 0;padding:16px 20px">
+        <strong>💡 Modelo Saboro:</strong> Como Saboro no procesa pagos de comida, los reembolsos por pedidos se gestionan directamente entre cliente y cocinero. Saboro solo procesa pagos de membresías.
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">1. Reembolsos por pedidos de comida</h3>
+        <p>Saboro <strong>no procesa ni garantiza</strong> reembolsos por pedidos de comida. Si tienes un problema con tu pedido:</p>
+        <ul style="margin:10px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li>Contacta directamente al cocinero por WhatsApp u otro método acordado</li>
+          <li>Documenta el problema con fotos si es posible</li>
+          <li>Negocia el reembolso o compensación directamente</li>
+        </ul>
+        <p style="margin-top:10px">Saboro no puede intervenir en disputas de pago de comida ya que los pagos ocurren fuera de nuestra plataforma.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. Reembolsos de membresía</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>Período de prueba gratuito (30 días):</strong> No se cobra nada, no hay reembolso necesario.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>Primer mes pagado:</strong> Reembolso completo si se solicita dentro de los primeros <strong>3 días</strong> del cobro.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>Meses subsiguientes:</strong> No reembolsables. Puedes cancelar en cualquier momento para que no se renueve el siguiente mes.
+          </div>
+          <div style="background:#FFF0F0;border-radius:10px;padding:14px">
+            <strong>Cobro erróneo o duplicado:</strong> Reembolso completo garantizado. Contáctanos en <strong>soporte@saboro.app</strong> dentro de 7 días.
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">3. Tiempo de procesamiento</h3>
+        <p>Los reembolsos de membresía aprobados se procesan en <strong>5-10 días hábiles</strong> al método de pago original.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">4. Cómo solicitar un reembolso</h3>
+        <p>Envía un correo a <strong>soporte@saboro.app</strong> con tu nombre, correo registrado y motivo. Respondemos en menos de 48 horas.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     POLÍTICA DE DELIVERY
+══════════════════════════════════════════ -->
+<div id="page-delivery" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Política de Delivery</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Última actualización: Mayo 2026 · Saboro LLC</p>
+    <div style="display:flex;flex-direction:column;gap:24px;font-size:14px;line-height:1.8;color:var(--text)">
+      <div style="background:#FFF8F0;border-left:4px solid var(--orange);border-radius:0 12px 12px 0;padding:16px 20px">
+        <strong>⚠️ Importante:</strong> Saboro <strong>no es un servicio de delivery</strong>. No contratamos ni gestionamos repartidores. La entrega es acordada directamente entre cliente y cocinero.
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">1. Opciones de entrega</h3>
+        <p>Cada cocinero define sus propias opciones de entrega en su perfil:</p>
+        <ul style="margin:10px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li><strong>🛵 Delivery:</strong> El cocinero entrega personalmente o coordina un repartidor</li>
+          <li><strong>🏠 Recogida:</strong> El cliente pasa a recoger en el domicilio del cocinero</li>
+          <li><strong>🕯️ Cena privada:</strong> El cocinero cocina en casa del cliente (por acuerdo)</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. Costos de delivery</h3>
+        <p>Los costos de entrega son establecidos libremente por cada cocinero. Saboro no fija ni controla estos precios. El costo aparece en el perfil del cocinero antes de confirmar el pedido.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">3. Tiempos de entrega</h3>
+        <p>Los tiempos son estimados y dependen de cada cocinero. Saboro no garantiza tiempos de entrega. Si el cocinero se retrasa, el cliente debe contactarlo directamente.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">4. Responsabilidad</h3>
+        <p>Saboro <strong>no es responsable</strong> por entregas tardías, alimentos dañados en tránsito, direcciones incorrectas o cualquier incidente durante la entrega. La responsabilidad recae en el cocinero que realiza la entrega.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">5. Zonas de cobertura</h3>
+        <p>Cada cocinero define su propia zona de cobertura. Saboro opera internacionalmente pero no garantiza disponibilidad de cocineros en todas las áreas geográficas.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     POLÍTICA DE CONTENIDO
+══════════════════════════════════════════ -->
+<div id="page-contenido" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Política de Contenido</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Última actualización: Mayo 2026 · Saboro LLC</p>
+    <div style="display:flex;flex-direction:column;gap:24px;font-size:14px;line-height:1.8;color:var(--text)">
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">1. Tu contenido</h3>
+        <p>Eres el dueño de todo el contenido que publicas en Saboro (fotos de platillos, descripciones, reseñas). Al publicarlo, nos otorgas una licencia no exclusiva y gratuita para mostrarlo dentro de la plataforma y en materiales de marketing de Saboro.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. Contenido permitido</h3>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li>Fotos reales de tus platillos</li>
+          <li>Descripciones precisas de ingredientes y preparación</li>
+          <li>Reseñas honestas basadas en experiencias reales</li>
+          <li>Información de contacto y métodos de pago</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">3. Contenido prohibido</h3>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li>❌ Fotos falsas o de otros cocineros</li>
+          <li>❌ Descripciones engañosas sobre ingredientes o alérgenos</li>
+          <li>❌ Reseñas falsas o compradas</li>
+          <li>❌ Contenido ofensivo, discriminatorio o ilegal</li>
+          <li>❌ Alcohol, tabaco o sustancias controladas</li>
+          <li>❌ Spam o publicidad no relacionada con comida</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">4. Moderación</h3>
+        <p>Saboro se reserva el derecho de eliminar contenido que viole esta política sin previo aviso. Los usuarios que violen repetidamente las normas pueden ser suspendidos permanentemente.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">5. Reportar contenido</h3>
+        <p>Si ves contenido que viola estas normas, repórtalo a <strong>soporte@saboro.app</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 // ════════════════════════════════════════
@@ -2034,7 +2363,9 @@ function coStep(n) {
     else if (i < n) ind.classList.add('done');
   });
   if (n === 3) {
-    document.getElementById('summary-delivery').textContent = currentDelivery === 'delivery' ? 'Delivery 🛵' : 'Recogida 🏠';
+    document.getElementById('summary-delivery').textContent =
+      currentDelivery === 'delivery' ? 'Delivery 🛵' :
+      currentDelivery === 'cena'     ? 'Cena privada 🕯️' : 'Recogida 🏠';
     document.getElementById('summary-payment').textContent = {whatsapp:'WhatsApp 💬', transfer:'Transferencia 🏦', digital:'PayPal/Venmo/Zelle 📲'}[currentPayMethod];
     renderCheckout();
   }
@@ -2043,15 +2374,18 @@ function coStep(n) {
 
 function selectDelivery2(type) {
   currentDelivery = type;
-  ['delivery','pickup'].forEach(t => {
+  ['delivery','pickup','cena'].forEach(t => {
     document.getElementById('del-'+t).classList.remove('selected');
     const c = document.getElementById('del-check-'+t);
-    c.classList.remove('selected'); c.textContent='';
+    if (c) { c.classList.remove('selected'); c.textContent=''; }
   });
   document.getElementById('del-'+type).classList.add('selected');
   const chk = document.getElementById('del-check-'+type);
-  chk.classList.add('selected'); chk.textContent='✓';
+  if (chk) { chk.classList.add('selected'); chk.textContent='✓'; }
   document.getElementById('del-address-block').style.display = type==='delivery' ? 'block' : 'none';
+  // Show cena note
+  const cenaNote = document.getElementById('cena-note');
+  if (cenaNote) cenaNote.style.display = type==='cena' ? 'block' : 'none';
 }
 
 function selectPayMethod(method) {
@@ -2279,15 +2613,15 @@ let userMarker = null;
 let activeFilter = 'todos';
 
 const cookLocations = [
-  { id:1, name:'Chef María R.',  emoji:'👩‍🍳', lat:47.6262, lng:-122.5210, cuisine:'Mexicana',  rating:4.9, delivery:true,  tags:['mexicana','delivery'] },
-  { id:2, name:'Chef Carlos M.', emoji:'👨‍🍳', lat:47.6318, lng:-122.5378, cuisine:'Italiana',  rating:4.7, delivery:true,  tags:['italiana','delivery'] },
-  { id:3, name:'Chef Sofía V.',  emoji:'🧑‍🍳', lat:47.6198, lng:-122.5290, cuisine:'Asiática',  rating:4.8, delivery:false, tags:['asiatica','recogida'] },
-  { id:4, name:'Chef Juan P.',   emoji:'👨‍🍳', lat:47.6350, lng:-122.5150, cuisine:'Argentina', rating:4.6, delivery:true,  tags:['delivery'] },
-  { id:5, name:'Chef Ana L.',    emoji:'👩‍🍳', lat:47.6230, lng:-122.5440, cuisine:'Mexicana',  rating:4.5, delivery:false, tags:['mexicana','recogida'] },
+  { id:1, name:'Chef María R.',  emoji:'👩‍🍳', lat:47.6262, lng:-122.5210, cuisine:'Mexicana',  rating:4.9, delivery:true,  cena:true,  tags:['mexicana','delivery','cena'] },
+  { id:2, name:'Chef Carlos M.', emoji:'👨‍🍳', lat:47.6318, lng:-122.5378, cuisine:'Italiana',  rating:4.7, delivery:true,  cena:false, tags:['italiana','delivery'] },
+  { id:3, name:'Chef Sofía V.',  emoji:'🧑‍🍳', lat:47.6198, lng:-122.5290, cuisine:'Asiática',  rating:4.8, delivery:false, cena:true,  tags:['asiatica','recogida','cena'] },
+  { id:4, name:'Chef Juan P.',   emoji:'👨‍🍳', lat:47.6350, lng:-122.5150, cuisine:'Argentina', rating:4.6, delivery:true,  cena:false, tags:['delivery'] },
+  { id:5, name:'Chef Ana L.',    emoji:'👩‍🍳', lat:47.6230, lng:-122.5440, cuisine:'Mexicana',  rating:4.5, delivery:false, cena:false, tags:['mexicana','recogida'] },
 ];
 
-function makeCookIcon(emoji, delivery) {
-  const color = delivery ? '#E8622A' : '#2E7D52';
+function makeCookIcon(emoji, delivery, cena) {
+  const color = cena ? '#9B59B6' : delivery ? '#E8622A' : '#2E7D52';
   return L.divIcon({
     className: '',
     html: `<div style="background:${color};width:42px;height:42px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center">
@@ -2329,13 +2663,17 @@ function placeAllMarkers() {
   leafletMarkers = [];
   cookLocations.forEach(c => {
     if (activeFilter !== 'todos' && !c.tags.includes(activeFilter)) return;
-    const marker = L.marker([c.lat, c.lng], { icon: makeCookIcon(c.emoji, c.delivery) });
+    const marker = L.marker([c.lat, c.lng], { icon: makeCookIcon(c.emoji, c.delivery, c.cena) });
     marker.bindPopup(`
-      <div style="font-family:'DM Sans',sans-serif;min-width:180px;padding:4px">
+      <div style="font-family:'DM Sans',sans-serif;min-width:190px;padding:4px">
         <div style="font-size:22px;margin-bottom:4px">${c.emoji}</div>
         <div style="font-weight:700;font-size:15px;color:#3D2010">${c.name}</div>
         <div style="font-size:13px;color:#8A6A50;margin:2px 0">${c.cuisine} · ⭐${c.rating}</div>
-        <div style="font-size:12px;margin-bottom:10px">${c.delivery?'🛵 Delivery disponible':'🏠 Solo recogida'}</div>
+        <div style="font-size:12px;margin-bottom:8px;display:flex;flex-direction:column;gap:2px">
+          ${c.delivery ? '<span>🛵 Delivery disponible</span>' : ''}
+          ${c.tags.includes('recogida') ? '<span>🏠 Recogida en domicilio</span>' : ''}
+          ${c.cena ? '<span>🕯️ Cena privada (reserva)</span>' : ''}
+        </div>
         <button onclick="showPage('profile')" style="background:#E8622A;color:white;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;width:100%">Ver menú y pedir →</button>
       </div>`, { maxWidth:220 });
     marker.addTo(leafletMap);
@@ -2649,34 +2987,76 @@ function setLang(lang) {
   currentLang = lang;
   const t = translations[lang];
 
-  // Update language buttons
+  // Update language buttons — mobile
   ['es','en','pt'].forEach(l => {
     const btn = document.getElementById('lang-btn-'+l);
-    if (btn) {
-      btn.style.background = l === lang ? 'var(--orange)' : 'var(--warm)';
-      btn.style.color = l === lang ? 'white' : 'var(--text)';
-      btn.style.border = l === lang ? 'none' : '1px solid var(--border)';
-    }
+    if (!btn) return;
+    btn.style.background = l === lang ? 'var(--orange)' : 'var(--warm)';
+    btn.style.color = l === lang ? 'white' : 'var(--text)';
+    btn.style.border = l === lang ? 'none' : '1px solid var(--border)';
   });
 
   // Update desktop lang button
   const desktopLang = document.getElementById('desktop-lang-btn');
-  if (desktopLang) desktopLang.textContent = lang === 'es' ? '🇪🇸 ES' : lang === 'en' ? '🇺🇸 EN' : '🇧🇷 PT';
+  if (desktopLang) desktopLang.textContent = lang==='es'?'🇪🇸 ES':lang==='en'?'🇺🇸 EN':'🇧🇷 PT';
 
-  // Update translatable elements
-  const els = document.querySelectorAll('[data-i18n]');
-  els.forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (t[key]) el.textContent = t[key];
-  });
+  // Apply translations to home page
+  const map = {
+    'Bienvenido a':      {'en':'Welcome to',       'pt':'Bem-vindo ao'},
+    'Elige cómo quieres usar la plataforma': {'en':'Choose how you want to use the platform','pt':'Escolha como deseja usar a plataforma'},
+    '¿Qué eres tú?':    {'en':'Who are you?',      'pt':'Quem é você?'},
+    'Soy Cliente':       {'en':'I\'m a Client',     'pt':'Sou Cliente'},
+    'Quiero encontrar cocineros y pedir comida casera': {'en':'I want to find home cooks and order food','pt':'Quero encontrar cozinheiros e pedir comida caseira'},
+    'Buscar Cocineros →':{'en':'Find Cooks →',      'pt':'Buscar Cozinheiros →'},
+    'Soy Cocinero':      {'en':'I\'m a Cook',       'pt':'Sou Cozinheiro'},
+    'Quiero publicar mi menú y conseguir clientes': {'en':'I want to publish my menu and get clients','pt':'Quero publicar meu menu e conseguir clientes'},
+    'Ver Planes →':      {'en':'See Plans →',       'pt':'Ver Planos →'},
+    'Mapa de Cocineros Cercanos': {'en':'Nearby Cooks Map','pt':'Mapa de Cozinheiros Próximos'},
+    'Cocineros reales en tu área. Haz clic en un pin para ver su perfil y pedir.': {'en':'Real cooks in your area. Tap a pin to see their profile and order.','pt':'Cozinheiros reais na sua área. Toque em um pin para ver o perfil e pedir.'},
+    '📍 Mostrar mi ubicación': {'en':'📍 Show my location','pt':'📍 Mostrar minha localização'},
+    'Inicio':            {'en':'Home',              'pt':'Início'},
+    'Mapa':              {'en':'Map',               'pt':'Mapa'},
+    'Reseñas':           {'en':'Reviews',           'pt':'Avaliações'},
+    'Cocineros':         {'en':'Cooks',             'pt':'Cozinheiros'},
+    'Iniciar Sesión':    {'en':'Log In',            'pt':'Entrar'},
+    'Regístrate':        {'en':'Sign Up',           'pt':'Cadastre-se'},
+    'Mi Menú':           {'en':'My Menu',           'pt':'Meu Menu'},
+    'Más':               {'en':'More',              'pt':'Mais'},
+    '💡 Clientes pagan directo al cocinero · Saboro cobra membresía solo al cocinero': {
+      'en':'💡 Clients pay the cook directly · Saboro only charges cooks a membership fee',
+      'pt':'💡 Clientes pagam direto ao cozinheiro · Saboro cobra apenas a adesão do cozinheiro'
+    },
+  };
 
-  // Update mobile nav labels
-  document.querySelectorAll('.mn-label').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (t[key]) el.textContent = t[key];
-  });
+  // Walk all text nodes and translate
+  function translateNode(node) {
+    if (node.nodeType === 3) { // text node
+      const trimmed = node.textContent.trim();
+      if (map[trimmed] && map[trimmed][lang]) {
+        node.textContent = node.textContent.replace(trimmed, map[trimmed][lang]);
+      } else if (lang === 'es') {
+        // restore Spanish — find reverse
+        Object.entries(map).forEach(([es, others]) => {
+          if (others[currentLang === 'es' ? 'en' : 'pt'] === trimmed) {
+            node.textContent = node.textContent.replace(trimmed, es);
+          }
+        });
+      }
+    } else if (node.nodeType === 1 && !['SCRIPT','STYLE'].includes(node.tagName)) {
+      node.childNodes.forEach(translateNode);
+    }
+  }
 
-  showToast(lang === 'es' ? '🇪🇸 Español activado' : lang === 'en' ? '🇺🇸 English activated' : '🇧🇷 Português ativado');
+  // Translate visible page only for performance
+  const activePage = document.querySelector('.page.active');
+  if (activePage) translateNode(activePage);
+
+  // Always translate nav + mobile nav
+  document.querySelector('nav') && translateNode(document.querySelector('nav'));
+  document.getElementById('mobile-nav') && translateNode(document.getElementById('mobile-nav'));
+  document.getElementById('mobile-more-menu') && translateNode(document.getElementById('mobile-more-menu'));
+
+  showToast(lang==='es'?'🇪🇸 Español activado':lang==='en'?'🇺🇸 English activated':'🇧🇷 Português ativado');
 }
 
 // ════════════════════════════════════════

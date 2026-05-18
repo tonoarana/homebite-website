@@ -1,0 +1,3071 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Micasero — Comida Casera Cerca de Ti</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root {
+    --cream: #FAF6F0;
+    --warm: #F5EDE0;
+    --orange: #E8622A;
+    --orange-dark: #C94E1A;
+    --orange-light: #F4865A;
+    --brown: #3D2010;
+    --brown-mid: #7A4A2A;
+    --text: #2A1A0E;
+    --text-muted: #8A6A50;
+    --white: #FFFFFF;
+    --card-bg: #FFFDF9;
+    --border: #EAD9C4;
+    --green: #2E7D52;
+    --shadow: 0 4px 24px rgba(61,32,16,0.10);
+    --shadow-lg: 0 12px 48px rgba(61,32,16,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── NAVIGATION ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(250,246,240,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 900;
+    color: var(--orange);
+    cursor: pointer;
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--brown); }
+  .nav-links {
+    display: flex; gap: 4px; align-items: center;
+  }
+  .nav-links button {
+    background: none; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500;
+    color: var(--text-muted);
+    padding: 8px 14px; border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .nav-links button:hover, .nav-links button.active {
+    background: var(--warm);
+    color: var(--orange);
+  }
+  .nav-cta {
+    background: var(--orange) !important;
+    color: var(--white) !important;
+    border-radius: 10px !important;
+    padding: 8px 18px !important;
+  }
+  .nav-cta:hover { background: var(--orange-dark) !important; }
+  .nav-lang {
+    font-size: 12px !important;
+    color: var(--text-muted) !important;
+    border: 1px solid var(--border) !important;
+  }
+  .cart-btn {
+    position: relative;
+  }
+  .cart-badge {
+    position: absolute; top: 2px; right: 6px;
+    background: var(--orange); color: white;
+    font-size: 10px; width: 16px; height: 16px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+
+  /* ── PAGES ── */
+  .page { display: none; padding-top: 64px; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ── HOME PAGE ── */
+  .hero {
+    background: linear-gradient(135deg, #3D2010 0%, #7A4A2A 50%, #E8622A 100%);
+    padding: 80px 24px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    color: #FFD9B8;
+    font-size: 12px; font-weight: 600;
+    padding: 6px 16px; border-radius: 20px;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 900; color: var(--white);
+    line-height: 1.1; margin-bottom: 16px;
+  }
+  .hero h1 em { color: #FFD9B8; font-style: normal; }
+  .hero p {
+    color: rgba(255,255,255,0.8);
+    font-size: 17px; max-width: 500px;
+    margin: 0 auto 32px; line-height: 1.6;
+  }
+  .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--white); color: var(--orange);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 15px;
+    padding: 14px 28px; border-radius: 12px;
+    border: none; cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+  .btn-secondary {
+    background: rgba(255,255,255,0.15); color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600; font-size: 15px;
+    padding: 14px 28px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.3); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.25); }
+
+  .hero-stats {
+    display: flex; gap: 32px; justify-content: center;
+    margin-top: 48px; flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: #FFD9B8; }
+  .stat-label { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+
+  .section { padding: 60px 24px; max-width: 1100px; margin: 0 auto; }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 4vw, 36px); font-weight: 700;
+    color: var(--brown); margin-bottom: 8px;
+  }
+  .section-sub { color: var(--text-muted); font-size: 16px; margin-bottom: 40px; }
+
+  .how-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+  .how-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px 24px;
+    transition: all 0.3s;
+  }
+  .how-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+  .how-icon {
+    width: 56px; height: 56px; border-radius: 16px;
+    background: linear-gradient(135deg, var(--orange-light), var(--orange));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; margin-bottom: 20px;
+  }
+  .how-card h3 { font-family: 'Playfair Display', serif; font-size: 19px; margin-bottom: 8px; color: var(--brown); }
+  .how-card p { font-size: 14px; line-height: 1.6; color: var(--text-muted); }
+
+  .featured-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .cook-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden;
+    transition: all 0.3s; cursor: pointer;
+  }
+  .cook-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+  .cook-card-img {
+    height: 160px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 64px;
+    position: relative;
+  }
+  .cook-card-img .cook-avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    border: 3px solid white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    box-shadow: var(--shadow);
+  }
+  .cook-delivery-badge {
+    position: absolute; top: 12px; right: 12px;
+    background: var(--green); color: white;
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+  }
+  .cook-card-body { padding: 16px 20px 20px; }
+  .cook-card-body h3 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--brown); margin-bottom: 4px; }
+  .cook-meta { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .stars { color: #F4A020; }
+  .cook-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tag {
+    background: var(--warm); color: var(--brown-mid);
+    font-size: 11px; font-weight: 600; padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .btn-order {
+    width: 100%; background: var(--orange); color: white;
+    border: none; border-radius: 10px;
+    padding: 10px; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-order:hover { background: var(--orange-dark); }
+
+  /* ── MAP PAGE ── */
+  .map-container { padding: 24px; }
+  .map-header { margin-bottom: 20px; }
+  .map-header h2 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--brown); }
+  .map-header p { color: var(--text-muted); font-size: 15px; margin-top: 4px; }
+  .map-filters {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .filter-btn {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 20px; padding: 8px 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    font-weight: 500; color: var(--text-muted); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--orange); color: white; border-color: var(--orange);
+  }
+  #map-visual {
+    background: linear-gradient(135deg, #e8f4e8 0%, #d4e8d4 100%);
+    border-radius: 20px;
+    height: 400px;
+    position: relative; overflow: hidden;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .map-grid-lines {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(100,150,100,0.15) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(100,150,100,0.15) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .map-roads {
+    position: absolute; inset: 0;
+  }
+  .map-marker {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 10;
+  }
+  .map-marker:hover { transform: translate(-50%, -100%) scale(1.2); z-index: 20; }
+  .map-marker-pin {
+    width: 44px; height: 44px;
+    background: var(--orange); border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(232,98,42,0.4);
+    border: 2px solid white;
+  }
+  .map-marker-pin span {
+    transform: rotate(45deg); font-size: 18px;
+  }
+  .map-tooltip {
+    position: absolute;
+    bottom: 54px; left: 50%; transform: translateX(-50%);
+    background: var(--brown); color: white;
+    padding: 8px 12px; border-radius: 10px;
+    font-size: 12px; white-space: nowrap;
+    opacity: 0; transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .map-marker:hover .map-tooltip { opacity: 1; }
+  .map-tooltip::after {
+    content: ''; position: absolute; top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--brown);
+  }
+  .map-you {
+    position: absolute;
+    width: 16px; height: 16px;
+    background: #2196F3; border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 0 8px rgba(33,150,243,0.2);
+    top: 55%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .map-legend {
+    display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .map-list { margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+
+  /* ── PROFILE PAGE ── */
+  .profile-hero {
+    background: linear-gradient(135deg, var(--brown) 0%, var(--brown-mid) 100%);
+    padding: 40px 24px;
+    display: flex; align-items: center; gap: 24px;
+    flex-wrap: wrap;
+  }
+  .profile-avatar {
+    width: 100px; height: 100px; border-radius: 50%;
+    border: 4px solid rgba(255,255,255,0.3);
+    background: linear-gradient(135deg, var(--orange-light), var(--orange));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 44px;
+    flex-shrink: 0;
+  }
+  .profile-info h2 { font-family: 'Playfair Display', serif; font-size: 26px; color: white; }
+  .profile-info p { color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 4px; }
+  .profile-badges { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .profile-badge {
+    background: rgba(255,255,255,0.15); color: white;
+    font-size: 12px; font-weight: 600; padding: 5px 12px;
+    border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
+  }
+  .profile-badge.green { background: rgba(46,125,82,0.4); }
+
+  .profile-body { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+  .profile-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; }
+  @media(max-width: 700px) { .profile-grid { grid-template-columns: 1fr; } }
+
+  .menu-grid { display: grid; gap: 16px; }
+  .menu-item {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px;
+    display: flex; gap: 16px; align-items: center;
+    transition: all 0.2s;
+  }
+  .menu-item:hover { box-shadow: var(--shadow); }
+  .menu-emoji { font-size: 40px; flex-shrink: 0; }
+  .menu-details { flex: 1; }
+  .menu-details h4 { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--brown); }
+  .menu-details p { font-size: 13px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+  .menu-price { font-size: 17px; font-weight: 700; color: var(--orange); white-space: nowrap; }
+  .btn-add {
+    background: var(--orange); color: white;
+    border: none; border-radius: 8px;
+    width: 32px; height: 32px; font-size: 18px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .btn-add:hover { background: var(--orange-dark); transform: scale(1.1); }
+
+  .profile-sidebar { display: flex; flex-direction: column; gap: 16px; }
+  .sidebar-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px;
+  }
+  .sidebar-card h4 { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--brown); margin-bottom: 12px; }
+
+  /* ── REVIEWS PAGE ── */
+  .reviews-container { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+  .reviews-header { margin-bottom: 32px; }
+  .overall-rating {
+    background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+    color: white; border-radius: 20px; padding: 28px;
+    display: flex; gap: 24px; align-items: center;
+    margin-bottom: 32px; flex-wrap: wrap;
+  }
+  .rating-big { font-family: 'Playfair Display', serif; font-size: 56px; font-weight: 900; line-height: 1; }
+  .rating-bars { flex: 1; min-width: 180px; }
+  .rating-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .rating-bar-label { font-size: 12px; white-space: nowrap; width: 12px; }
+  .rating-bar-bg { flex: 1; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; }
+  .rating-bar-fill { height: 100%; background: white; border-radius: 3px; }
+
+  .review-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px; margin-bottom: 16px;
+  }
+  .review-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; }
+  .reviewer { display: flex; gap: 10px; align-items: center; }
+  .reviewer-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .reviewer-name { font-weight: 600; font-size: 15px; color: var(--brown); }
+  .reviewer-date { font-size: 12px; color: var(--text-muted); }
+  .review-dish { font-size: 12px; color: var(--orange); font-weight: 600; margin-bottom: 8px; }
+  .review-text { font-size: 14px; line-height: 1.6; color: var(--text); }
+
+  .add-review-btn {
+    background: var(--orange); color: white;
+    border: none; border-radius: 12px;
+    padding: 14px 24px; font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    width: 100%; margin-top: 8px;
+    transition: all 0.2s;
+  }
+  .add-review-btn:hover { background: var(--orange-dark); }
+
+  /* ── AUTH PAGES ── */
+  .auth-wrapper {
+    min-height: calc(100vh - 64px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    background: linear-gradient(135deg, var(--cream) 0%, var(--warm) 100%);
+  }
+  .auth-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 24px; padding: 40px;
+    width: 100%; max-width: 420px;
+    box-shadow: var(--shadow-lg);
+  }
+  .auth-logo { text-align: center; margin-bottom: 28px; }
+  .auth-logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 900; color: #4CAF50;
+  }
+  .auth-logo-text span { color: var(--brown); }
+  .auth-subtitle { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+  .auth-card h2 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--brown); margin-bottom: 24px; text-align: center; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 13px; font-weight: 600; color: var(--brown-mid); display: block; margin-bottom: 6px; }
+  .form-input {
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px;
+    background: var(--cream); color: var(--text);
+    transition: border-color 0.2s; outline: none;
+  }
+  .form-input:focus { border-color: var(--orange); background: white; }
+  .role-select { display: flex; gap: 10px; }
+  .role-btn {
+    flex: 1; padding: 12px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    background: var(--cream); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    color: var(--text-muted); text-align: center;
+    transition: all 0.2s;
+  }
+  .role-btn.selected {
+    border-color: var(--orange); background: #FFF3EE; color: var(--orange);
+  }
+  .btn-submit {
+    width: 100%; background: var(--orange); color: white;
+    border: none; border-radius: 12px;
+    padding: 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    margin-top: 8px; transition: all 0.2s;
+  }
+  .btn-submit:hover { background: var(--orange-dark); transform: translateY(-1px); }
+  .auth-link { text-align: center; margin-top: 16px; font-size: 14px; color: var(--text-muted); }
+  .auth-link a { color: var(--orange); font-weight: 600; cursor: pointer; text-decoration: none; }
+  .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+  .divider-text { font-size: 12px; color: var(--text-muted); }
+  .social-btn {
+    width: 100%; padding: 12px; border: 1.5px solid var(--border);
+    border-radius: 10px; background: var(--cream); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .social-btn:hover { background: var(--warm); border-color: var(--brown-mid); }
+
+  /* ── CHECKOUT PAGE ── */
+  .checkout-container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+  .checkout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  @media(max-width: 650px) { .checkout-grid { grid-template-columns: 1fr; } }
+
+  .checkout-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--brown); margin-bottom: 20px; }
+  .order-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .order-item-info { display: flex; gap: 12px; align-items: center; }
+  .order-item-emoji { font-size: 28px; }
+  .order-item-name { font-weight: 600; font-size: 15px; }
+  .order-item-qty { font-size: 13px; color: var(--text-muted); }
+  .order-item-price { font-weight: 700; color: var(--orange); }
+  .order-total {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 0; font-size: 18px; font-weight: 700;
+  }
+  .order-total .total-num { color: var(--orange); font-family: 'Playfair Display', serif; font-size: 22px; }
+
+  .delivery-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .delivery-opt {
+    border: 1.5px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; cursor: pointer;
+    display: flex; gap: 12px; align-items: center;
+    transition: all 0.2s;
+  }
+  .delivery-opt.selected { border-color: var(--orange); background: #FFF3EE; }
+  .delivery-opt-icon { font-size: 22px; }
+  .delivery-opt-info { flex: 1; }
+  .delivery-opt-name { font-weight: 600; font-size: 14px; }
+  .delivery-opt-desc { font-size: 12px; color: var(--text-muted); }
+  .delivery-opt-price { font-weight: 700; font-size: 14px; color: var(--orange); }
+
+  .card-visual {
+    background: linear-gradient(135deg, var(--brown) 0%, var(--brown-mid) 100%);
+    border-radius: 16px; padding: 24px;
+    color: white; margin-bottom: 20px;
+    position: relative; overflow: hidden;
+  }
+  .card-visual::before {
+    content: ''; position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .card-chip { font-size: 22px; margin-bottom: 16px; }
+  .card-number { font-size: 18px; letter-spacing: 3px; margin-bottom: 12px; font-family: monospace; }
+  .card-row { display: flex; justify-content: space-between; font-size: 12px; opacity: 0.7; }
+
+  .btn-pay {
+    width: 100%; background: var(--green); color: white;
+    border: none; border-radius: 12px;
+    padding: 16px; font-family: 'DM Sans', sans-serif;
+    font-size: 16px; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-pay:hover { background: #245F3F; transform: translateY(-1px); }
+
+  .secure-badge { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; font-size: 12px; color: var(--text-muted); }
+
+  /* ── CART SIDEBAR ── */
+  .cart-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: none;
+  }
+  .cart-overlay.open { display: flex; }
+  .cart-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.4); }
+  .cart-panel {
+    position: absolute; right: 0; top: 0; bottom: 0;
+    width: 360px; max-width: 100vw;
+    background: var(--cream);
+    box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+    display: flex; flex-direction: column;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  .cart-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .cart-header h3 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--brown); }
+  .close-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); }
+  .cart-items { flex: 1; overflow-y: auto; padding: 16px 24px; }
+  .cart-item { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .cart-item-emoji { font-size: 28px; }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-weight: 600; font-size: 14px; }
+  .cart-item-price { font-size: 13px; color: var(--orange); }
+  .qty-control { display: flex; align-items: center; gap: 8px; }
+  .qty-btn { background: var(--warm); border: none; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+  .qty-num { font-weight: 700; font-size: 14px; min-width: 16px; text-align: center; }
+  .cart-footer { padding: 20px 24px; border-top: 1px solid var(--border); }
+  .cart-total-row { display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 17px; font-weight: 700; }
+  .cart-total-row span:last-child { color: var(--orange); }
+  .btn-checkout { width: 100%; background: var(--orange); color: white; border: none; border-radius: 12px; padding: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-checkout:hover { background: var(--orange-dark); }
+
+  /* ── CHECKOUT STEPS ── */
+  .co-step {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .co-step span {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--border); color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .co-step.active { color: var(--orange); }
+  .co-step.active span { background: var(--orange); color: white; }
+  .co-step.done span { background: var(--green); color: white; }
+  .co-step.done { color: var(--green); }
+  .co-step-line { flex: 1; height: 2px; background: var(--border); min-width: 16px; }
+
+  /* ── PAYMENT METHOD CARDS ── */
+  .payment-method-card {
+    display: flex; align-items: center; gap: 14px;
+    border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 16px 18px; margin-bottom: 10px;
+    cursor: pointer; background: var(--card-bg);
+    transition: all 0.2s;
+  }
+  .payment-method-card:hover { border-color: var(--orange-light); background: #FFF8F4; }
+  .payment-method-card.selected { border-color: var(--orange); background: #FFF3EE; }
+  .pm-icon { font-size: 26px; flex-shrink: 0; }
+  .pm-info { flex: 1; }
+  .pm-name { font-weight: 600; font-size: 15px; color: var(--brown); }
+  .pm-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .pm-check {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .pm-check.selected { background: var(--orange); border-color: var(--orange); color: white; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--brown); color: white;
+    padding: 12px 24px; border-radius: 12px;
+    font-size: 14px; font-weight: 500;
+    z-index: 300; transition: transform 0.3s;
+    box-shadow: var(--shadow-lg);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── MISC ── */
+  .divider-section { height: 1px; background: var(--border); margin: 0 24px; }
+  .empty-cart { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+  .empty-cart-icon { font-size: 48px; margin-bottom: 12px; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 150; display: none; align-items: center; justify-content: center; padding: 24px; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--cream); border-radius: 20px; padding: 32px; width: 100%; max-width: 480px; box-shadow: var(--shadow-lg); }
+  .modal h3 { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 16px; }
+  .modal-close { float: right; background: none; border: none; font-size: 20px; cursor: pointer; }
+  .stars-input { display: flex; gap: 8px; font-size: 28px; cursor: pointer; margin: 12px 0; }
+  .star-sel { transition: transform 0.1s; }
+  .star-sel:hover { transform: scale(1.2); }
+  textarea.form-input { min-height: 100px; resize: vertical; }
+
+  @media(max-width: 600px) {
+    .nav-links { display: none; }
+    .hero h1 { font-size: 28px; }
+    .hero-stats { gap: 20px; }
+    .profile-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── MOBILE BOTTOM NAV ── */
+  .mobile-nav {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: white; border-top: 1px solid var(--border);
+    padding: 8px 0 20px;
+    grid-template-columns: repeat(5, 1fr);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .mobile-nav button {
+    background: none; border: none; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 600; color: var(--text-muted);
+    padding: 6px 4px; -webkit-appearance: none;
+  }
+  .mobile-nav button .mn-icon { font-size: 22px; }
+  .mobile-nav button.active { color: var(--orange); }
+  @media(max-width: 600px) {
+    .mobile-nav { display: grid; }
+    .page { padding-bottom: 80px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     NAVIGATION
+══════════════════════════════════════════ -->
+<nav>
+  <div onclick="showPage('home')" style="cursor:pointer;display:flex;align-items:center;gap:10px;text-decoration:none">
+    <!-- Logo SVG recreado del original -->
+    <svg width="38" height="38" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
+      <rect width="38" height="38" rx="5" fill="#111111"/>
+      <!-- Tenedor izquierdo -->
+      <line x1="12" y1="8" x2="12" y2="16" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="10" y1="8" x2="10" y2="13" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="14" y1="8" x2="14" y2="13" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M10 13 Q12 15 14 13" stroke="#4CAF50" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <line x1="12" y1="15" x2="12" y2="28" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Plato central -->
+      <circle cx="19" cy="19" r="7" stroke="#4CAF50" stroke-width="1.5" fill="none"/>
+      <circle cx="19" cy="19" r="4.5" stroke="#4CAF50" stroke-width="1" fill="none" opacity="0.5"/>
+      <!-- Cuchillo derecho -->
+      <path d="M26 8 C28 8 28 12 26 14 L26 28" stroke="#4CAF50" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Texto Micasero -->
+      <text x="19" y="35.5" font-family="Arial,sans-serif" font-size="4.2" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="0.3">Micasero</text>
+    </svg>
+    <span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:#4CAF50;letter-spacing:-0.5px">Micasero</span>
+  </div>
+  <div class="nav-links">
+    <button onclick="showPage('home')" id="nav-home" class="active">Inicio</button>
+    <button onclick="showPage('map')" id="nav-map">Mapa</button>
+    <button onclick="showPage('reviews')" id="nav-reviews">Reseñas</button>
+    <button onclick="showPage('profile')" id="nav-profile">Cocineros</button>
+    <button onclick="showPage('membresia')" id="nav-membresia" style="color:var(--orange);font-weight:600">👨‍🍳 Para Cocineros</button>
+    <button onclick="showPage('dashboard')" id="nav-dashboard" style="color:var(--green);font-weight:600">📋 Mi Menú</button>
+    <button onclick="showPage('login')" id="nav-login">Iniciar Sesión</button>
+    <button onclick="showPage('register')" id="nav-register" class="nav-cta">Regístrate</button>
+    <button class="cart-btn" onclick="toggleCart()">
+      🛒 Carrito
+      <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+    </button>
+    <button class="nav-lang" id="desktop-lang-btn" onclick="toggleDesktopLang()" style="position:relative">🇪🇸 ES</button>
+  </div>
+  <!-- Desktop lang dropdown -->
+  <div id="desktop-lang-drop" style="display:none;position:absolute;top:60px;right:16px;background:white;border:1px solid var(--border);border-radius:12px;padding:8px;box-shadow:var(--shadow-lg);z-index:200;min-width:140px">
+    <button onclick="setLang('es');closeDesktopLang()" style="width:100%;text-align:left;background:none;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500">🇪🇸 Español</button>
+    <button onclick="setLang('en');closeDesktopLang()" style="width:100%;text-align:left;background:none;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500">🇺🇸 English</button>
+    <button onclick="setLang('pt');closeDesktopLang()" style="width:100%;text-align:left;background:none;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500">🇧🇷 Português</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HOME PAGE
+══════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- ── SELECTOR DE ROL ── -->
+  <div style="background:linear-gradient(135deg,#111 0%,#2a1a0e 60%,#3d2010 100%);padding:56px 24px 48px;text-align:center">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:6px 16px;margin-bottom:20px">
+      <span style="font-size:12px;color:#FFD9B8;font-weight:600;letter-spacing:1px;text-transform:uppercase">¿Qué eres tú?</span>
+    </div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);font-weight:900;color:white;margin-bottom:8px;line-height:1.15">Bienvenido a <em style="color:#4CAF50;font-style:normal">Micasero</em></h1>
+    <p style="color:rgba(255,255,255,0.6);font-size:15px;margin-bottom:36px">Elige cómo quieres usar la plataforma</p>
+
+    <!-- Las dos tarjetas de rol -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:600px;margin:0 auto">
+
+      <!-- CLIENTE -->
+      <button onclick="showPage('map')" style="background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:20px;padding:28px 20px;cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif;-webkit-appearance:none">
+        <div style="font-size:44px;margin-bottom:12px">🍽️</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:white;margin-bottom:8px">Soy Cliente</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5;margin-bottom:16px">Quiero encontrar cocineros y pedir comida casera</div>
+        <div style="background:#4CAF50;color:white;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700">
+          Buscar Cocineros →
+        </div>
+      </button>
+
+      <!-- COCINERO -->
+      <button onclick="showPage('membresia')" style="background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:20px;padding:28px 20px;cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif;-webkit-appearance:none">
+        <div style="font-size:44px;margin-bottom:12px">👨‍🍳</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:white;margin-bottom:8px">Soy Cocinero</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5;margin-bottom:16px">Quiero publicar mi menú y conseguir clientes</div>
+        <div style="background:#E8622A;color:white;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700">
+          Ver Planes →
+        </div>
+      </button>
+    </div>
+
+    <!-- Mini nota de transparencia -->
+    <p style="color:rgba(255,255,255,0.35);font-size:12px;margin-top:24px">
+      💡 Clientes pagan directo al cocinero · Micasero cobra membresía solo al cocinero
+    </p>
+  </div>
+
+  <!-- ── CÓMO FUNCIONA PARA CADA UNO ── -->
+  <div style="max-width:900px;margin:0 auto;padding:48px 24px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+
+      <!-- Flujo cliente -->
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--brown);margin-bottom:16px;display:flex;align-items:center;gap:8px">
+          🍽️ Si eres cliente
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:28px;height:28px;background:var(--orange);border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+            <div><strong>Explora el mapa</strong><br><span style="font-size:13px;color:var(--text-muted)">Encuentra cocineros cerca de ti</span></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:28px;height:28px;background:var(--orange);border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+            <div><strong>Elige tu platillo</strong><br><span style="font-size:13px;color:var(--text-muted)">Agrega al carrito y confirma</span></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:28px;height:28px;background:var(--orange);border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+            <div><strong>Paga al cocinero</strong><br><span style="font-size:13px;color:var(--text-muted)">Directo por WhatsApp, transferencia o PayPal/Zelle</span></div>
+          </div>
+          <div style="margin-top:8px">
+            <button class="btn-order" onclick="showPage('map')" style="padding:12px 20px">Buscar Cocineros →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flujo cocinero -->
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--brown);margin-bottom:16px;display:flex;align-items:center;gap:8px">
+          👨‍🍳 Si eres cocinero
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:28px;height:28px;background:#4CAF50;border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+            <div><strong>Elige tu plan</strong><br><span style="font-size:13px;color:var(--text-muted)">Gratis 30 días o Pro desde $19/mes</span></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:28px;height:28px;background:#4CAF50;border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+            <div><strong>Paga tu membresía</strong><br><span style="font-size:13px;color:var(--text-muted)">Con tarjeta, una sola vez al mes</span></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:28px;height:28px;background:#4CAF50;border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+            <div><strong>Publica y cobra</strong><br><span style="font-size:13px;color:var(--text-muted)">Tus clientes te pagan directo a ti — 0% comisión</span></div>
+          </div>
+          <div style="margin-top:8px">
+            <button onclick="showPage('pago-membresia')" style="width:100%;background:#4CAF50;color:white;border:none;border-radius:10px;padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Activar membresía →</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div style="height:1px;background:var(--border);margin:0 24px"></div>
+
+  <div class="section">
+    <div class="section-title">¿Cómo funciona Micasero?</div>
+    <div class="section-sub">Simple, rápido y delicioso.</div>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-icon">🗺️</div>
+        <h3>Encuentra tu Cocinero</h3>
+        <p>Usa nuestro mapa interactivo para localizar chefs y ver sus menús directamente en tu área.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon">🛒</div>
+        <h3>Elige tu Platillo</h3>
+        <p>Navega los menús, lee reseñas y agrega tus favoritos al carrito con un solo clic.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon">🏠</div>
+        <h3>Recibe o Recoge</h3>
+        <p>Escoge delivery, recoge en casa del cocinero, o ¡vive una cena privada en su hogar!</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon">⭐</div>
+        <h3>Apoya lo Local</h3>
+        <p>Cada pedido ayuda a emprendedores culinarios a crecer y compartir su pasión.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider-section"></div>
+
+  <div class="section">
+    <div class="section-title">Cocineros Destacados</div>
+    <div class="section-sub">Los favoritos de tu comunidad esta semana.</div>
+    <div class="featured-grid" id="featured-cooks"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MAP PAGE — Leaflet + OpenStreetMap
+══════════════════════════════════════════ -->
+<div id="page-map" class="page">
+  <div class="map-container">
+    <div class="map-header">
+      <h2>Mapa de Cocineros Cercanos</h2>
+      <p>Cocineros reales en tu área. Haz clic en un pin para ver su perfil y pedir.</p>
+    </div>
+
+    <div class="map-filters">
+      <button class="filter-btn active" onclick="filterMapLeaflet(this,'todos')">Todos</button>
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'delivery')">🛵 Delivery</button>
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'recogida')">🏠 Recogida</button>
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'cena')">🕯️ Cena en casa</button>
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'mexicana')">🌮 Mexicana</button>
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'italiana')">🍝 Italiana</button>
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'asiatica')">🍜 Asiática</button>
+    </div>
+
+    <!-- Botón ubicación -->
+    <button id="btn-locate" onclick="locateUser()" style="margin-bottom:12px;background:white;border:1.5px solid var(--border);border-radius:10px;padding:9px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--brown);cursor:pointer;display:flex;align-items:center;gap:6px">
+      📍 Mostrar mi ubicación
+    </button>
+
+    <!-- Mapa real Leaflet -->
+    <div id="leaflet-map" style="height:420px;border-radius:20px;overflow:hidden;border:1px solid var(--border);z-index:1"></div>
+
+    <div class="map-legend" style="margin-top:12px">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> Con delivery</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Solo recogida</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#9B59B6"></div> Cena privada</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2196F3"></div> Tu ubicación</div>
+    </div>
+
+    <div class="map-list" id="map-cook-list" style="margin-top:24px"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PROFILE PAGE
+══════════════════════════════════════════ -->
+<div id="page-profile" class="page">
+  <div class="profile-hero">
+    <div class="profile-avatar">👩‍🍳</div>
+    <div class="profile-info">
+      <h2>Chef María Rodríguez</h2>
+      <p>📍 Colonia Roma, Ciudad de México</p>
+      <div class="profile-badges">
+        <span class="profile-badge">⭐ 4.9 (127 reseñas)</span>
+        <span class="profile-badge green">✓ Verificado</span>
+        <span class="profile-badge">🛵 Delivery</span>
+        <span class="profile-badge">🏠 Recogida</span>
+        <span class="profile-badge">🕐 Hoy disponible</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-body">
+    <!-- Banner pago directo -->
+    <div style="background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:1.5px solid #F4C9A8;border-radius:16px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;gap:12px;align-items:center">
+        <span style="font-size:28px">🤝</span>
+        <div>
+          <div style="font-weight:700;font-size:15px;color:var(--brown)">Pagas directo al cocinero</div>
+          <div style="font-size:13px;color:var(--text-muted)">WhatsApp · Transferencia · PayPal / Zelle · Venmo</div>
+        </div>
+      </div>
+      <button class="btn-order" style="padding:10px 20px;white-space:nowrap" onclick="goToCheckout()">Ir al pago →</button>
+    </div>
+    <div class="profile-grid">
+      <div>
+        <h3 class="section-title" style="margin-bottom:8px">Sobre Mí</h3>
+        <p style="color:var(--text-muted);line-height:1.7;margin-bottom:28px;font-size:15px">
+          Soy María, apasionada de la cocina casera con 12 años de experiencia. Mi especialidad es la comida tradicional mexicana con un toque moderno, siempre con ingredientes frescos y de temporada. ¡Me encanta compartir mi amor por la comida con mi comunidad!
+        </p>
+
+        <h3 class="section-title" style="margin-bottom:16px">Mi Menú</h3>
+        <div class="menu-grid" id="menu-items"></div>
+      </div>
+
+      <div class="profile-sidebar">
+        <div class="sidebar-card">
+          <h4>📦 Opciones de Entrega</h4>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--text-muted)">
+            <div>🛵 Delivery — hasta 5km</div>
+            <div>🏠 Recogida en domicilio</div>
+            <div>🕯️ Cena privada en casa del cocinero</div>
+          </div>
+        </div>
+        <div class="sidebar-card">
+          <h4>⏰ Horarios</h4>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--text-muted)">
+            <div>Lun–Vie: 12:00 – 21:00</div>
+            <div>Sáb–Dom: 10:00 – 22:00</div>
+          </div>
+        </div>
+        <div class="sidebar-card">
+          <h4>🏷️ Especialidades</h4>
+          <div class="cook-tags">
+            <span class="tag">Mexicana</span>
+            <span class="tag">Vegana</span>
+            <span class="tag">Sin Gluten</span>
+            <span class="tag">Postres</span>
+          </div>
+        </div>
+        <div class="sidebar-card">
+          <h4>📊 Estadísticas</h4>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:14px">
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Pedidos totales</span><strong>843</strong></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Tiempo promedio</span><strong>35 min</strong></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Tasa de repetición</span><strong>78%</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     REVIEWS PAGE
+══════════════════════════════════════════ -->
+<div id="page-reviews" class="page">
+  <div class="reviews-container">
+    <div class="reviews-header">
+      <div class="section-title">Reseñas de Platillos</div>
+      <div class="section-sub">Lo que dice nuestra comunidad sobre los cocineros de Micasero.</div>
+    </div>
+
+    <div class="overall-rating">
+      <div>
+        <div class="rating-big">4.8</div>
+        <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px">de 5 estrellas · 1,240 reseñas</div>
+      </div>
+      <div class="rating-bars">
+        <div class="rating-bar-row"><span class="rating-bar-label">5</span><div class="rating-bar-bg"><div class="rating-bar-fill" style="width:82%"></div></div><span style="font-size:12px;opacity:0.7">82%</span></div>
+        <div class="rating-bar-row"><span class="rating-bar-label">4</span><div class="rating-bar-bg"><div class="rating-bar-fill" style="width:12%"></div></div><span style="font-size:12px;opacity:0.7">12%</span></div>
+        <div class="rating-bar-row"><span class="rating-bar-label">3</span><div class="rating-bar-bg"><div class="rating-bar-fill" style="width:4%"></div></div><span style="font-size:12px;opacity:0.7">4%</span></div>
+        <div class="rating-bar-row"><span class="rating-bar-label">2</span><div class="rating-bar-bg"><div class="rating-bar-fill" style="width:1%"></div></div><span style="font-size:12px;opacity:0.7">1%</span></div>
+        <div class="rating-bar-row"><span class="rating-bar-label">1</span><div class="rating-bar-bg"><div class="rating-bar-fill" style="width:1%"></div></div><span style="font-size:12px;opacity:0.7">1%</span></div>
+      </div>
+    </div>
+
+    <button class="add-review-btn" onclick="openReviewModal()">✏️ Escribir una Reseña</button>
+
+    <div style="margin-top:24px" id="reviews-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LOGIN PAGE
+══════════════════════════════════════════ -->
+<div id="page-login" class="page">
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px">
+          <svg width="32" height="32" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
+            <rect width="38" height="38" rx="5" fill="#111111"/>
+            <line x1="12" y1="8" x2="12" y2="16" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="10" y1="8" x2="10" y2="13" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="14" y1="8" x2="14" y2="13" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M10 13 Q12 15 14 13" stroke="#4CAF50" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <line x1="12" y1="15" x2="12" y2="28" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="19" cy="19" r="7" stroke="#4CAF50" stroke-width="1.5" fill="none"/>
+            <circle cx="19" cy="19" r="4.5" stroke="#4CAF50" stroke-width="1" fill="none" opacity="0.5"/>
+            <path d="M26 8 C28 8 28 12 26 14 L26 28" stroke="#4CAF50" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="19" y="35.5" font-family="Arial,sans-serif" font-size="4.2" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="0.3">Micasero</text>
+          </svg>
+          <div class="auth-logo-text">Micasero</div>
+        </div>
+        <div class="auth-subtitle">Bienvenido de vuelta 👋</div>
+      </div>
+      <h2>Iniciar Sesión</h2>
+      <div class="form-group">
+        <label class="form-label">Correo Electrónico</label>
+        <input class="form-input" type="email" placeholder="tu@correo.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" type="password" placeholder="••••••••">
+      </div>
+      <button class="btn-submit" onclick="showToast('✅ Sesión iniciada correctamente')">Iniciar Sesión</button>
+      <div class="divider"><div class="divider-line"></div><span class="divider-text">o continúa con</span><div class="divider-line"></div></div>
+      <button class="social-btn">🌐 Continuar con Google</button>
+      <div class="auth-link">¿No tienes cuenta? <a onclick="showPage('register')">Regístrate aquí</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     REGISTER PAGE
+══════════════════════════════════════════ -->
+<div id="page-register" class="page">
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px">
+          <svg width="32" height="32" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
+            <rect width="38" height="38" rx="5" fill="#111111"/>
+            <line x1="12" y1="8" x2="12" y2="16" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="10" y1="8" x2="10" y2="13" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="14" y1="8" x2="14" y2="13" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M10 13 Q12 15 14 13" stroke="#4CAF50" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <line x1="12" y1="15" x2="12" y2="28" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="19" cy="19" r="7" stroke="#4CAF50" stroke-width="1.5" fill="none"/>
+            <circle cx="19" cy="19" r="4.5" stroke="#4CAF50" stroke-width="1" fill="none" opacity="0.5"/>
+            <path d="M26 8 C28 8 28 12 26 14 L26 28" stroke="#4CAF50" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="19" y="35.5" font-family="Arial,sans-serif" font-size="4.2" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="0.3">Micasero</text>
+          </svg>
+          <div class="auth-logo-text">Micasero</div>
+        </div>
+        <div class="auth-subtitle">¡Únete a la comunidad!</div>
+      </div>
+      <h2>Crear Cuenta</h2>
+      <div class="form-group">
+        <label class="form-label">Nombre Completo</label>
+        <input class="form-input" type="text" placeholder="Tu nombre">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Correo Electrónico</label>
+        <input class="form-input" type="email" placeholder="tu@correo.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" type="password" placeholder="Mínimo 8 caracteres">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Soy...</label>
+        <div class="role-select">
+          <div class="role-btn selected" onclick="selectRole(this,'cliente')">🍽️ Cliente</div>
+          <div class="role-btn" onclick="selectRole(this,'cocinero')">👨‍🍳 Cocinero</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:13px;color:var(--text-muted)">
+          <input type="checkbox" id="accept-terms" style="margin-top:2px;flex-shrink:0;accent-color:var(--orange)">
+          <span>Acepto los <a onclick="showPage('terminos')" style="color:var(--orange);cursor:pointer;font-weight:600">Términos de Servicio</a> y la <a onclick="showPage('privacidad')" style="color:var(--orange);cursor:pointer;font-weight:600">Política de Privacidad</a> de Micasero</span>
+        </label>
+      </div>
+      <button class="btn-submit" onclick="showToast('🎉 Cuenta creada exitosamente')">Crear Cuenta</button>
+      <div class="divider"><div class="divider-line"></div><span class="divider-text">o regístrate con</span><div class="divider-line"></div></div>
+      <button class="social-btn">🌐 Continuar con Google</button>
+      <div class="auth-link">¿Ya tienes cuenta? <a onclick="showPage('login')">Inicia sesión aquí</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CHECKOUT PAGE — pago directo al cocinero
+══════════════════════════════════════════ -->
+<div id="page-checkout" class="page">
+  <div class="checkout-container" style="max-width:700px">
+
+    <!-- Pasos -->
+    <div style="display:flex;align-items:center;gap:0;margin-bottom:32px">
+      <div class="co-step active" id="step-ind-1"><span>1</span> Resumen</div>
+      <div class="co-step-line"></div>
+      <div class="co-step" id="step-ind-2"><span>2</span> Entrega</div>
+      <div class="co-step-line"></div>
+      <div class="co-step" id="step-ind-3"><span>3</span> Pago</div>
+      <div class="co-step-line"></div>
+      <div class="co-step" id="step-ind-4"><span>4</span> Listo</div>
+    </div>
+
+    <!-- PASO 1: Resumen del pedido -->
+    <div id="co-step-1">
+      <div class="checkout-title">🛒 Resumen de tu Pedido</div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:20px;margin:16px 0">
+        <div id="checkout-items"></div>
+        <div style="display:flex;justify-content:space-between;padding-top:14px;margin-top:4px;border-top:2px dashed var(--border);font-size:18px;font-weight:700">
+          <span>Total</span>
+          <span style="color:var(--orange);font-family:'Playfair Display',serif" id="checkout-total">$0.00</span>
+        </div>
+      </div>
+      <div style="background:#FFF8F0;border:1.5px solid #F4C9A8;border-radius:12px;padding:14px 16px;font-size:13px;color:var(--brown-mid);display:flex;gap:10px;align-items:flex-start;margin-bottom:20px">
+        <span style="font-size:18px;flex-shrink:0">🤝</span>
+        <span>Este dinero va <strong>directo al cocinero</strong>. Micasero no cobra comisión sobre tus pedidos.</span>
+      </div>
+      <button class="btn-pay" onclick="coStep(2)">Continuar → Elegir Entrega</button>
+    </div>
+
+    <!-- PASO 2: Tipo de entrega -->
+    <div id="co-step-2" style="display:none">
+      <div class="checkout-title">🚚 ¿Cómo recibirás tu pedido?</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0">
+        <div class="delivery-opt selected" id="del-delivery" onclick="selectDelivery2('delivery')">
+          <div class="delivery-opt-icon">🛵</div>
+          <div class="delivery-opt-info">
+            <div class="delivery-opt-name">Delivery a domicilio</div>
+            <div class="delivery-opt-desc">El cocinero o un repartidor te lo lleva · ~30–45 min</div>
+          </div>
+          <div class="pm-check selected" id="del-check-delivery">✓</div>
+        </div>
+        <div class="delivery-opt" id="del-pickup" onclick="selectDelivery2('pickup')">
+          <div class="delivery-opt-icon">🏠</div>
+          <div class="delivery-opt-info">
+            <div class="delivery-opt-name">Recogida en domicilio del cocinero</div>
+            <div class="delivery-opt-desc">Tú pasas a recogerlo · Listo en ~20 min</div>
+          </div>
+          <div class="pm-check" id="del-check-pickup"></div>
+        </div>
+        <div class="delivery-opt" id="del-cena" onclick="selectDelivery2('cena')">
+          <div class="delivery-opt-icon">🕯️</div>
+          <div class="delivery-opt-info">
+            <div class="delivery-opt-name">Cena privada en casa del cocinero</div>
+            <div class="delivery-opt-desc">Experiencia única · Requiere reserva con anticipación</div>
+          </div>
+          <div class="pm-check" id="del-check-cena"></div>
+        </div>
+      </div>
+      <!-- Nota cena privada -->
+      <div id="cena-note" style="display:none;background:#F5EFF9;border:1px solid #C39BD3;border-radius:12px;padding:14px 16px;margin-top:-8px;margin-bottom:12px;font-size:13px;color:#6C3483;line-height:1.6">
+        🕯️ <strong>Cena privada:</strong> El cocinero te contactará para confirmar fecha, hora, número de personas y precio. Esta opción requiere reserva con al menos 24 horas de anticipación.
+      </div>
+        <div class="form-group">
+          <label class="form-label">Tu dirección de entrega</label>
+          <input class="form-input" id="del-address" type="text" placeholder="Calle, número, colonia">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notas para el cocinero (opcional)</label>
+          <input class="form-input" id="del-notes" type="text" placeholder="Ej. Sin picante, tocar timbre 2B…">
+        </div>
+      </div>
+      <div style="display:flex;gap:12px">
+        <button class="btn-secondary" style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:var(--warm);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-weight:600" onclick="coStep(1)">← Atrás</button>
+        <button class="btn-pay" style="flex:2" onclick="coStep(3)">Continuar → Forma de Pago</button>
+      </div>
+    </div>
+
+    <!-- PASO 3: Método de pago DIRECTO AL COCINERO -->
+    <div id="co-step-3" style="display:none">
+      <div class="checkout-title">💸 Págale directamente al cocinero</div>
+      <p style="color:var(--text-muted);font-size:14px;margin:8px 0 20px">Micasero no procesa este pago. Elige cómo prefieres pagar y el cocinero te enviará los detalles al confirmar.</p>
+
+      <div class="payment-method-card selected" id="pm-whatsapp" onclick="selectPayMethod('whatsapp')">
+        <div class="pm-icon">💬</div>
+        <div class="pm-info">
+          <div class="pm-name">Coordinar por WhatsApp</div>
+          <div class="pm-desc">El cocinero te escribe para acordar pago y entrega</div>
+        </div>
+        <div class="pm-check selected" id="check-whatsapp">✓</div>
+      </div>
+
+      <div class="payment-method-card" id="pm-transfer" onclick="selectPayMethod('transfer')">
+        <div class="pm-icon">🏦</div>
+        <div class="pm-info">
+          <div class="pm-name">Transferencia Bancaria</div>
+          <div class="pm-desc">El cocinero te comparte su CLABE / cuenta al confirmar</div>
+        </div>
+        <div class="pm-check" id="check-transfer"></div>
+      </div>
+      <!-- Datos que aparecen al elegir transferencia -->
+      <div id="transfer-info" style="display:none;background:var(--warm);border-radius:12px;padding:16px;margin-top:-4px;margin-bottom:10px;font-size:13px;color:var(--brown-mid)">
+        📋 Los datos bancarios del cocinero llegarán a tu correo registrado al confirmar el pedido.
+      </div>
+
+      <div class="payment-method-card" id="pm-digital" onclick="selectPayMethod('digital')">
+        <div class="pm-icon">📲</div>
+        <div class="pm-info">
+          <div class="pm-name">PayPal / Venmo / Zelle</div>
+          <div class="pm-desc">El cocinero te comparte su usuario al confirmar</div>
+        </div>
+        <div class="pm-check" id="check-digital"></div>
+      </div>
+      <!-- Datos que aparecen al elegir digital -->
+      <div id="digital-info" style="display:none;background:var(--warm);border-radius:12px;padding:16px;margin-top:-4px;margin-bottom:10px;font-size:13px;color:var(--brown-mid)">
+        📧 El cocinero te enviará su usuario de PayPal/Venmo/Zelle por mensaje al confirmar.
+      </div>
+
+      <!-- Resumen final antes de confirmar -->
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin:20px 0;font-size:14px">
+        <div style="font-weight:700;color:var(--brown);margin-bottom:10px">Resumen final</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text-muted)">Pedido a</span><span>Chef María Rodríguez</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text-muted)">Entrega</span><span id="summary-delivery">Delivery</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text-muted)">Forma de pago</span><span id="summary-payment">WhatsApp</span></div>
+        <div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);font-weight:700;font-size:16px">
+          <span>Total a pagar al cocinero</span>
+          <span style="color:var(--orange)" id="summary-total">$0.00</span>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px">
+        <button class="btn-secondary" style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:var(--warm);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-weight:600" onclick="coStep(2)">← Atrás</button>
+        <button class="btn-pay" style="flex:2;background:var(--green)" onclick="processPayment()">✅ Confirmar Pedido</button>
+      </div>
+      <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:10px">Micasero no cobra comisión sobre este pedido</p>
+    </div>
+
+    <!-- PASO 4: Confirmado -->
+    <div id="co-step-4" style="display:none;text-align:center;padding:40px 20px">
+      <div style="font-size:64px;margin-bottom:16px">🎉</div>
+      <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--brown);margin-bottom:8px">¡Pedido Confirmado!</div>
+      <p style="color:var(--text-muted);font-size:15px;line-height:1.7;max-width:400px;margin:0 auto 24px">
+        El cocinero recibió tu pedido y te contactará pronto para coordinar el pago y la entrega.
+      </p>
+      <div style="background:var(--warm);border-radius:16px;padding:20px;max-width:360px;margin:0 auto 28px;text-align:left;font-size:14px">
+        <div style="font-weight:700;color:var(--brown);margin-bottom:10px">¿Qué sigue?</div>
+        <div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start"><span>1️⃣</span> El cocinero te contacta por WhatsApp</div>
+        <div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start"><span>2️⃣</span> Confirman el pago directo entre ustedes</div>
+        <div style="display:flex;gap:10px;align-items:flex-start"><span>3️⃣</span> ¡Disfruta tu comida casera!</div>
+      </div>
+      <button class="btn-order" style="padding:14px 32px;font-size:15px" onclick="showPage('home')">Volver al inicio</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MEMBRESÍA PAGE — para cocineros
+══════════════════════════════════════════ -->
+<div id="page-membresia" class="page">
+  <div style="background:linear-gradient(135deg,var(--brown) 0%,var(--brown-mid) 60%,var(--orange) 100%);padding:60px 24px 50px;text-align:center">
+    <div style="display:inline-block;background:rgba(255,255,255,0.15);color:#FFD9B8;font-size:12px;font-weight:600;padding:6px 16px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;border:1px solid rgba(255,255,255,0.2)">👨‍🍳 Para Cocineros</div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);font-weight:900;color:white;margin-bottom:12px">Haz crecer tu negocio<br>de comida casera</h1>
+    <p style="color:rgba(255,255,255,0.8);font-size:16px;max-width:500px;margin:0 auto 28px">Micasero te da visibilidad y clientes. Tú cobras el 100% directo — sin comisiones.</p>
+    <!-- Botón directo al pago -->
+    <button onclick="showPage('pago-membresia')" style="background:white;color:var(--orange);border:none;border-radius:14px;padding:16px 36px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:all 0.2s">
+      💳 Activar membresía Pro — $19/mes
+    </button>
+    <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:10px">o prueba gratis 30 días ↓</div>
+  </div>
+
+  <!-- Cómo funciona para cocineros -->
+  <div class="section" style="max-width:900px">
+    <div class="section-title" style="text-align:center">¿Cómo funciona para ti?</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-top:32px">
+      <div style="text-align:center;padding:24px 16px">
+        <div style="font-size:36px;margin-bottom:12px">📍</div>
+        <div style="font-family:'Playfair Display',serif;font-weight:700;margin-bottom:6px;color:var(--brown)">Apareces en el mapa</div>
+        <div style="font-size:13px;color:var(--text-muted)">Clientes cerca de ti te descubren en tiempo real</div>
+      </div>
+      <div style="text-align:center;padding:24px 16px">
+        <div style="font-size:36px;margin-bottom:12px">📋</div>
+        <div style="font-family:'Playfair Display',serif;font-weight:700;margin-bottom:6px;color:var(--brown)">Publicas tu menú</div>
+        <div style="font-size:13px;color:var(--text-muted)">Fotos, precios y descripción de tus platillos</div>
+      </div>
+      <div style="text-align:center;padding:24px 16px">
+        <div style="font-size:36px;margin-bottom:12px">💬</div>
+        <div style="font-family:'Playfair Display',serif;font-weight:700;margin-bottom:6px;color:var(--brown)">Recibes pedidos</div>
+        <div style="font-size:13px;color:var(--text-muted)">El cliente te contacta y acuerdan el pago directo</div>
+      </div>
+      <div style="text-align:center;padding:24px 16px">
+        <div style="font-size:36px;margin-bottom:12px">💰</div>
+        <div style="font-family:'Playfair Display',serif;font-weight:700;margin-bottom:6px;color:var(--brown)">Cobras el 100%</div>
+        <div style="font-size:13px;color:var(--text-muted)">Micasero no toca tu dinero. Cero comisiones.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--warm);padding:60px 24px">
+    <div style="max-width:800px;margin:0 auto;text-align:center">
+      <div class="section-title">Planes de Membresía</div>
+      <div class="section-sub">Empieza gratis, crece sin límites.</div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:32px;text-align:left">
+
+        <!-- PLAN GRATIS -->
+        <div style="background:var(--card-bg);border:1.5px solid var(--border);border-radius:24px;padding:32px;position:relative">
+          <div style="font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Prueba Gratuita</div>
+          <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:var(--brown)">$0</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px">Por 30 días · Sin tarjeta</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;font-size:14px">
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--green);font-size:16px">✓</span> Perfil en el mapa</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--green);font-size:16px">✓</span> Hasta 5 platillos en tu menú</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--green);font-size:16px">✓</span> Recibir reseñas</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--green);font-size:16px">✓</span> Pedidos ilimitados</div>
+            <div style="display:flex;gap:10px;align-items:center;opacity:0.4"><span>✗</span> Posición destacada en mapa</div>
+            <div style="display:flex;gap:10px;align-items:center;opacity:0.4"><span>✗</span> Menú ilimitado</div>
+            <div style="display:flex;gap:10px;align-items:center;opacity:0.4"><span>✗</span> Insignia "Verificado"</div>
+            <div style="display:flex;gap:10px;align-items:center;opacity:0.4"><span>✗</span> Estadísticas avanzadas</div>
+          </div>
+          <button class="btn-order" onclick="showToast('🎉 ¡Prueba gratuita activada! 30 días sin costo.')">Empezar Gratis →</button>
+        </div>
+
+        <!-- PLAN PRO -->
+        <div style="background:linear-gradient(160deg,var(--brown) 0%,var(--brown-mid) 100%);border-radius:24px;padding:32px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:16px;right:16px;background:var(--orange);color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px">MÁS POPULAR</div>
+          <div style="position:absolute;bottom:-20px;right:-20px;width:120px;height:120px;background:rgba(255,255,255,0.04);border-radius:50%"></div>
+          <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Plan Pro</div>
+          <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:white">$19<span style="font-size:18px;font-weight:400;opacity:0.7">/mes</span></div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:24px">Cancela cuando quieras</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;font-size:14px;color:rgba(255,255,255,0.85)">
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Todo lo del plan gratuito</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Posición destacada en el mapa</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Menú ilimitado de platillos</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Insignia "Verificado" ✓</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Estadísticas de visitas y pedidos</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Soporte prioritario</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> 0% comisión sobre pedidos</div>
+          </div>
+          <button style="width:100%;background:var(--orange);color:white;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s" onclick="openMembresiaModal()">Suscribirme al Plan Pro →</button>
+        </div>
+
+      </div>
+
+      <!-- Nota de transparencia -->
+      <div style="margin-top:32px;padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;font-size:14px;color:var(--text-muted);line-height:1.7;text-align:left">
+        <strong style="color:var(--brown)">💡 ¿Cómo gana Micasero?</strong><br>
+        Micasero cobra una membresía mensual al cocinero por aparecer en la plataforma. <strong>No cobramos comisión sobre tus pedidos</strong> — el dinero de tus clientes es tuyo al 100%. El pago entre cliente y cocinero siempre es directo: transferencia, PayPal, Venmo, Zelle o WhatsApp.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PÁGINA PAGO MEMBRESÍA — cocinero paga a Micasero
+══════════════════════════════════════════ -->
+<div id="page-pago-membresia" class="page">
+  <div style="max-width:480px;margin:0 auto;padding:32px 20px">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="font-size:40px;margin-bottom:10px">👨‍🍳</div>
+      <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--brown)">Activa tu Plan Pro</div>
+      <div style="font-size:14px;color:var(--text-muted);margin-top:6px">$19/mes · Cancela cuando quieras · Sin comisiones</div>
+    </div>
+
+    <!-- Qué incluye -->
+    <div style="background:linear-gradient(135deg,var(--brown),var(--brown-mid));border-radius:16px;padding:20px;margin-bottom:24px;color:white">
+      <div style="font-size:13px;font-weight:700;opacity:0.6;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Incluye</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">
+        <div>✓ Perfil destacado en mapa</div>
+        <div>✓ Menú ilimitado</div>
+        <div>✓ Insignia Verificado</div>
+        <div>✓ Estadísticas</div>
+        <div>✓ Soporte prioritario</div>
+        <div>✓ 0% comisión</div>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <div id="pago-form">
+      <div style="font-weight:700;color:var(--brown);font-size:16px;margin-bottom:16px">💳 Datos de pago</div>
+
+      <div class="form-group">
+        <label class="form-label">Nombre del titular</label>
+        <input class="form-input" id="pm-titular" type="text" placeholder="Como aparece en tu tarjeta"
+          oninput="document.getElementById('pv-name').textContent=this.value.toUpperCase()||'NOMBRE TITULAR'">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Número de tarjeta</label>
+        <div style="position:relative">
+          <input class="form-input" id="pm-numero" type="text" placeholder="1234 5678 9012 3456"
+            maxlength="19" oninput="fmtCard(this)" style="padding-right:44px">
+          <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:20px" id="pv-brand">💳</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label class="form-label">Vencimiento</label>
+          <input class="form-input" id="pm-exp" type="text" placeholder="MM/AA" maxlength="5"
+            oninput="fmtExp(this)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">CVV</label>
+          <input class="form-input" id="pm-cvv" type="password" placeholder="•••" maxlength="4">
+        </div>
+      </div>
+
+      <!-- Vista previa tarjeta -->
+      <div style="background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);border-radius:16px;padding:22px 20px;margin:4px 0 20px;color:white;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:rgba(255,255,255,0.04);border-radius:50%"></div>
+        <div style="position:absolute;bottom:-30px;left:-10px;width:120px;height:120px;background:rgba(255,255,255,0.03);border-radius:50%"></div>
+        <div style="font-size:22px;margin-bottom:14px">💳</div>
+        <div style="font-family:monospace;font-size:17px;letter-spacing:3px;margin-bottom:16px" id="pv-num">•••• •••• •••• ••••</div>
+        <div style="display:flex;justify-content:space-between;font-size:12px">
+          <div>
+            <div style="opacity:0.5;font-size:10px;margin-bottom:2px">TITULAR</div>
+            <div id="pv-name" style="font-weight:600">NOMBRE TITULAR</div>
+          </div>
+          <div style="text-align:right">
+            <div style="opacity:0.5;font-size:10px;margin-bottom:2px">VENCE</div>
+            <div id="pv-exp" style="font-weight:600">MM/AA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Correo de facturación -->
+      <div class="form-group">
+        <label class="form-label">Correo para recibir factura</label>
+        <input class="form-input" id="pm-email" type="email" placeholder="tu@correo.com">
+      </div>
+
+      <!-- Resumen del cobro -->
+      <div style="background:var(--warm);border-radius:12px;padding:16px;margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px">
+          <span style="color:var(--text-muted)">Plan Pro Mensual</span><span>$19.00</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:10px">
+          <span style="color:var(--text-muted)">Próximo cobro</span><span>en 30 días</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px;border-top:1px dashed var(--border);padding-top:10px">
+          <span>Hoy pagas</span>
+          <span style="color:var(--orange)">$19.00</span>
+        </div>
+      </div>
+
+      <button class="btn-pay" onclick="confirmarMembresia()" style="font-size:16px">
+        🔒 Pagar $19.00 y Activar Plan Pro
+      </button>
+      <p style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.5">
+        Cifrado SSL 256-bit · Cancela en cualquier momento desde tu perfil
+      </p>
+      <button onclick="showPage('membresia')" style="width:100%;background:none;border:none;color:var(--text-muted);font-size:13px;margin-top:8px;cursor:pointer;padding:8px">← Volver a planes</button>
+    </div>
+
+    <!-- Confirmación -->
+    <div id="pago-confirmado" style="display:none;text-align:center;padding:20px 0">
+      <div style="font-size:64px;margin-bottom:16px">🎊</div>
+      <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--brown);margin-bottom:8px">¡Plan Pro Activado!</div>
+      <p style="color:var(--text-muted);font-size:15px;line-height:1.7;margin-bottom:24px">
+        Tu perfil ya aparece destacado en el mapa. Los clientes cerca de ti pueden encontrarte ahora mismo.
+      </p>
+      <div style="background:var(--warm);border-radius:16px;padding:20px;text-align:left;font-size:14px;margin-bottom:24px">
+        <div style="font-weight:700;color:var(--brown);margin-bottom:12px">📋 Resumen de membresía</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-muted)">Plan</span><strong>Pro Mensual</strong></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-muted)">Cobrado hoy</span><strong>$19.00</strong></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-muted)">Próximo cobro</span><strong id="fecha-proxima">—</strong></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Comisión por pedido</span><strong style="color:var(--green)">0%</strong></div>
+      </div>
+      <button class="btn-order" style="padding:14px 32px;font-size:15px;width:100%" onclick="showPage('profile')">
+        Ir a mi Perfil de Cocinero →
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CART SIDEBAR
+══════════════════════════════════════════ -->
+<div class="cart-overlay" id="cart-overlay">
+  <div class="cart-bg" onclick="toggleCart()"></div>
+  <div class="cart-panel">
+    <div class="cart-header">
+      <h3>Tu Carrito 🛒</h3>
+      <button class="close-btn" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-items" id="cart-items-list">
+      <div class="empty-cart">
+        <div class="empty-cart-icon">🍽️</div>
+        <p>Tu carrito está vacío</p>
+        <p style="font-size:13px;margin-top:4px">¡Agrega platillos deliciosos!</p>
+      </div>
+    </div>
+    <div class="cart-footer" id="cart-footer" style="display:none">
+      <div class="cart-total-row">
+        <span>Total</span>
+        <span id="cart-total">$0.00</span>
+      </div>
+      <button class="btn-checkout" onclick="goToCheckout()">Proceder al Pago →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     REVIEW MODAL
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="review-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeReviewModal()">✕</button>
+    <h3>✍️ Escribe tu Reseña</h3>
+    <div class="form-group">
+      <label class="form-label">Calificación</label>
+      <div class="stars-input" id="stars-input">
+        <span class="star-sel" onclick="setStar(1)">☆</span>
+        <span class="star-sel" onclick="setStar(2)">☆</span>
+        <span class="star-sel" onclick="setStar(3)">☆</span>
+        <span class="star-sel" onclick="setStar(4)">☆</span>
+        <span class="star-sel" onclick="setStar(5)">☆</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tu nombre</label>
+      <input class="form-input" type="text" id="review-name" placeholder="¿Cómo te llamas?">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Platillo</label>
+      <input class="form-input" type="text" id="review-dish" placeholder="¿Qué pediste?">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tu reseña</label>
+      <textarea class="form-input" id="review-text" placeholder="Cuéntanos tu experiencia..."></textarea>
+    </div>
+    <button class="btn-submit" onclick="submitReview()">Publicar Reseña</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DASHBOARD COCINERO — gestión de menú
+══════════════════════════════════════════ -->
+<div id="page-dashboard" class="page">
+  <div style="max-width:800px;margin:0 auto;padding:28px 20px">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:28px">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--brown)">Mi Menú 👨‍🍳</div>
+        <div style="font-size:14px;color:var(--text-muted);margin-top:2px">Agrega, edita o elimina tus platillos</div>
+      </div>
+      <button onclick="openDishModal()" style="background:var(--orange);color:white;border:none;border-radius:12px;padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">
+        + Agregar Platillo
+      </button>
+    </div>
+
+    <!-- Stats rápidas -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px">
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center">
+        <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--orange)" id="dash-count">0</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Platillos</div>
+      </div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center">
+        <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--green)">⭐4.9</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Calificación</div>
+      </div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center">
+        <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--brown)">🟢</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">En línea</div>
+      </div>
+    </div>
+
+    <div style="background:var(--warm);border-radius:14px;padding:16px 20px;margin-bottom:24px">
+      <div style="font-weight:700;font-size:15px;color:var(--brown);margin-bottom:12px">Mis opciones de entrega</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:14px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" checked style="accent-color:var(--orange);width:16px;height:16px"> 🛵 Ofrezco Delivery
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" checked style="accent-color:var(--orange);width:16px;height:16px"> 🏠 Ofrezco Recogida en domicilio
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" style="accent-color:#9B59B6;width:16px;height:16px"> 🕯️ Ofrezco Cena privada en mi casa
+        </label>
+      </div>
+    </div>
+      <div>
+        <div style="font-weight:600;font-size:15px;color:var(--brown)">Estoy disponible hoy</div>
+        <div style="font-size:13px;color:var(--text-muted)">Los clientes pueden verte en el mapa</div>
+      </div>
+      <div onclick="toggleAvailable()" id="avail-toggle" style="width:52px;height:28px;background:var(--green);border-radius:20px;cursor:pointer;position:relative;transition:background 0.3s">
+        <div id="avail-knob" style="width:22px;height:22px;background:white;border-radius:50%;position:absolute;top:3px;right:3px;transition:right 0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></div>
+      </div>
+    </div>
+
+    <!-- Lista de platillos del cocinero -->
+    <div id="dash-menu-list"></div>
+
+    <!-- Empty state -->
+    <div id="dash-empty" style="text-align:center;padding:48px 20px;display:none">
+      <div style="font-size:52px;margin-bottom:12px">🍽️</div>
+      <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--brown);margin-bottom:8px">Tu menú está vacío</div>
+      <div style="color:var(--text-muted);font-size:14px;margin-bottom:20px">Agrega tu primer platillo para que los clientes puedan pedirlo</div>
+      <button onclick="openDishModal()" style="background:var(--orange);color:white;border:none;border-radius:12px;padding:12px 24px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">
+        + Agregar mi primer platillo
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── MODAL: Agregar / Editar platillo ── -->
+<div class="modal-overlay" id="dish-modal">
+  <div class="modal" style="max-width:460px">
+    <button class="modal-close" onclick="closeDishModal()">✕</button>
+    <h3 id="dish-modal-title">🍽️ Nuevo Platillo</h3>
+    <input type="hidden" id="dish-edit-id">
+
+    <div class="form-group">
+      <label class="form-label">Emoji del platillo</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px" id="emoji-picker">
+        <span>🍝</span><span>🌮</span><span>🍛</span><span>🍲</span><span>🍰</span>
+        <span>🥗</span><span>🍣</span><span>🥩</span><span>🫔</span><span>🥘</span>
+        <span>🍜</span><span>🥪</span><span>🍕</span><span>🥞</span><span>🍱</span>
+      </div>
+      <input class="form-input" id="dish-emoji" type="text" placeholder="Elige un emoji arriba o escribe uno" maxlength="2" style="margin-top:8px">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nombre del platillo</label>
+      <input class="form-input" id="dish-name" type="text" placeholder="Ej. Tacos al Pastor">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descripción</label>
+      <textarea class="form-input" id="dish-desc" placeholder="Ingredientes, preparación, alergenos..." style="min-height:80px;resize:vertical"></textarea>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group">
+        <label class="form-label">Precio ($)</label>
+        <input class="form-input" id="dish-price" type="number" placeholder="0.00" step="0.50" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Categoría</label>
+        <select class="form-input" id="dish-category" style="cursor:pointer">
+          <option>Plato principal</option>
+          <option>Entrada</option>
+          <option>Sopa / Caldo</option>
+          <option>Postre</option>
+          <option>Bebida</option>
+          <option>Desayuno</option>
+          <option>Vegano</option>
+          <option>Sin Gluten</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Disponibilidad</label>
+      <div style="display:flex;gap:10px">
+        <div class="role-btn selected" id="avail-yes" onclick="setDishAvail(true)">✅ Disponible</div>
+        <div class="role-btn" id="avail-no" onclick="setDishAvail(false)">❌ Agotado</div>
+      </div>
+    </div>
+
+    <button class="btn-submit" onclick="saveDish()">💾 Guardar Platillo</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TÉRMINOS DE SERVICIO — Internacional
+══════════════════════════════════════════ -->
+<div id="page-terminos" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Terms of Service / Términos de Servicio</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Last updated / Última actualización: May 2026</p>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Micasero LLC · Wyoming, United States</p>
+
+    <!-- Aviso destacado -->
+    <div style="background:#FFF8F0;border-left:4px solid var(--orange);border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:28px;font-size:14px;line-height:1.7">
+      <strong>⚠️ Please read carefully before using Micasero.</strong><br>
+      By creating an account or using this platform, you agree to these terms in full. If you do not agree, do not use Micasero.<br><br>
+      <strong>Al crear una cuenta o usar esta plataforma, aceptas estos términos en su totalidad.</strong>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:28px;font-size:14px;line-height:1.8;color:var(--text)">
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">1. About Micasero / Sobre Micasero</h3>
+        <p>Micasero LLC ("Micasero", "we", "us") is a technology company incorporated in Wyoming, United States. Micasero operates an online marketplace platform that connects independent home cooks ("Cooks") with local customers ("Clients") who seek home-cooked meals.</p>
+        <p style="margin-top:8px"><strong>Micasero is a platform — not a food provider, restaurant, delivery service, employer, or payment processor for food transactions.</strong> Micasero's role is limited to providing software tools for discovery, visibility, and communication between Cooks and Clients.</p>
+      </div>
+
+      <div style="background:#F0F7FF;border-radius:12px;padding:16px 20px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. 🛡️ Platform Shield — No Liability for Food Transactions</h3>
+        <p>This is the most important section. <strong>Micasero does not process, handle, or guarantee food payments.</strong> All payments for food occur directly between Clients and Cooks using external methods (bank transfer, Venmo, PayPal, Zelle, WhatsApp, cash, etc.).</p>
+        <p style="margin-top:8px">Micasero is not responsible for and expressly disclaims all liability related to:</p>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
+          <li>Food quality, safety, allergens, or health consequences</li>
+          <li>Foodborne illness or injury from consuming meals purchased through the platform</li>
+          <li>Disputes between Clients and Cooks regarding food, payment, or delivery</li>
+          <li>Non-delivery or late delivery of food orders</li>
+          <li>The accuracy of Cook profiles, descriptions, or pricing</li>
+          <li>Compliance by Cooks with local food safety, health, or business regulations</li>
+        </ul>
+        <p style="margin-top:10px">This limitation applies globally regardless of the country where the transaction occurs.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">3. Cook Responsibilities / Responsabilidades del Cocinero</h3>
+        <p>By registering as a Cook, you represent and warrant that:</p>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
+          <li>You are solely responsible for complying with all local, state, national, and international laws regarding home food preparation, food safety, business licenses, and tax obligations in your jurisdiction</li>
+          <li>You have obtained all required permits, licenses, and certifications required by your local government</li>
+          <li>You will accurately represent your food, ingredients, allergens, and pricing</li>
+          <li>You will honor agreements made directly with Clients</li>
+          <li>You are an independent contractor, not an employee, agent, or partner of Micasero</li>
+        </ul>
+        <p style="margin-top:8px">Micasero does not verify food safety certifications, business licenses, or regulatory compliance. <strong>The Cook assumes full legal and financial responsibility for food prepared and sold.</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">4. Membership / Membresía</h3>
+        <p>Cooks receive a <strong>free 30-day trial</strong>. After the trial, Micasero charges a monthly membership fee of <strong>$15 USD/month</strong> (or local equivalent) to maintain an active, visible profile on the platform.</p>
+        <p style="margin-top:8px">If payment fails or the membership is canceled, the Cook's profile will be deactivated until the membership is reinstated. The membership fee is the <strong>only</strong> payment Micasero charges. Micasero does not charge commissions on food sales.</p>
+        <p style="margin-top:8px">Membership fees are non-refundable except where required by applicable law.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">5. Client Acknowledgment / Reconocimiento del Cliente</h3>
+        <p>By using Micasero as a Client, you acknowledge and agree that:</p>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
+          <li>You are transacting directly with the Cook, not with Micasero</li>
+          <li>Micasero is not responsible for food quality, safety, or fulfillment</li>
+          <li>You assume all risk associated with purchasing and consuming food from independent home cooks</li>
+          <li>Any disputes must be resolved directly with the Cook</li>
+        </ul>
+      </div>
+
+      <div style="background:#FFF0F0;border-radius:12px;padding:16px 20px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">6. ⚖️ LIMITATION OF LIABILITY — CRITICAL</h3>
+        <p><strong>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, MICASERO LLC, ITS OFFICERS, DIRECTORS, EMPLOYEES, AND AGENTS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA, GOODWILL, OR OTHER INTANGIBLE LOSSES.</strong></p>
+        <p style="margin-top:8px">In no event shall Micasero's total liability to any party exceed the greater of: (a) the amount paid by that party to Micasero in the 12 months prior to the claim, or (b) $100 USD.</p>
+        <p style="margin-top:8px">This limitation applies regardless of the legal theory (contract, tort, negligence, strict liability, etc.) and even if Micasero has been advised of the possibility of such damages.</p>
+      </div>
+
+      <div style="background:#F0FFF4;border-radius:12px;padding:16px 20px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">7. ⚖️ Dispute Resolution — Mandatory Arbitration</h3>
+        <p><strong>PLEASE READ THIS SECTION CAREFULLY. IT AFFECTS YOUR LEGAL RIGHTS.</strong></p>
+        <p style="margin-top:8px">Any dispute, claim, or controversy arising from or relating to these Terms or your use of Micasero shall be resolved exclusively through <strong>binding individual arbitration</strong> administered by the American Arbitration Association (AAA) under its Consumer Arbitration Rules.</p>
+        <p style="margin-top:8px"><strong>Class Action Waiver:</strong> You agree to resolve disputes individually. <strong>You waive your right to participate in class action lawsuits or class-wide arbitration</strong> against Micasero.</p>
+        <p style="margin-top:8px">Exceptions: Either party may seek injunctive relief in a court of competent jurisdiction to prevent irreparable harm.</p>
+      </div>
+
+      <div style="background:#F0F4FF;border-radius:12px;padding:16px 20px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">8. 🌎 Governing Law & Jurisdiction</h3>
+        <p>These Terms are governed by the laws of the <strong>State of Wyoming, United States</strong>, without regard to conflict of law principles. Any legal proceedings not subject to arbitration shall be brought exclusively in the state or federal courts located in <strong>Wyoming, United States</strong>.</p>
+        <p style="margin-top:8px">By using Micasero from any country, you consent to this jurisdiction. This applies to users in Paraguay, Mexico, Spain, the United States, and all other countries where Micasero operates.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">9. International Use / Uso Internacional</h3>
+        <p>Micasero operates globally. Users are responsible for compliance with their local laws. Micasero makes no representation that the platform is appropriate or lawful in all jurisdictions. If use of Micasero is prohibited in your country, you must not use it.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">10. Indemnification / Indemnización</h3>
+        <p>You agree to defend, indemnify, and hold harmless Micasero LLC and its affiliates from any claims, liabilities, damages, losses, and expenses (including legal fees) arising from: (a) your use of the platform; (b) food you prepare or purchase; (c) your violation of these Terms; or (d) your violation of any applicable law.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">11. Modifications / Modificaciones</h3>
+        <p>Micasero reserves the right to modify these Terms at any time. We will provide at least 15 days' notice before material changes take effect. Continued use of the platform after changes constitutes acceptance.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">12. Contact / Contacto</h3>
+        <p>Micasero LLC<br>
+        Wyoming, United States<br>
+        Email: <strong>legal@micasero.app</strong></p>
+      </div>
+
+      <div style="background:var(--warm);border-radius:12px;padding:16px 20px;font-size:13px;color:var(--text-muted)">
+        ⚠️ <strong>Note:</strong> These Terms are designed for international use but do not replace legal advice. Micasero recommends consulting a startup attorney before launching commercially in new markets.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     POLÍTICA DE PRIVACIDAD — Internacional
+══════════════════════════════════════════ -->
+<div id="page-privacidad" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Privacy Policy / Política de Privacidad</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Last updated / Última actualización: Mayo 2026</p>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Micasero LLC · Wyoming, United States</p>
+
+    <div style="background:#F0F4FF;border-left:4px solid #4A90D9;border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:28px;font-size:14px;line-height:1.7">
+      <strong>📋 Resumen simple:</strong> Micasero recopila solo lo necesario para funcionar. <strong>No vendemos tus datos.</strong> No procesamos pagos de comida. Los pagos de membresía van por Stripe (seguro, PCI-DSS). Puedes eliminar tu cuenta en cualquier momento.
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:28px;font-size:14px;line-height:1.8;color:var(--text)">
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">1. Información que recopilamos</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>📧 Información de cuenta</strong><br>
+            Nombre completo, correo electrónico, tipo de usuario (cliente/cocinero), foto de perfil (opcional), ciudad o zona aproximada.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>🍽️ Información del cocinero</strong><br>
+            Nombre del negocio, descripción, platillos y precios, fotos de platillos, métodos de contacto y pago que el cocinero elija publicar públicamente, horarios de disponibilidad.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>💳 Información de pago (solo membresía)</strong><br>
+            Los pagos de membresía son procesados por <strong>Stripe</strong>. Micasero almacena únicamente el identificador de la transacción y el estado del pago. <strong>Nunca almacenamos números de tarjeta, CVV, ni credenciales bancarias.</strong>
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>📍 Ubicación</strong><br>
+            Solo con tu permiso explícito. Se usa para mostrar cocineros cercanos y para que el cocinero aparezca en el mapa. La ubicación exacta del cocinero nunca es pública — solo se muestra una zona aproximada.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>📱 Información del dispositivo</strong><br>
+            Modelo de dispositivo, versión del sistema operativo, versión de la app, token de notificaciones push (solo si las activas). No rastreamos tu actividad fuera de Micasero.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>📸 Contenido generado por el usuario</strong><br>
+            Fotos de platillos, reseñas y calificaciones que publicas voluntariamente.
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">2. Cómo usamos tu información</h3>
+        <ul style="margin:0 0 0 20px;display:flex;flex-direction:column;gap:8px">
+          <li>Crear y gestionar tu cuenta</li>
+          <li>Mostrar el perfil del cocinero en el mapa para que los clientes lo encuentren</li>
+          <li>Procesar el pago de membresía mensual</li>
+          <li>Enviarte notificaciones importantes sobre tu cuenta</li>
+          <li>Mejorar la plataforma, detectar errores y prevenir fraude</li>
+          <li>Cumplir con obligaciones legales internacionales</li>
+        </ul>
+        <p style="margin-top:10px;background:#F0FFF4;padding:12px;border-radius:10px"><strong>Lo que NO hacemos:</strong> No vendemos tu información. No la usamos para publicidad de terceros. No compartimos datos de clientes con cocineros más allá de lo acordado en un pedido.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">3. Con quién compartimos tu información</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
+            <span style="font-size:20px">💳</span>
+            <div><strong>Stripe</strong> — procesamiento de pagos de membresía. <a href="https://stripe.com/privacy" target="_blank" style="color:var(--orange)">Ver su política de privacidad</a></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
+            <span style="font-size:20px">🗄️</span>
+            <div><strong>Supabase</strong> — base de datos y autenticación segura. Datos almacenados en servidores con cifrado.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
+            <span style="font-size:20px">🗺️</span>
+            <div><strong>OpenStreetMap / Leaflet</strong> — visualización del mapa. No comparten datos de usuario.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
+            <span style="font-size:20px">🔔</span>
+            <div><strong>FCM / APNs</strong> — notificaciones push de Apple y Google, solo si las activas.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#FFF0F0;border-radius:10px">
+            <span style="font-size:20px">⚖️</span>
+            <div><strong>Autoridades legales</strong> — solo cuando sea requerido por ley aplicable, con orden judicial.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">4. 📸 Acceso a cámara y fotos</h3>
+        <p>Micasero solicita acceso a tu cámara y galería <strong>únicamente para estos fines:</strong></p>
+        <ul style="margin:10px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li><strong>Cocineros:</strong> subir foto de perfil y fotos de platillos para su menú</li>
+          <li><strong>Clientes:</strong> nunca se solicita acceso a cámara o galería</li>
+        </ul>
+        <p style="margin-top:10px">Las fotos se almacenan de forma segura y se muestran únicamente dentro de Micasero. <strong>No usamos tu cámara para ningún otro propósito y no compartimos tus fotos con anunciantes.</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">5. Retención de datos</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Cuenta activa:</strong> Conservamos tu información mientras tu cuenta esté activa.</div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Cuenta eliminada:</strong> Eliminamos tu perfil e información personal en 30 días. Los registros de pago de membresía se conservan hasta 7 años por obligaciones fiscales y contables.</div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Contenido público:</strong> Las reseñas que escribiste pueden permanecer anonimizadas después de eliminar tu cuenta.</div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">6. 🔒 Seguridad</h3>
+        <ul style="margin:0 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li>Todo el tráfico entre tu dispositivo y nuestros servidores está cifrado con <strong>HTTPS / TLS</strong></li>
+          <li>Las contraseñas se almacenan con hash seguro (bcrypt), nunca en texto plano</li>
+          <li>Los pagos son manejados por Stripe bajo infraestructura <strong>PCI-DSS</strong> certificada</li>
+          <li>Acceso a datos internos restringido solo al personal autorizado de Micasero</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">7. 👶 Menores de edad</h3>
+        <p>Micasero <strong>no está dirigido a personas menores de 18 años.</strong> No recopilamos conscientemente información de menores. Si descubrimos que un menor ha creado una cuenta, la eliminaremos inmediatamente. Si eres padre/madre y crees que tu hijo tiene una cuenta, contáctanos en <strong>soporte@micasero.app</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">8. 🌎 Tus derechos (GDPR / CCPA)</h3>
+        <p>Dependiendo de tu país, tienes los siguientes derechos sobre tus datos:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>✅ Acceso</strong><br>Ver qué datos tenemos sobre ti</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>✏️ Corrección</strong><br>Corregir datos incorrectos</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>🗑️ Eliminación</strong><br>Borrar tu cuenta y datos</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>📦 Portabilidad</strong><br>Exportar tus datos</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>🚫 Oposición</strong><br>Oponerte al procesamiento</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>🔔 Notificaciones</strong><br>Desactivar desde ajustes</div>
+        </div>
+        <p style="margin-top:12px">Para ejercer cualquier derecho: <strong>privacidad@micasero.app</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">9. Cookies</h3>
+        <p>Usamos únicamente cookies técnicas necesarias para mantener tu sesión activa. <strong>No usamos cookies de publicidad ni de seguimiento de terceros.</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">10. Cambios a esta política</h3>
+        <p>Podemos actualizar esta política. Te notificaremos por correo o dentro de la app con al menos <strong>15 días de anticipación</strong> antes de cambios importantes.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">11. Contacto</h3>
+        <p>Micasero LLC · Wyoming, United States<br>
+        📧 Privacidad: <strong>privacidad@micasero.app</strong><br>
+        📧 Soporte general: <strong>soporte@micasero.app</strong></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FOOTER con links legales
+══════════════════════════════════════════ -->
+<div style="background:var(--brown);color:rgba(255,255,255,0.6);text-align:center;padding:24px 20px 100px;font-size:13px">
+  <div style="font-family:'Playfair Display',serif;font-size:16px;color:white;margin-bottom:8px">Micasero</div>
+  <div style="margin-bottom:12px">Plataforma de comida casera local · Solo cobramos membresía al cocinero</div>
+  <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+    <button onclick="showPage('terminos')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">⚖️ Términos</button>
+    <button onclick="showPage('privacidad')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">🔒 Privacidad</button>
+    <button onclick="showPage('cancelaciones')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">❌ Cancelaciones</button>
+    <button onclick="showPage('reembolsos')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">💰 Reembolsos</button>
+    <button onclick="showPage('delivery')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">🛵 Delivery</button>
+    <button onclick="showPage('contenido')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">📸 Contenido</button>
+  </div>
+  <div style="margin-top:10px">soporte@micasero.app · legal@micasero.app</div>
+  <div style="margin-top:8px;font-size:11px">© 2026 Micasero LLC · Wyoming, United States · Todos los derechos reservados</div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="mobile-nav" id="mobile-nav">
+  <button onclick="showPage('home')" id="mn-home">
+    <span class="mn-icon">🏠</span><span class="mn-label" data-i18n="nav-home">Inicio</span>
+  </button>
+  <button onclick="showPage('map')" id="mn-map">
+    <span class="mn-icon">🗺️</span><span class="mn-label" data-i18n="nav-map">Mapa</span>
+  </button>
+  <button onclick="showPage('profile')" id="mn-profile">
+    <span class="mn-icon">👨‍🍳</span><span class="mn-label" data-i18n="nav-profile">Cocineros</span>
+  </button>
+  <button onclick="showPage('dashboard')" id="mn-dashboard">
+    <span class="mn-icon">📋</span><span class="mn-label" data-i18n="nav-dashboard">Mi Menú</span>
+  </button>
+  <button onclick="toggleMobileMenu()" id="mn-more">
+    <span class="mn-icon">☰</span><span class="mn-label" data-i18n="nav-more">Más</span>
+  </button>
+</div>
+
+<!-- MOBILE MORE MENU -->
+<div id="mobile-more-menu" style="display:none;position:fixed;bottom:70px;left:0;right:0;z-index:99;background:white;border-top:1px solid var(--border);box-shadow:0 -4px 24px rgba(0,0,0,0.12);border-radius:20px 20px 0 0;padding:20px 16px 8px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+    <button onclick="showPage('membresia');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">👨‍🍳</span>Para Cocineros
+    </button>
+    <button onclick="showPage('pago-membresia');closeMobileMenu()" style="background:#FFF3EE;border:1px solid #F4C9A8;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);-webkit-appearance:none">
+      <span style="font-size:22px">💳</span>Membresía
+    </button>
+    <button onclick="showPage('login');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">🔑</span>Iniciar Sesión
+    </button>
+    <button onclick="showPage('register');closeMobileMenu()" style="background:#4CAF50;border:none;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:white;-webkit-appearance:none">
+      <span style="font-size:22px">✨</span>Regístrate
+    </button>
+    <button onclick="showPage('reviews');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">⭐</span>Reseñas
+    </button>
+    <button onclick="showPage('terminos');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">⚖️</span>Términos
+    </button>
+    <button onclick="showPage('privacidad');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">🔒</span>Privacidad
+    </button>
+    <button onclick="showPage('cancelaciones');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">❌</span>Cancelaciones
+    </button>
+    <button onclick="showPage('reembolsos');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">💰</span>Reembolsos
+    </button>
+    <button onclick="showPage('delivery');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">🛵</span>Delivery
+    </button>
+  </div>
+
+  <!-- Selector de idioma -->
+  <div style="border-top:1px solid var(--border);padding-top:14px">
+    <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🌎 Idioma / Language</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="setLang('es');closeMobileMenu()" id="lang-btn-es" style="background:var(--orange);color:white;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none">🇪🇸 Español</button>
+      <button onclick="setLang('en');closeMobileMenu()" id="lang-btn-en" style="background:var(--warm);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;-webkit-appearance:none">🇺🇸 English</button>
+      <button onclick="setLang('pt');closeMobileMenu()" id="lang-btn-pt" style="background:var(--warm);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;-webkit-appearance:none">🇧🇷 Português</button>
+    </div>
+  </div>
+  <button onclick="closeMobileMenu()" style="width:100%;margin-top:14px;background:none;border:none;font-size:13px;color:var(--text-muted);cursor:pointer;padding:8px;-webkit-appearance:none">✕ Cerrar</button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     POLÍTICA DE CANCELACIONES
+══════════════════════════════════════════ -->
+<div id="page-cancelaciones" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Política de Cancelaciones</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Última actualización: Mayo 2026 · Micasero LLC</p>
+    <div style="display:flex;flex-direction:column;gap:24px;font-size:14px;line-height:1.8;color:var(--text)">
+      <div style="background:#FFF8F0;border-left:4px solid var(--orange);border-radius:0 12px 12px 0;padding:16px 20px">
+        <strong>⚠️ Importante:</strong> Micasero no procesa pagos de comida. Las cancelaciones y reembolsos se acuerdan <strong>directamente entre el cliente y el cocinero</strong>. Micasero no puede intervenir ni garantizar reembolsos por pedidos de comida.
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">1. Cancelación por parte del cliente</h3>
+        <p>El cliente puede solicitar la cancelación de un pedido directamente al cocinero antes de que la preparación haya comenzado. Una vez que el cocinero confirma que comenzó la preparación, la cancelación queda a discreción del cocinero.</p>
+        <ul style="margin:10px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li><strong>Antes de aceptación del cocinero:</strong> Cancelación libre, sin cargo</li>
+          <li><strong>Después de aceptación, antes de preparación:</strong> A negociar con el cocinero</li>
+          <li><strong>Durante o después de preparación:</strong> El cocinero puede retener el pago total</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. Cancelación por parte del cocinero</h3>
+        <p>Si el cocinero no puede completar un pedido aceptado, debe notificar al cliente inmediatamente y acordar un reembolso completo. Los cocineros que cancelen pedidos frecuentemente pueden ser suspendidos de la plataforma.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">3. Pedidos sin respuesta</h3>
+        <p>Si el cocinero no responde a un pedido dentro de <strong>2 horas</strong>, el pedido se considera auto-cancelado. El cliente no tiene obligación de pago en este caso.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">4. Membresía Micasero</h3>
+        <p>Las membresías de cocineros son <strong>no reembolsables</strong> una vez activadas, excepto donde lo requiera la ley aplicable. Puedes cancelar tu membresía en cualquier momento — tu perfil permanecerá activo hasta el fin del período pagado.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">5. Disputas</h3>
+        <p>Micasero no arbitra disputas entre clientes y cocineros sobre pedidos de comida. Te recomendamos resolver cualquier disputa directamente. Para disputas sobre membresías, contáctanos en <strong>soporte@micasero.app</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     POLÍTICA DE REEMBOLSOS
+══════════════════════════════════════════ -->
+<div id="page-reembolsos" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Política de Reembolsos</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Última actualización: Mayo 2026 · Micasero LLC</p>
+    <div style="display:flex;flex-direction:column;gap:24px;font-size:14px;line-height:1.8;color:var(--text)">
+      <div style="background:#F0FFF4;border-left:4px solid var(--green);border-radius:0 12px 12px 0;padding:16px 20px">
+        <strong>💡 Modelo Micasero:</strong> Como Micasero no procesa pagos de comida, los reembolsos por pedidos se gestionan directamente entre cliente y cocinero. Micasero solo procesa pagos de membresías.
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">1. Reembolsos por pedidos de comida</h3>
+        <p>Micasero <strong>no procesa ni garantiza</strong> reembolsos por pedidos de comida. Si tienes un problema con tu pedido:</p>
+        <ul style="margin:10px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li>Contacta directamente al cocinero por WhatsApp u otro método acordado</li>
+          <li>Documenta el problema con fotos si es posible</li>
+          <li>Negocia el reembolso o compensación directamente</li>
+        </ul>
+        <p style="margin-top:10px">Micasero no puede intervenir en disputas de pago de comida ya que los pagos ocurren fuera de nuestra plataforma.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. Reembolsos de membresía</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>Período de prueba gratuito (30 días):</strong> No se cobra nada, no hay reembolso necesario.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>Primer mes pagado:</strong> Reembolso completo si se solicita dentro de los primeros <strong>3 días</strong> del cobro.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>Meses subsiguientes:</strong> No reembolsables. Puedes cancelar en cualquier momento para que no se renueve el siguiente mes.
+          </div>
+          <div style="background:#FFF0F0;border-radius:10px;padding:14px">
+            <strong>Cobro erróneo o duplicado:</strong> Reembolso completo garantizado. Contáctanos en <strong>soporte@micasero.app</strong> dentro de 7 días.
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">3. Tiempo de procesamiento</h3>
+        <p>Los reembolsos de membresía aprobados se procesan en <strong>5-10 días hábiles</strong> al método de pago original.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">4. Cómo solicitar un reembolso</h3>
+        <p>Envía un correo a <strong>soporte@micasero.app</strong> con tu nombre, correo registrado y motivo. Respondemos en menos de 48 horas.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     POLÍTICA DE DELIVERY
+══════════════════════════════════════════ -->
+<div id="page-delivery" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Política de Delivery</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Última actualización: Mayo 2026 · Micasero LLC</p>
+    <div style="display:flex;flex-direction:column;gap:24px;font-size:14px;line-height:1.8;color:var(--text)">
+      <div style="background:#FFF8F0;border-left:4px solid var(--orange);border-radius:0 12px 12px 0;padding:16px 20px">
+        <strong>⚠️ Importante:</strong> Micasero <strong>no es un servicio de delivery</strong>. No contratamos ni gestionamos repartidores. La entrega es acordada directamente entre cliente y cocinero.
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">1. Opciones de entrega</h3>
+        <p>Cada cocinero define sus propias opciones de entrega en su perfil:</p>
+        <ul style="margin:10px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li><strong>🛵 Delivery:</strong> El cocinero entrega personalmente o coordina un repartidor</li>
+          <li><strong>🏠 Recogida:</strong> El cliente pasa a recoger en el domicilio del cocinero</li>
+          <li><strong>🕯️ Cena privada:</strong> El cocinero cocina en casa del cliente (por acuerdo)</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. Costos de delivery</h3>
+        <p>Los costos de entrega son establecidos libremente por cada cocinero. Micasero no fija ni controla estos precios. El costo aparece en el perfil del cocinero antes de confirmar el pedido.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">3. Tiempos de entrega</h3>
+        <p>Los tiempos son estimados y dependen de cada cocinero. Micasero no garantiza tiempos de entrega. Si el cocinero se retrasa, el cliente debe contactarlo directamente.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">4. Responsabilidad</h3>
+        <p>Micasero <strong>no es responsable</strong> por entregas tardías, alimentos dañados en tránsito, direcciones incorrectas o cualquier incidente durante la entrega. La responsabilidad recae en el cocinero que realiza la entrega.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">5. Zonas de cobertura</h3>
+        <p>Cada cocinero define su propia zona de cobertura. Micasero opera internacionalmente pero no garantiza disponibilidad de cocineros en todas las áreas geográficas.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     POLÍTICA DE CONTENIDO
+══════════════════════════════════════════ -->
+<div id="page-contenido" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Política de Contenido</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Última actualización: Mayo 2026 · Micasero LLC</p>
+    <div style="display:flex;flex-direction:column;gap:24px;font-size:14px;line-height:1.8;color:var(--text)">
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">1. Tu contenido</h3>
+        <p>Eres el dueño de todo el contenido que publicas en Micasero (fotos de platillos, descripciones, reseñas). Al publicarlo, nos otorgas una licencia no exclusiva y gratuita para mostrarlo dentro de la plataforma y en materiales de marketing de Micasero.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. Contenido permitido</h3>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li>Fotos reales de tus platillos</li>
+          <li>Descripciones precisas de ingredientes y preparación</li>
+          <li>Reseñas honestas basadas en experiencias reales</li>
+          <li>Información de contacto y métodos de pago</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">3. Contenido prohibido</h3>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li>❌ Fotos falsas o de otros cocineros</li>
+          <li>❌ Descripciones engañosas sobre ingredientes o alérgenos</li>
+          <li>❌ Reseñas falsas o compradas</li>
+          <li>❌ Contenido ofensivo, discriminatorio o ilegal</li>
+          <li>❌ Alcohol, tabaco o sustancias controladas</li>
+          <li>❌ Spam o publicidad no relacionada con comida</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">4. Moderación</h3>
+        <p>Micasero se reserva el derecho de eliminar contenido que viole esta política sin previo aviso. Los usuarios que violen repetidamente las normas pueden ser suspendidos permanentemente.</p>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">5. Reportar contenido</h3>
+        <p>Si ves contenido que viola estas normas, repórtalo a <strong>soporte@micasero.app</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════
+const cooks = [
+  { id:1, name:'Chef María R.', emoji:'👩‍🍳', cuisine:'Mexicana', rating:4.9, reviews:127, delivery:true, tags:['Mexicana','Vegana'], color:'#FDE8D8', dishes:['Lasaña Casera','Tacos al Pastor'] },
+  { id:2, name:'Chef Carlos M.', emoji:'👨‍🍳', cuisine:'Italiana', rating:4.7, reviews:89, delivery:true, tags:['Italiana','Postres'], color:'#E8F0FE', dishes:['Pasta Carbonara','Tiramisú'] },
+  { id:3, name:'Chef Sofía V.', emoji:'🧑‍🍳', cuisine:'Asiática', rating:4.8, reviews:203, delivery:false, tags:['Tailandesa','Sin Gluten'], color:'#E8F8EE', dishes:['Curry Tailandés','Ramen'] },
+  { id:4, name:'Chef Juan P.', emoji:'👨‍🍳', cuisine:'Argentina', rating:4.6, reviews:55, delivery:true, tags:['Argentina','Parrilla'], color:'#FEF3E8', dishes:['Empanadas','Asado'] },
+];
+
+const menu = [
+  { id:'m1', name:'Lasaña Casera', desc:'Pasta fresca, carne molida, bechamel y tres quesos.', price:12.50, emoji:'🍝' },
+  { id:'m2', name:'Tacos al Pastor', desc:'Tortillas de maíz, cerdo marinado, piña y cilantro.', price:10.00, emoji:'🌮' },
+  { id:'m3', name:'Curry de Pollo', desc:'Curry rojo cremoso con leche de coco y verduras frescas.', price:14.00, emoji:'🍛' },
+  { id:'m4', name:'Pozole Rojo', desc:'Caldo tradicional con maíz cacahuazintle y carne de res.', price:11.00, emoji:'🍲' },
+  { id:'m5', name:'Tarta de Queso', desc:'Tarta casera con base de galleta y frutos rojos.', price:8.50, emoji:'🍰' },
+];
+
+const mapMarkers = [
+  { name:'Chef María', emoji:'👩‍🍳', x:'22%', y:'38%', rating:'4.9' },
+  { name:'Chef Carlos', emoji:'👨‍🍳', x:'68%', y:'25%', rating:'4.7' },
+  { name:'Chef Sofía', emoji:'🧑‍🍳', x:'75%', y:'62%', rating:'4.8' },
+  { name:'Chef Juan', emoji:'👨‍🍳', x:'18%', y:'72%', rating:'4.6' },
+  { name:'Chef Ana', emoji:'👩‍🍳', x:'50%', y:'55%', rating:'4.5' },
+];
+
+const reviewsData = [
+  { name:'María P.', avatar:'👩', stars:5, dish:'Lasaña Casera · Chef María', text:'¡Simplemente delicioso! La lasaña casera es espectacular, se siente el sabor auténtico y la calidad de los ingredientes. ¡Muy recomendable!', date:'hace 2 días', bg:'#FDE8D8' },
+  { name:'Carlos G.', avatar:'👨', stars:4, dish:'Curry de Pollo · Chef Sofía', text:'El curry estuvo muy bueno, cremoso y bien condimentado. El servicio de recogida fue eficiente y puntual. Definitivamente volvería.', date:'hace 5 días', bg:'#E8F0FE' },
+  { name:'Laura S.', avatar:'🧑', stars:5, dish:'Empanadas · Chef Juan', text:'¡Una joya escondida! Las empanadas son las mejores que he probado. Se nota el cariño en cada bocado. ¡Volveré pronto por más!', date:'hace 1 semana', bg:'#E8F8EE' },
+  { name:'Roberto A.', avatar:'👦', stars:5, dish:'Tacos al Pastor · Chef María', text:'Los tacos tienen un sabor increíble. La carne perfectamente marinada y la piña le da un toque especial. Ya pedí 3 veces esta semana.', date:'hace 1 semana', bg:'#FEF3E8' },
+];
+
+// ════════════════════════════════════════
+// CART STATE
+// ════════════════════════════════════════
+let cart = {};
+
+function addToCart(id, name, price, emoji) {
+  if (cart[id]) {
+    cart[id].qty++;
+  } else {
+    cart[id] = { name, price, emoji, qty: 1 };
+  }
+  updateCartUI();
+  showToast(`🛒 ${name} agregado al carrito`);
+}
+
+function updateCartQty(id, delta) {
+  if (!cart[id]) return;
+  cart[id].qty += delta;
+  if (cart[id].qty <= 0) delete cart[id];
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const items = Object.entries(cart);
+  const badge = document.getElementById('cart-badge');
+  const list = document.getElementById('cart-items-list');
+  const footer = document.getElementById('cart-footer');
+  const total = items.reduce((s,[,v]) => s + v.price * v.qty, 0);
+  const count = items.reduce((s,[,v]) => s + v.qty, 0);
+
+  if (count > 0) {
+    badge.style.display = 'flex';
+    badge.textContent = count;
+  } else {
+    badge.style.display = 'none';
+  }
+
+  if (items.length === 0) {
+    list.innerHTML = `<div class="empty-cart"><div class="empty-cart-icon">🍽️</div><p>Tu carrito está vacío</p><p style="font-size:13px;margin-top:4px">¡Agrega platillos deliciosos!</p></div>`;
+    footer.style.display = 'none';
+  } else {
+    list.innerHTML = items.map(([id,v]) => `
+      <div class="cart-item">
+        <div class="cart-item-emoji">${v.emoji}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${v.name}</div>
+          <div class="cart-item-price">$${(v.price * v.qty).toFixed(2)}</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="updateCartQty('${id}',-1)">−</button>
+          <span class="qty-num">${v.qty}</span>
+          <button class="qty-btn" onclick="updateCartQty('${id}',1)">+</button>
+        </div>
+      </div>
+    `).join('');
+    document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+    footer.style.display = 'block';
+  }
+}
+
+function toggleCart() {
+  document.getElementById('cart-overlay').classList.toggle('open');
+}
+
+function goToCheckout() {
+  toggleCart();
+  showPage('checkout');
+  renderCheckout();
+}
+
+// ════════════════════════════════════════
+// CHECKOUT MULTI-STEP
+// ════════════════════════════════════════
+let currentDelivery = 'delivery';
+let currentPayMethod = 'whatsapp';
+
+function renderCheckout() {
+  const items = Object.entries(cart);
+  const container = document.getElementById('checkout-items');
+  const total = items.reduce((s,[,v]) => s + v.price * v.qty, 0);
+  if (items.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px">Carrito vacío. <a onclick="showPage(\'map\')" style="color:var(--orange);cursor:pointer">Agrega platillos</a></p>';
+  } else {
+    container.innerHTML = items.map(([,v]) => `
+      <div class="order-item">
+        <div class="order-item-info">
+          <div class="order-item-emoji">${v.emoji}</div>
+          <div><div class="order-item-name">${v.name}</div><div class="order-item-qty">×${v.qty}</div></div>
+        </div>
+        <div class="order-item-price">$${(v.price*v.qty).toFixed(2)}</div>
+      </div>`).join('');
+  }
+  const t = `$${total.toFixed(2)}`;
+  document.getElementById('checkout-total').textContent = t;
+  const st = document.getElementById('summary-total');
+  if (st) st.textContent = t;
+}
+
+function coStep(n) {
+  [1,2,3,4].forEach(i => {
+    document.getElementById('co-step-'+i).style.display = i===n ? 'block' : 'none';
+    const ind = document.getElementById('step-ind-'+i);
+    ind.classList.remove('active','done');
+    if (i === n) ind.classList.add('active');
+    else if (i < n) ind.classList.add('done');
+  });
+  if (n === 3) {
+    document.getElementById('summary-delivery').textContent =
+      currentDelivery === 'delivery' ? 'Delivery 🛵' :
+      currentDelivery === 'cena'     ? 'Cena privada 🕯️' : 'Recogida 🏠';
+    document.getElementById('summary-payment').textContent = {whatsapp:'WhatsApp 💬', transfer:'Transferencia 🏦', digital:'PayPal/Venmo/Zelle 📲'}[currentPayMethod];
+    renderCheckout();
+  }
+  window.scrollTo(0,0);
+}
+
+function selectDelivery2(type) {
+  currentDelivery = type;
+  ['delivery','pickup','cena'].forEach(t => {
+    document.getElementById('del-'+t).classList.remove('selected');
+    const c = document.getElementById('del-check-'+t);
+    if (c) { c.classList.remove('selected'); c.textContent=''; }
+  });
+  document.getElementById('del-'+type).classList.add('selected');
+  const chk = document.getElementById('del-check-'+type);
+  if (chk) { chk.classList.add('selected'); chk.textContent='✓'; }
+  document.getElementById('del-address-block').style.display = type==='delivery' ? 'block' : 'none';
+  // Show cena note
+  const cenaNote = document.getElementById('cena-note');
+  if (cenaNote) cenaNote.style.display = type==='cena' ? 'block' : 'none';
+}
+
+function selectPayMethod(method) {
+  currentPayMethod = method;
+  ['transfer','digital','whatsapp'].forEach(m => {
+    document.getElementById('pm-'+m).classList.remove('selected');
+    const c = document.getElementById('check-'+m);
+    c.classList.remove('selected'); c.textContent='';
+  });
+  document.getElementById('pm-'+method).classList.add('selected');
+  const chk = document.getElementById('check-'+method);
+  chk.classList.add('selected'); chk.textContent='✓';
+  document.getElementById('transfer-info').style.display = method==='transfer' ? 'block' : 'none';
+  document.getElementById('digital-info').style.display = method==='digital' ? 'block' : 'none';
+}
+
+function processPayment() {
+  coStep(4);
+  cart = {}; updateCartUI();
+}
+
+// ════════════════════════════════════════
+// MEMBRESÍA — página completa de pago
+// ════════════════════════════════════════
+function openMembresiaModal() {
+  showPage('pago-membresia');
+  document.getElementById('pago-form').style.display = 'block';
+  document.getElementById('pago-confirmado').style.display = 'none';
+}
+function closeMembresiaModal() { showPage('membresia'); }
+
+function fmtCard(el) {
+  let v = el.value.replace(/\D/g,'').substring(0,16);
+  el.value = v.replace(/(.{4})/g,'$1 ').trim();
+  const dots = v.padEnd(16,'•').replace(/(.{4})/g,'$1 ').trim();
+  document.getElementById('pv-num').textContent = dots;
+  document.getElementById('pv-brand').textContent = v[0]==='4'?'💳':v[0]==='5'?'🟠':'💳';
+}
+function fmtExp(el) {
+  let v = el.value.replace(/\D/g,'');
+  if (v.length >= 2) v = v.substring(0,2)+'/'+v.substring(2,4);
+  el.value = v;
+  document.getElementById('pv-exp').textContent = v || 'MM/AA';
+}
+function confirmarMembresia() {
+  const titular = document.getElementById('pm-titular').value;
+  const numero  = document.getElementById('pm-numero').value;
+  const exp     = document.getElementById('pm-exp').value;
+  const cvv     = document.getElementById('pm-cvv').value;
+  const email   = document.getElementById('pm-email').value;
+  if (!titular || numero.length < 19 || exp.length < 5 || cvv.length < 3 || !email) {
+    showToast('⚠️ Por favor completa todos los campos'); return;
+  }
+  // Calcular próxima fecha
+  const next = new Date(); next.setDate(next.getDate()+30);
+  document.getElementById('fecha-proxima').textContent =
+    next.toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('pago-form').style.display = 'none';
+  document.getElementById('pago-confirmado').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+// ════════════════════════════════════════
+// RENDER COMPONENTS
+// ════════════════════════════════════════
+function renderFeaturedCooks() {
+  const el = document.getElementById('featured-cooks');
+  el.innerHTML = cooks.map(c => `
+    <div class="cook-card" onclick="showPage('profile')">
+      <div class="cook-card-img" style="background:${c.color}">
+        <div class="cook-avatar" style="background:${c.color}">${c.emoji}</div>
+        ${c.delivery ? '<div class="cook-delivery-badge">🛵 Delivery</div>' : ''}
+      </div>
+      <div class="cook-card-body">
+        <h3>${c.name}</h3>
+        <div class="cook-meta">
+          <span class="stars">★★★★★</span>
+          <span>${c.rating} (${c.reviews})</span>
+        </div>
+        <div class="cook-tags">${c.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        <button class="btn-order" onclick="event.stopPropagation();showPage('profile')">Ver Menú →</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderMenu() {
+  const el = document.getElementById('menu-items');
+  el.innerHTML = menu.map(m => `
+    <div class="menu-item">
+      <div class="menu-emoji">${m.emoji}</div>
+      <div class="menu-details">
+        <h4>${m.name}</h4>
+        <p>${m.desc}</p>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+        <div class="menu-price">$${m.price.toFixed(2)}</div>
+        <button class="btn-add" onclick="addToCart('${m.id}','${m.name}',${m.price},'${m.emoji}')">+</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderMap() {
+  renderMapList();
+}
+
+function renderMapList() {
+  const filtered = (typeof activeFilter !== 'undefined' && activeFilter !== 'todos')
+    ? cookLocations.filter(c => c.tags.includes(activeFilter))
+    : cookLocations;
+  const el = document.getElementById('map-cook-list');
+  if (!el) return;
+  el.innerHTML = filtered.map(c => `
+    <div class="cook-card" onclick="showPage('profile')" style="cursor:pointer">
+      <div class="cook-card-img" style="background:${c.delivery?'#FDE8D8':'#E8F8EE'};height:90px">
+        <div class="cook-avatar">${c.emoji}</div>
+        ${c.delivery ? '<div class="cook-delivery-badge">🛵</div>' : ''}
+      </div>
+      <div class="cook-card-body">
+        <h3>${c.name}</h3>
+        <div class="cook-meta"><span class="stars">★</span>${c.rating} · ${c.cuisine}</div>
+        <button class="btn-order" onclick="event.stopPropagation();
+          if(leafletMap){leafletMap.setView([${c.lat},${c.lng}],17);}
+          showToast('📍 ${c.name}')">
+          Ver en mapa 📍
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderReviews() {
+  const el = document.getElementById('reviews-list');
+  el.innerHTML = reviewsData.map(r => `
+    <div class="review-card">
+      <div class="review-header">
+        <div class="reviewer">
+          <div class="reviewer-avatar" style="background:${r.bg};font-size:20px">${r.avatar}</div>
+          <div>
+            <div class="reviewer-name">${r.name}</div>
+            <div class="reviewer-date">${r.date}</div>
+          </div>
+        </div>
+        <div class="stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+      </div>
+      <div class="review-dish">🍽️ ${r.dish}</div>
+      <div class="review-text">${r.text}</div>
+    </div>
+  `).join('');
+}
+
+// ════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+  const navBtn = document.getElementById('nav-' + name);
+  if (navBtn) navBtn.classList.add('active');
+  // Mobile nav highlight
+  document.querySelectorAll('.mobile-nav button').forEach(b => b.classList.remove('active'));
+  const mnBtn = document.getElementById('mn-' + name);
+  if (mnBtn) mnBtn.classList.add('active');
+  window.scrollTo(0, 0);
+  if (name === 'checkout') { renderCheckout(); coStep(1); }
+  if (name === 'map') { setTimeout(initLeafletMap, 100); }
+}
+
+
+
+// ════════════════════════════════════════
+// REVIEW MODAL
+// ════════════════════════════════════════
+let selectedStar = 0;
+
+function openReviewModal() {
+  document.getElementById('review-modal').classList.add('open');
+}
+function closeReviewModal() {
+  document.getElementById('review-modal').classList.remove('open');
+}
+function setStar(n) {
+  selectedStar = n;
+  const stars = document.querySelectorAll('#stars-input .star-sel');
+  stars.forEach((s, i) => s.textContent = i < n ? '★' : '☆');
+}
+function submitReview() {
+  const name = document.getElementById('review-name').value || 'Anónimo';
+  const dish = document.getElementById('review-dish').value || 'Platillo sin especificar';
+  const text = document.getElementById('review-text').value;
+  if (!text) { showToast('⚠️ Escribe algo en tu reseña'); return; }
+  reviewsData.unshift({
+    name, avatar: '🧑', stars: selectedStar || 5,
+    dish: `${dish} · Micasero`,
+    text, date: 'Ahora mismo', bg: '#FDE8D8'
+  });
+  renderReviews();
+  closeReviewModal();
+  showToast('⭐ ¡Reseña publicada! Gracias.');
+}
+
+// ════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════
+function selectRole(el, role) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ════════════════════════════════════════
+// LEAFLET MAP — Bainbridge Island, WA
+// ════════════════════════════════════════
+let leafletMap = null;
+let leafletMarkers = [];
+let userMarker = null;
+let activeFilter = 'todos';
+
+const cookLocations = [
+  { id:1, name:'Chef María R.',  emoji:'👩‍🍳', lat:47.6262, lng:-122.5210, cuisine:'Mexicana',  rating:4.9, delivery:true,  cena:true,  tags:['mexicana','delivery','cena'] },
+  { id:2, name:'Chef Carlos M.', emoji:'👨‍🍳', lat:47.6318, lng:-122.5378, cuisine:'Italiana',  rating:4.7, delivery:true,  cena:false, tags:['italiana','delivery'] },
+  { id:3, name:'Chef Sofía V.',  emoji:'🧑‍🍳', lat:47.6198, lng:-122.5290, cuisine:'Asiática',  rating:4.8, delivery:false, cena:true,  tags:['asiatica','recogida','cena'] },
+  { id:4, name:'Chef Juan P.',   emoji:'👨‍🍳', lat:47.6350, lng:-122.5150, cuisine:'Argentina', rating:4.6, delivery:true,  cena:false, tags:['delivery'] },
+  { id:5, name:'Chef Ana L.',    emoji:'👩‍🍳', lat:47.6230, lng:-122.5440, cuisine:'Mexicana',  rating:4.5, delivery:false, cena:false, tags:['mexicana','recogida'] },
+];
+
+function makeCookIcon(emoji, delivery, cena) {
+  const color = cena ? '#9B59B6' : delivery ? '#E8622A' : '#2E7D52';
+  return L.divIcon({
+    className: '',
+    html: `<div style="background:${color};width:42px;height:42px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center">
+      <span style="transform:rotate(45deg);font-size:18px">${emoji}</span></div>`,
+    iconSize:[42,42], iconAnchor:[21,42], popupAnchor:[0,-46]
+  });
+}
+
+function initLeafletMap() {
+  if (leafletMap) { leafletMap.invalidateSize(); return; }
+  leafletMap = L.map('leaflet-map', { zoomControl:true }).setView([47.626, -122.527], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom:19
+  }).addTo(leafletMap);
+  placeAllMarkers();
+  // Auto-locate on map open
+  autoLocate();
+}
+
+function autoLocate() {
+  if (!navigator.geolocation || location.protocol === 'file:') return;
+  navigator.geolocation.getCurrentPosition(pos => {
+    const {latitude:lat, longitude:lng} = pos.coords;
+    placeUserDot(lat, lng);
+  }, () => {});
+}
+
+function placeUserDot(lat, lng) {
+  if (userMarker) leafletMap.removeLayer(userMarker);
+  userMarker = L.circleMarker([lat, lng], {
+    radius:12, fillColor:'#2196F3', color:'white',
+    weight:3, opacity:1, fillOpacity:0.95
+  }).addTo(leafletMap).bindPopup('<b>📍 Tú estás aquí</b>');
+}
+
+function placeAllMarkers() {
+  leafletMarkers.forEach(m => leafletMap.removeLayer(m));
+  leafletMarkers = [];
+  cookLocations.forEach(c => {
+    if (activeFilter !== 'todos' && !c.tags.includes(activeFilter)) return;
+    const marker = L.marker([c.lat, c.lng], { icon: makeCookIcon(c.emoji, c.delivery, c.cena) });
+    marker.bindPopup(`
+      <div style="font-family:'DM Sans',sans-serif;min-width:190px;padding:4px">
+        <div style="font-size:22px;margin-bottom:4px">${c.emoji}</div>
+        <div style="font-weight:700;font-size:15px;color:#3D2010">${c.name}</div>
+        <div style="font-size:13px;color:#8A6A50;margin:2px 0">${c.cuisine} · ⭐${c.rating}</div>
+        <div style="font-size:12px;margin-bottom:8px;display:flex;flex-direction:column;gap:2px">
+          ${c.delivery ? '<span>🛵 Delivery disponible</span>' : ''}
+          ${c.tags.includes('recogida') ? '<span>🏠 Recogida en domicilio</span>' : ''}
+          ${c.cena ? '<span>🕯️ Cena privada (reserva)</span>' : ''}
+        </div>
+        <button onclick="showPage('profile')" style="background:#E8622A;color:white;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;width:100%">Ver menú y pedir →</button>
+      </div>`, { maxWidth:220 });
+    marker.addTo(leafletMap);
+    leafletMarkers.push(marker);
+  });
+  renderMapList();
+}
+
+function filterMapLeaflet(btn, type) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = type;
+  if (leafletMap) placeAllMarkers();
+  else renderMapList();
+}
+
+function locateUser() {
+  const btn = document.getElementById('btn-locate');
+  if (location.protocol === 'file:') {
+    showToast('💡 Sube el archivo a GitHub Pages para usar el GPS');
+    return;
+  }
+  if (!navigator.geolocation) { showToast('⚠️ Tu navegador no soporta GPS'); return; }
+  btn.textContent = '⏳ Buscando...'; btn.disabled = true;
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const {latitude:lat, longitude:lng} = pos.coords;
+      placeUserDot(lat, lng);
+      leafletMap.setView([lat, lng], 15);
+      btn.textContent = '✅ Ubicación activa';
+      btn.style.color = '#2196F3'; btn.style.borderColor = '#2196F3';
+      btn.disabled = false;
+      showToast('📍 ¡Tu ubicación está activa!');
+    },
+    err => {
+      btn.disabled = false;
+      btn.textContent = '📍 Mostrar mi ubicación';
+      const msgs = {1:'🔒 Permiso denegado — actívalo en tu navegador', 2:'📡 Sin señal GPS', 3:'⏱️ Tiempo agotado'};
+      showToast(msgs[err.code] || '⚠️ No se pudo obtener ubicación');
+    },
+    { enableHighAccuracy:true, timeout:10000, maximumAge:0 }
+  );
+}
+
+function renderMap() { renderMapList(); }
+
+function renderMapList() {
+  const filtered = activeFilter === 'todos' ? cookLocations : cookLocations.filter(c => c.tags.includes(activeFilter));
+  const el = document.getElementById('map-cook-list');
+  if (!el) return;
+  el.innerHTML = filtered.map(c => `
+    <div class="cook-card" onclick="showPage('profile')" style="cursor:pointer">
+      <div class="cook-card-img" style="background:${c.delivery?'#FDE8D8':'#E8F8EE'};height:90px">
+        <div class="cook-avatar">${c.emoji}</div>
+        ${c.delivery?'<div class="cook-delivery-badge">🛵</div>':''}
+      </div>
+      <div class="cook-card-body">
+        <h3>${c.name}</h3>
+        <div class="cook-meta"><span class="stars">★</span>${c.rating} · ${c.cuisine}</div>
+        <button class="btn-order" onclick="event.stopPropagation();if(leafletMap)leafletMap.setView([${c.lat},${c.lng}],16);showToast('📍 ${c.name}')">
+          Ver en mapa 📍
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════
+// DASHBOARD — gestión de menú del cocinero
+// ════════════════════════════════════════
+let cookMenu = [
+  { id:'m1', name:'Lasaña Casera',   desc:'Pasta fresca, carne molida, bechamel y tres quesos.',          price:12.50, emoji:'🍝', category:'Plato principal', available:true },
+  { id:'m2', name:'Tacos al Pastor', desc:'Tortillas de maíz, cerdo marinado, piña y cilantro.',          price:10.00, emoji:'🌮', category:'Plato principal', available:true },
+  { id:'m3', name:'Curry de Pollo',  desc:'Curry rojo cremoso con leche de coco y verduras frescas.',     price:14.00, emoji:'🍛', category:'Plato principal', available:true },
+  { id:'m4', name:'Pozole Rojo',     desc:'Caldo tradicional con maíz cacahuazintle y carne de res.',     price:11.00, emoji:'🍲', category:'Sopa / Caldo',   available:true },
+  { id:'m5', name:'Tarta de Queso',  desc:'Tarta casera con base de galleta y frutos rojos.',             price:8.50,  emoji:'🍰', category:'Postre',         available:false },
+];
+let dishAvailable = true;
+let cookAvailable = true;
+
+function renderDashboard() {
+  const list = document.getElementById('dash-menu-list');
+  const empty = document.getElementById('dash-empty');
+  document.getElementById('dash-count').textContent = cookMenu.length;
+
+  if (cookMenu.length === 0) {
+    list.innerHTML = ''; empty.style.display = 'block'; return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = cookMenu.map(d => `
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;display:flex;gap:14px;align-items:center;${!d.available?'opacity:0.6':''}">
+      <div style="font-size:38px;flex-shrink:0">${d.emoji}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:16px;color:var(--brown)">${d.name}</div>
+          <span style="font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;background:${d.available?'#E8F8EE':'#FEE8E8'};color:${d.available?'var(--green)':'#C0392B'}">${d.available?'Disponible':'Agotado'}</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted);margin:3px 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.desc}</div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:17px;font-weight:700;color:var(--orange)">$${d.price.toFixed(2)}</span>
+          <span style="font-size:11px;background:var(--warm);padding:2px 8px;border-radius:10px;color:var(--brown-mid)">${d.category}</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+        <button onclick="editDish('${d.id}')" style="background:var(--warm);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">✏️ Editar</button>
+        <button onclick="toggleDishAvail('${d.id}')" style="background:var(--warm);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">${d.available?'❌ Agotar':'✅ Activar'}</button>
+        <button onclick="deleteDish('${d.id}')" style="background:#FEE8E8;border:1px solid #F4BEBE;border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;color:#C0392B">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+
+  // Sync menu on profile page too
+  syncMenuToProfile();
+}
+
+function syncMenuToProfile() {
+  const el = document.getElementById('menu-items');
+  if (!el) return;
+  el.innerHTML = cookMenu.filter(d => d.available).map(d => `
+    <div class="menu-item">
+      <div class="menu-emoji">${d.emoji}</div>
+      <div class="menu-details">
+        <h4>${d.name}</h4>
+        <p>${d.desc}</p>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+        <div class="menu-price">$${d.price.toFixed(2)}</div>
+        <button class="btn-add" onclick="addToCart('${d.id}','${d.name}',${d.price},'${d.emoji}')">+</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openDishModal(id) {
+  document.getElementById('dish-edit-id').value = '';
+  document.getElementById('dish-modal-title').textContent = '🍽️ Nuevo Platillo';
+  document.getElementById('dish-emoji').value = '';
+  document.getElementById('dish-name').value = '';
+  document.getElementById('dish-desc').value = '';
+  document.getElementById('dish-price').value = '';
+  document.getElementById('dish-category').value = 'Plato principal';
+  setDishAvail(true);
+  document.getElementById('dish-modal').classList.add('open');
+}
+
+function editDish(id) {
+  const d = cookMenu.find(x => x.id === id);
+  if (!d) return;
+  document.getElementById('dish-edit-id').value = id;
+  document.getElementById('dish-modal-title').textContent = '✏️ Editar Platillo';
+  document.getElementById('dish-emoji').value = d.emoji;
+  document.getElementById('dish-name').value = d.name;
+  document.getElementById('dish-desc').value = d.desc;
+  document.getElementById('dish-price').value = d.price;
+  document.getElementById('dish-category').value = d.category;
+  setDishAvail(d.available);
+  document.getElementById('dish-modal').classList.add('open');
+}
+
+function closeDishModal() {
+  document.getElementById('dish-modal').classList.remove('open');
+}
+
+function setDishAvail(val) {
+  dishAvailable = val;
+  document.getElementById('avail-yes').classList.toggle('selected', val);
+  document.getElementById('avail-no').classList.toggle('selected', !val);
+}
+
+function saveDish() {
+  const emoji = document.getElementById('dish-emoji').value.trim() || '🍽️';
+  const name  = document.getElementById('dish-name').value.trim();
+  const desc  = document.getElementById('dish-desc').value.trim();
+  const price = parseFloat(document.getElementById('dish-price').value);
+  const cat   = document.getElementById('dish-category').value;
+  const editId= document.getElementById('dish-edit-id').value;
+
+  if (!name)        { showToast('⚠️ Escribe el nombre del platillo'); return; }
+  if (!desc)        { showToast('⚠️ Agrega una descripción'); return; }
+  if (!price || price <= 0) { showToast('⚠️ Agrega un precio válido'); return; }
+
+  if (editId) {
+    const i = cookMenu.findIndex(x => x.id === editId);
+    if (i > -1) cookMenu[i] = { ...cookMenu[i], emoji, name, desc, price, category:cat, available:dishAvailable };
+    showToast('✅ Platillo actualizado');
+  } else {
+    cookMenu.push({ id:'m'+Date.now(), emoji, name, desc, price, category:cat, available:dishAvailable });
+    showToast('🎉 Platillo agregado al menú');
+  }
+  closeDishModal();
+  renderDashboard();
+}
+
+function deleteDish(id) {
+  cookMenu = cookMenu.filter(x => x.id !== id);
+  renderDashboard();
+  showToast('🗑️ Platillo eliminado');
+}
+
+function toggleDishAvail(id) {
+  const d = cookMenu.find(x => x.id === id);
+  if (d) { d.available = !d.available; renderDashboard(); showToast(d.available ? '✅ Platillo activado' : '❌ Marcado como agotado'); }
+}
+
+function toggleAvailable() {
+  cookAvailable = !cookAvailable;
+  const toggle = document.getElementById('avail-toggle');
+  const knob   = document.getElementById('avail-knob');
+  toggle.style.background = cookAvailable ? 'var(--green)' : '#ccc';
+  knob.style.right = cookAvailable ? '3px' : '27px';
+  showToast(cookAvailable ? '🟢 Estás disponible en el mapa' : '⛔ Te ocultaste del mapa');
+}
+
+function toggleDesktopLang() {
+  const d = document.getElementById('desktop-lang-drop');
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
+function closeDesktopLang() {
+  document.getElementById('desktop-lang-drop').style.display = 'none';
+}
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('#desktop-lang-btn') && !e.target.closest('#desktop-lang-drop')) {
+    const d = document.getElementById('desktop-lang-drop');
+    if (d) d.style.display = 'none';
+  }
+  if (!e.target.closest('#mobile-more-menu') && !e.target.closest('#mn-more')) {
+    closeMobileMenu();
+  }
+  if (e.target.closest('#emoji-picker') && e.target.tagName === 'SPAN') {
+    document.getElementById('dish-emoji').value = e.target.textContent;
+    document.querySelectorAll('#emoji-picker span').forEach(s => s.style.background = '');
+    e.target.style.background = '#FDE8D8';
+    e.target.style.borderRadius = '6px';
+  }
+});
+
+function toggleMobileMenu() {
+  const m = document.getElementById('mobile-more-menu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-more-menu').style.display = 'none';
+}
+
+// ════════════════════════════════════════
+// LANGUAGE SWITCHER
+// ════════════════════════════════════════
+const translations = {
+  es: {
+    'home-title': 'Bienvenido a',
+    'home-subtitle': 'Elige cómo quieres usar la plataforma',
+    'client-title': 'Soy Cliente',
+    'client-desc': 'Quiero encontrar cocineros y pedir comida casera',
+    'client-btn': 'Buscar Cocineros →',
+    'cook-title': 'Soy Cocinero',
+    'cook-desc': 'Quiero publicar mi menú y conseguir clientes',
+    'cook-btn': 'Ver Planes →',
+    'map-title': 'Mapa de Cocineros Cercanos',
+    'map-desc': 'Cocineros reales en tu área. Haz clic en un pin para ver su perfil y pedir.',
+    'locate-btn': '📍 Mostrar mi ubicación',
+    'nav-home': 'Inicio',
+    'nav-map': 'Mapa',
+    'nav-profile': 'Cocineros',
+    'nav-dashboard': 'Mi Menú',
+    'nav-more': 'Más',
+    'note': '💡 Clientes pagan directo al cocinero · Micasero cobra membresía solo al cocinero',
+  },
+  en: {
+    'home-title': 'Welcome to',
+    'home-subtitle': 'Choose how you want to use the platform',
+    'client-title': 'I\'m a Client',
+    'client-desc': 'I want to find home cooks and order food',
+    'client-btn': 'Find Cooks →',
+    'cook-title': 'I\'m a Cook',
+    'cook-desc': 'I want to publish my menu and get clients',
+    'cook-btn': 'See Plans →',
+    'map-title': 'Nearby Cooks Map',
+    'map-desc': 'Real cooks in your area. Tap a pin to see their profile and order.',
+    'locate-btn': '📍 Show my location',
+    'nav-home': 'Home',
+    'nav-map': 'Map',
+    'nav-profile': 'Cooks',
+    'nav-dashboard': 'My Menu',
+    'nav-more': 'More',
+    'note': '💡 Clients pay the cook directly · Micasero only charges cooks a membership fee',
+  },
+  pt: {
+    'home-title': 'Bem-vindo ao',
+    'home-subtitle': 'Escolha como deseja usar a plataforma',
+    'client-title': 'Sou Cliente',
+    'client-desc': 'Quero encontrar cozinheiros e pedir comida caseira',
+    'client-btn': 'Buscar Cozinheiros →',
+    'cook-title': 'Sou Cozinheiro',
+    'cook-desc': 'Quero publicar meu menu e conseguir clientes',
+    'cook-btn': 'Ver Planos →',
+    'map-title': 'Mapa de Cozinheiros Próximos',
+    'map-desc': 'Cozinheiros reais na sua área. Toque em um pin para ver o perfil e pedir.',
+    'locate-btn': '📍 Mostrar minha localização',
+    'nav-home': 'Início',
+    'nav-map': 'Mapa',
+    'nav-profile': 'Cozinheiros',
+    'nav-dashboard': 'Meu Menu',
+    'nav-more': 'Mais',
+    'note': '💡 Clientes pagam direto ao cozinheiro · Micasero cobra apenas a adesão do cozinheiro',
+  }
+};
+
+let currentLang = 'es';
+
+function setLang(lang) {
+  currentLang = lang;
+  const t = translations[lang];
+
+  // Update language buttons — mobile
+  ['es','en','pt'].forEach(l => {
+    const btn = document.getElementById('lang-btn-'+l);
+    if (!btn) return;
+    btn.style.background = l === lang ? 'var(--orange)' : 'var(--warm)';
+    btn.style.color = l === lang ? 'white' : 'var(--text)';
+    btn.style.border = l === lang ? 'none' : '1px solid var(--border)';
+  });
+
+  // Update desktop lang button
+  const desktopLang = document.getElementById('desktop-lang-btn');
+  if (desktopLang) desktopLang.textContent = lang==='es'?'🇪🇸 ES':lang==='en'?'🇺🇸 EN':'🇧🇷 PT';
+
+  // Apply translations to home page
+  const map = {
+    'Bienvenido a':      {'en':'Welcome to',       'pt':'Bem-vindo ao'},
+    'Elige cómo quieres usar la plataforma': {'en':'Choose how you want to use the platform','pt':'Escolha como deseja usar a plataforma'},
+    '¿Qué eres tú?':    {'en':'Who are you?',      'pt':'Quem é você?'},
+    'Soy Cliente':       {'en':'I\'m a Client',     'pt':'Sou Cliente'},
+    'Quiero encontrar cocineros y pedir comida casera': {'en':'I want to find home cooks and order food','pt':'Quero encontrar cozinheiros e pedir comida caseira'},
+    'Buscar Cocineros →':{'en':'Find Cooks →',      'pt':'Buscar Cozinheiros →'},
+    'Soy Cocinero':      {'en':'I\'m a Cook',       'pt':'Sou Cozinheiro'},
+    'Quiero publicar mi menú y conseguir clientes': {'en':'I want to publish my menu and get clients','pt':'Quero publicar meu menu e conseguir clientes'},
+    'Ver Planes →':      {'en':'See Plans →',       'pt':'Ver Planos →'},
+    'Mapa de Cocineros Cercanos': {'en':'Nearby Cooks Map','pt':'Mapa de Cozinheiros Próximos'},
+    'Cocineros reales en tu área. Haz clic en un pin para ver su perfil y pedir.': {'en':'Real cooks in your area. Tap a pin to see their profile and order.','pt':'Cozinheiros reais na sua área. Toque em um pin para ver o perfil e pedir.'},
+    '📍 Mostrar mi ubicación': {'en':'📍 Show my location','pt':'📍 Mostrar minha localização'},
+    'Inicio':            {'en':'Home',              'pt':'Início'},
+    'Mapa':              {'en':'Map',               'pt':'Mapa'},
+    'Reseñas':           {'en':'Reviews',           'pt':'Avaliações'},
+    'Cocineros':         {'en':'Cooks',             'pt':'Cozinheiros'},
+    'Iniciar Sesión':    {'en':'Log In',            'pt':'Entrar'},
+    'Regístrate':        {'en':'Sign Up',           'pt':'Cadastre-se'},
+    'Mi Menú':           {'en':'My Menu',           'pt':'Meu Menu'},
+    'Más':               {'en':'More',              'pt':'Mais'},
+    '💡 Clientes pagan directo al cocinero · Micasero cobra membresía solo al cocinero': {
+      'en':'💡 Clients pay the cook directly · Micasero only charges cooks a membership fee',
+      'pt':'💡 Clientes pagam direto ao cozinheiro · Micasero cobra apenas a adesão do cozinheiro'
+    },
+  };
+
+  // Walk all text nodes and translate
+  function translateNode(node) {
+    if (node.nodeType === 3) { // text node
+      const trimmed = node.textContent.trim();
+      if (map[trimmed] && map[trimmed][lang]) {
+        node.textContent = node.textContent.replace(trimmed, map[trimmed][lang]);
+      } else if (lang === 'es') {
+        // restore Spanish — find reverse
+        Object.entries(map).forEach(([es, others]) => {
+          if (others[currentLang === 'es' ? 'en' : 'pt'] === trimmed) {
+            node.textContent = node.textContent.replace(trimmed, es);
+          }
+        });
+      }
+    } else if (node.nodeType === 1 && !['SCRIPT','STYLE'].includes(node.tagName)) {
+      node.childNodes.forEach(translateNode);
+    }
+  }
+
+  // Translate visible page only for performance
+  const activePage = document.querySelector('.page.active');
+  if (activePage) translateNode(activePage);
+
+  // Always translate nav + mobile nav
+  document.querySelector('nav') && translateNode(document.querySelector('nav'));
+  document.getElementById('mobile-nav') && translateNode(document.getElementById('mobile-nav'));
+  document.getElementById('mobile-more-menu') && translateNode(document.getElementById('mobile-more-menu'));
+
+  showToast(lang==='es'?'🇪🇸 Español activado':lang==='en'?'🇺🇸 English activated':'🇧🇷 Português ativado');
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+renderFeaturedCooks();
+renderDashboard();
+renderMap();
+renderReviews();
+</script>
+</body>
+</html>

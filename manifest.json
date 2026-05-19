@@ -1,0 +1,21 @@
+json{
+  "name": "Micasero",
+  "short_name": "Micasero",
+  "description": "Comida casera cerca de ti",
+  "start_url": "/micasero.html",
+  "display": "standalone",
+  "background_color": "#4A1E08",
+  "theme_color": "#4A1E08",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -731,7 +731,7 @@
     <button onclick="showPage('reviews')" id="nav-reviews">Reseñas</button>
     <button onclick="showPage('profile')" id="nav-profile">Cocineros</button>
     <button onclick="showPage('membresia')" id="nav-membresia" style="color:var(--orange);font-weight:600">👨‍🍳 Para Cocineros</button>
-    <button onclick="showPage('dashboard')" id="nav-dashboard" style="color:var(--green);font-weight:600">📋 Mi Menú</button>
+    <button onclick="showPage('cocina')" id="nav-cocina" style="color:var(--green);font-weight:600">📋 Mi Cocina</button>
     <button onclick="showPage('login')" id="nav-login">Iniciar Sesión</button>
     <button onclick="showPage('register')" id="nav-register" class="nav-cta">Regístrate</button>
     <button class="cart-btn" onclick="toggleCart()">
@@ -768,7 +768,12 @@
       <button onclick="showPage('map')" style="background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:20px;padding:28px 20px;cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif;-webkit-appearance:none">
         <div style="font-size:44px;margin-bottom:12px">🍽️</div>
         <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:white;margin-bottom:8px">Soy Cliente</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5;margin-bottom:16px">Quiero encontrar cocineros y pedir comida casera</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:16px;text-align:left">
+          1️⃣ Explora el mapa<br>
+          2️⃣ Elige tu cocinero<br>
+          3️⃣ Elige tus platillos<br>
+          4️⃣ Paga al cocinero
+        </div>
         <div style="background:#4CAF50;color:white;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700">
           Buscar Cocineros →
         </div>
@@ -778,8 +783,13 @@
       <button onclick="showPage('membresia')" style="background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:20px;padding:28px 20px;cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif;-webkit-appearance:none">
         <div style="font-size:44px;margin-bottom:12px">👨‍🍳</div>
         <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:white;margin-bottom:8px">Soy Cocinero</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.5;margin-bottom:16px">Quiero publicar mi menú y conseguir clientes</div>
-        <div style="background:#E8622A;color:white;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700">
+        <div style="font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:16px;text-align:left">
+          1️⃣ Elige tu plan<br>
+          2️⃣ Arma tu perfil<br>
+          3️⃣ Publica tu menú<br>
+          4️⃣ Cobra directo
+        </div>
+        <div style="background:var(--orange);color:white;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700">
           Ver Planes →
         </div>
       </button>
@@ -803,15 +813,19 @@
         <div style="display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;gap:12px;align-items:flex-start">
             <div style="width:28px;height:28px;background:var(--orange);border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
-            <div><strong>Explora el mapa</strong><br><span style="font-size:13px;color:var(--text-muted)">Encuentra cocineros cerca de ti</span></div>
+            <div><strong>Explora el mapa</strong><br><span style="font-size:13px;color:var(--text-muted)">Filtra por todos, tipo de comida o servicio</span></div>
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start">
             <div style="width:28px;height:28px;background:var(--orange);border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
-            <div><strong>Elige tu platillo</strong><br><span style="font-size:13px;color:var(--text-muted)">Agrega al carrito y confirma</span></div>
+            <div><strong>Elige tu cocinero</strong><br><span style="font-size:13px;color:var(--text-muted)">Ve su perfil, menú y método de cobro</span></div>
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start">
             <div style="width:28px;height:28px;background:var(--orange);border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
-            <div><strong>Paga al cocinero</strong><br><span style="font-size:13px;color:var(--text-muted)">Directo por WhatsApp, transferencia o PayPal/Zelle</span></div>
+            <div><strong>Elige tus platillos</strong><br><span style="font-size:13px;color:var(--text-muted)">Agrega al carrito desde el menú del cocinero</span></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:28px;height:28px;background:var(--orange);border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+            <div><strong>Paga al cocinero</strong><br><span style="font-size:13px;color:var(--text-muted)">Venmo, PayPal, Zelle, QR o tarjeta — directo al cocinero</span></div>
           </div>
           <div style="margin-top:8px">
             <button class="btn-order" onclick="showPage('map')" style="padding:12px 20px">Buscar Cocineros →</button>
@@ -831,11 +845,15 @@
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start">
             <div style="width:28px;height:28px;background:#4CAF50;border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
-            <div><strong>Paga tu membresía</strong><br><span style="font-size:13px;color:var(--text-muted)">Con tarjeta, una sola vez al mes</span></div>
+            <div><strong>Arma tu perfil</strong><br><span style="font-size:13px;color:var(--text-muted)">Info personal, tipo de comida y menú</span></div>
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start">
             <div style="width:28px;height:28px;background:#4CAF50;border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
-            <div><strong>Publica y cobra</strong><br><span style="font-size:13px;color:var(--text-muted)">Tus clientes te pagan directo a ti — 0% comisión</span></div>
+            <div><strong>Agrega tu método de cobro</strong><br><span style="font-size:13px;color:var(--text-muted)">Venmo, PayPal, Zelle, QR o tarjeta</span></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:28px;height:28px;background:#4CAF50;border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+            <div><strong>¡Cobra directo!</strong><br><span style="font-size:13px;color:var(--text-muted)">0% comisión — el dinero es tuyo</span></div>
           </div>
           <div style="margin-top:8px">
             <button onclick="showPage('pago-membresia')" style="width:100%;background:#4CAF50;color:white;border:none;border-radius:10px;padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Activar membresía →</button>
@@ -893,14 +911,27 @@
       <p>Cocineros reales en tu área. Haz clic en un pin para ver su perfil y pedir.</p>
     </div>
 
-    <div class="map-filters">
-      <button class="filter-btn active" onclick="filterMapLeaflet(this,'todos')">Todos</button>
-      <button class="filter-btn" onclick="filterMapLeaflet(this,'delivery')">🛵 Delivery</button>
-      <button class="filter-btn" onclick="filterMapLeaflet(this,'recogida')">🏠 Recogida</button>
-      <button class="filter-btn" onclick="filterMapLeaflet(this,'cena')">🕯️ Cena en casa</button>
+    <!-- Todos los Cocineros -->
+    <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🍽️ Todos los Cocineros</div>
+    <div class="map-filters" style="margin-bottom:14px">
+      <button class="filter-btn active" onclick="filterMapLeaflet(this,'todos')">Ver Todos</button>
+    </div>
+
+    <!-- Por Tipo de Comida -->
+    <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px" id="filter-food">🌮 Por Tipo de Comida</div>
+    <div class="map-filters" style="margin-bottom:14px">
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'local')">🏡 Local</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'mexicana')">🌮 Mexicana</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'italiana')">🍝 Italiana</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'asiatica')">🍜 Asiática</button>
+    </div>
+
+    <!-- Por Servicio -->
+    <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px" id="filter-service">🛵 Por Servicio</div>
+    <div class="map-filters">
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'delivery')">🛵 Delivery</button>
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'recogida')">🏠 Recogida</button>
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'cena')">🕯️ Cenar en Casa</button>
     </div>
 
     <!-- Botón ubicación -->
@@ -960,7 +991,7 @@
           Soy María, apasionada de la cocina casera con 12 años de experiencia. Mi especialidad es la comida tradicional mexicana con un toque moderno, siempre con ingredientes frescos y de temporada. ¡Me encanta compartir mi amor por la comida con mi comunidad!
         </p>
 
-        <h3 class="section-title" style="margin-bottom:16px">Mi Menú</h3>
+        <h3 class="section-title" style="margin-bottom:16px">Mi Cocina</h3>
         <div class="menu-grid" id="menu-items"></div>
       </div>
 
@@ -1097,36 +1128,136 @@
         </div>
         <div class="auth-subtitle">¡Únete a la comunidad!</div>
       </div>
-      <h2>Crear Cuenta</h2>
-      <div class="form-group">
-        <label class="form-label">Nombre Completo</label>
-        <input class="form-input" type="text" placeholder="Tu nombre">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Correo Electrónico</label>
-        <input class="form-input" type="email" placeholder="tu@correo.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Contraseña</label>
-        <input class="form-input" type="password" placeholder="Mínimo 8 caracteres">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Soy...</label>
-        <div class="role-select">
-          <div class="role-btn selected" onclick="selectRole(this,'cliente')">🍽️ Cliente</div>
-          <div class="role-btn" onclick="selectRole(this,'cocinero')">👨‍🍳 Cocinero</div>
+
+      <!-- Selector tipo de cuenta -->
+      <div id="reg-type-select">
+        <h2 style="text-align:center;margin-bottom:20px">¿Cómo quieres unirte?</h2>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+          <button onclick="showRegForm('cliente')" style="background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:2px solid var(--orange);border-radius:14px;padding:18px;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;-webkit-appearance:none">
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="font-size:32px">🍽️</span>
+              <div>
+                <div style="font-weight:700;font-size:16px;color:var(--brown)">Soy Cliente</div>
+                <div style="font-size:13px;color:var(--text-muted)">Quiero encontrar cocineros y pedir comida casera</div>
+              </div>
+            </div>
+          </button>
+          <button onclick="showRegForm('cocinero')" style="background:linear-gradient(135deg,#F0FFF4,#D4F0DD);border:2px solid #4CAF50;border-radius:14px;padding:18px;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;-webkit-appearance:none">
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="font-size:32px">👨‍🍳</span>
+              <div>
+                <div style="font-weight:700;font-size:16px;color:var(--brown)">Soy Cocinero</div>
+                <div style="font-size:13px;color:var(--text-muted)">Quiero publicar mi menú y conseguir clientes</div>
+              </div>
+            </div>
+          </button>
         </div>
+        <div class="auth-link">¿Ya tienes cuenta? <a onclick="showPage('login')">Inicia sesión aquí</a></div>
       </div>
-      <div class="form-group">
-        <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:13px;color:var(--text-muted)">
-          <input type="checkbox" id="accept-terms" style="margin-top:2px;flex-shrink:0;accent-color:var(--orange)">
-          <span>Acepto los <a onclick="showPage('terminos')" style="color:var(--orange);cursor:pointer;font-weight:600">Términos de Servicio</a> y la <a onclick="showPage('privacidad')" style="color:var(--orange);cursor:pointer;font-weight:600">Política de Privacidad</a> de Micasero</span>
-        </label>
+
+      <!-- Formulario Cliente -->
+      <div id="reg-form-cliente" style="display:none">
+        <button onclick="document.getElementById('reg-type-select').style.display='block';document.getElementById('reg-form-cliente').style.display='none'" style="background:none;border:none;color:var(--orange);font-size:13px;cursor:pointer;margin-bottom:16px;padding:0">← Volver</button>
+        <h2 style="margin-bottom:20px">🍽️ Registro de Cliente</h2>
+        <div class="form-group">
+          <label class="form-label">Nombre Completo</label>
+          <input class="form-input" type="text" placeholder="Tu nombre">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Correo Electrónico</label>
+          <input class="form-input" type="email" placeholder="tu@correo.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input class="form-input" type="password" placeholder="Mínimo 8 caracteres">
+        </div>
+        <div class="form-group">
+          <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:13px;color:var(--text-muted)">
+            <input type="checkbox" style="margin-top:2px;flex-shrink:0;accent-color:var(--orange)">
+            <span>Acepto los <a onclick="showPage('terminos')" style="color:var(--orange);cursor:pointer;font-weight:600">Términos</a> y la <a onclick="showPage('privacidad')" style="color:var(--orange);cursor:pointer;font-weight:600">Privacidad</a></span>
+          </label>
+        </div>
+        <button class="btn-submit" onclick="showToast('🎉 ¡Bienvenido a Micasero!')">Crear Cuenta de Cliente</button>
+        <div class="divider"><div class="divider-line"></div><span class="divider-text">o con</span><div class="divider-line"></div></div>
+        <button class="social-btn">🌐 Continuar con Google</button>
       </div>
-      <button class="btn-submit" onclick="showToast('🎉 Cuenta creada exitosamente')">Crear Cuenta</button>
-      <div class="divider"><div class="divider-line"></div><span class="divider-text">o regístrate con</span><div class="divider-line"></div></div>
-      <button class="social-btn">🌐 Continuar con Google</button>
-      <div class="auth-link">¿Ya tienes cuenta? <a onclick="showPage('login')">Inicia sesión aquí</a></div>
+
+      <!-- Formulario Cocinero -->
+      <div id="reg-form-cocinero" style="display:none">
+        <button onclick="document.getElementById('reg-type-select').style.display='block';document.getElementById('reg-form-cocinero').style.display='none'" style="background:none;border:none;color:var(--orange);font-size:13px;cursor:pointer;margin-bottom:16px;padding:0">← Volver</button>
+        <h2 style="margin-bottom:4px">👨‍🍳 Registro de Cocinero</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px">Primero elige tu plan, luego armamos tu perfil</p>
+
+        <!-- Plan selector -->
+        <div style="display:flex;gap:10px;margin-bottom:20px">
+          <div id="plan-free" class="role-btn selected" onclick="selectPlan('free')" style="flex:1;padding:14px;text-align:center">
+            <div style="font-size:20px">🎁</div>
+            <div style="font-weight:700;font-size:14px">Gratis</div>
+            <div style="font-size:11px;color:var(--text-muted)">30 días</div>
+          </div>
+          <div id="plan-pro" class="role-btn" onclick="selectPlan('pro')" style="flex:1;padding:14px;text-align:center">
+            <div style="font-size:20px">⭐</div>
+            <div style="font-weight:700;font-size:14px">Pro</div>
+            <div style="font-size:11px;color:var(--text-muted)">$19/mes</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nombre Completo</label>
+          <input class="form-input" type="text" placeholder="Tu nombre">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Correo Electrónico</label>
+          <input class="form-input" type="email" placeholder="tu@correo.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input class="form-input" type="password" placeholder="Mínimo 8 caracteres">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Dirección domiciliaria</label>
+          <input class="form-input" type="text" placeholder="Calle, número, ciudad">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo de comida que preparas</label>
+          <select class="form-input" style="cursor:pointer">
+            <option>Local / Casera</option>
+            <option>Mexicana</option>
+            <option>Italiana</option>
+            <option>Asiática</option>
+            <option>Argentina</option>
+            <option>Otra</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Servicios que ofreces</label>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+            <label style="display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--orange)"> 🛵 Delivery</label>
+            <label style="display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--orange)"> 🏠 Recogida en domicilio</label>
+            <label style="display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer"><input type="checkbox" style="accent-color:#4CAF50"> 🕯️ Cenar en mi casa</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Método de cobro (puedes elegir varios)</label>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+            <label style="display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--orange)"> 📲 Venmo</label>
+            <label style="display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--orange)"> 💙 PayPal</label>
+            <label style="display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer"><input type="checkbox" style="accent-color:var(--orange)"> 💚 Zelle</label>
+            <label style="display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer"><input type="checkbox" style="accent-color:var(--orange)"> 📱 Código QR</label>
+            <label style="display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer"><input type="checkbox" style="accent-color:var(--orange)"> 💳 Tarjeta de crédito</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:13px;color:var(--text-muted)">
+            <input type="checkbox" style="margin-top:2px;flex-shrink:0;accent-color:var(--orange)">
+            <span>Acepto los <a onclick="showPage('terminos')" style="color:var(--orange);cursor:pointer;font-weight:600">Términos</a> y la <a onclick="showPage('privacidad')" style="color:var(--orange);cursor:pointer;font-weight:600">Privacidad</a></span>
+          </label>
+        </div>
+        <button class="btn-submit" style="background:#4CAF50" onclick="showToast('🎉 ¡Bienvenido cocinero! Activa tu plan para aparecer en el mapa.');showPage('pago-membresia')">Crear Cuenta de Cocinero →</button>
+        <div class="divider"><div class="divider-line"></div><span class="divider-text">o con</span><div class="divider-line"></div></div>
+        <button class="social-btn">🌐 Continuar con Google</button>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1215,50 +1346,60 @@
 
     <!-- PASO 3: Método de pago DIRECTO AL COCINERO -->
     <div id="co-step-3" style="display:none">
-      <div class="checkout-title">💸 Págale directamente al cocinero</div>
-      <p style="color:var(--text-muted);font-size:14px;margin:8px 0 20px">Micasero no procesa este pago. Elige cómo prefieres pagar y el cocinero te enviará los detalles al confirmar.</p>
+      <div class="checkout-title">💸 Información de Pago del Cocinero</div>
+      <p style="color:var(--text-muted);font-size:14px;margin:8px 0 20px">El cocinero acepta los siguientes métodos de pago. Elige el que prefieras:</p>
 
-      <div class="payment-method-card selected" id="pm-whatsapp" onclick="selectPayMethod('whatsapp')">
-        <div class="pm-icon">💬</div>
-        <div class="pm-info">
-          <div class="pm-name">Coordinar por WhatsApp</div>
-          <div class="pm-desc">El cocinero te escribe para acordar pago y entrega</div>
+      <!-- Cook payment info card -->
+      <div style="background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:1.5px solid var(--orange-light);border-radius:16px;padding:20px;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div style="font-size:36px">👩‍🍳</div>
+          <div>
+            <div style="font-weight:700;font-size:16px;color:var(--brown)">Chef María Rodríguez</div>
+            <div style="font-size:13px;color:var(--text-muted)">⭐ 4.9 · 127 reseñas</div>
+          </div>
         </div>
-        <div class="pm-check selected" id="check-whatsapp">✓</div>
-      </div>
-
-      <div class="payment-method-card" id="pm-transfer" onclick="selectPayMethod('transfer')">
-        <div class="pm-icon">🏦</div>
-        <div class="pm-info">
-          <div class="pm-name">Transferencia Bancaria</div>
-          <div class="pm-desc">El cocinero te comparte su CLABE / cuenta al confirmar</div>
+        <!-- Payment methods from cook's profile -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">📲</span>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:14px">Venmo</div>
+              <div style="font-size:13px;color:var(--text-muted)">@maria.rodriguez</div>
+            </div>
+            <button onclick="navigator.clipboard.writeText('@maria.rodriguez');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
+          </div>
+          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">💙</span>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:14px">PayPal</div>
+              <div style="font-size:13px;color:var(--text-muted)">maria.rodriguez@email.com</div>
+            </div>
+            <button onclick="navigator.clipboard.writeText('maria.rodriguez@email.com');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
+          </div>
+          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">💚</span>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:14px">Zelle</div>
+              <div style="font-size:13px;color:var(--text-muted)">+1 (206) 555-0123</div>
+            </div>
+            <button onclick="navigator.clipboard.writeText('+12065550123');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
+          </div>
+          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">💬</span>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:14px">WhatsApp / Teléfono</div>
+              <div style="font-size:13px;color:var(--text-muted)">+1 (206) 555-0123</div>
+            </div>
+            <a href="https://wa.me/12065550123" target="_blank" style="background:#25D366;color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;text-decoration:none">Escribir</a>
+          </div>
         </div>
-        <div class="pm-check" id="check-transfer"></div>
-      </div>
-      <!-- Datos que aparecen al elegir transferencia -->
-      <div id="transfer-info" style="display:none;background:var(--warm);border-radius:12px;padding:16px;margin-top:-4px;margin-bottom:10px;font-size:13px;color:var(--brown-mid)">
-        📋 Los datos bancarios del cocinero llegarán a tu correo registrado al confirmar el pedido.
       </div>
 
-      <div class="payment-method-card" id="pm-digital" onclick="selectPayMethod('digital')">
-        <div class="pm-icon">📲</div>
-        <div class="pm-info">
-          <div class="pm-name">PayPal / Venmo / Zelle</div>
-          <div class="pm-desc">El cocinero te comparte su usuario al confirmar</div>
-        </div>
-        <div class="pm-check" id="check-digital"></div>
-      </div>
-      <!-- Datos que aparecen al elegir digital -->
-      <div id="digital-info" style="display:none;background:var(--warm);border-radius:12px;padding:16px;margin-top:-4px;margin-bottom:10px;font-size:13px;color:var(--brown-mid)">
-        📧 El cocinero te enviará su usuario de PayPal/Venmo/Zelle por mensaje al confirmar.
-      </div>
-
-      <!-- Resumen final antes de confirmar -->
-      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin:20px 0;font-size:14px">
-        <div style="font-weight:700;color:var(--brown);margin-bottom:10px">Resumen final</div>
+      <!-- Resumen final -->
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;font-size:14px">
+        <div style="font-weight:700;color:var(--brown);margin-bottom:10px">Resumen del pedido</div>
         <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text-muted)">Pedido a</span><span>Chef María Rodríguez</span></div>
         <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text-muted)">Entrega</span><span id="summary-delivery">Delivery</span></div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text-muted)">Forma de pago</span><span id="summary-payment">WhatsApp</span></div>
         <div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);font-weight:700;font-size:16px">
           <span>Total a pagar al cocinero</span>
           <span style="color:var(--orange)" id="summary-total">$0.00</span>
@@ -1277,13 +1418,13 @@
       <div style="font-size:64px;margin-bottom:16px">🎉</div>
       <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--brown);margin-bottom:8px">¡Pedido Confirmado!</div>
       <p style="color:var(--text-muted);font-size:15px;line-height:1.7;max-width:400px;margin:0 auto 24px">
-        El cocinero recibió tu pedido y te contactará pronto para coordinar el pago y la entrega.
+        Ya tienes la información de pago del cocinero. Realiza el pago y disfruta tu comida casera.
       </p>
       <div style="background:var(--warm);border-radius:16px;padding:20px;max-width:360px;margin:0 auto 28px;text-align:left;font-size:14px">
         <div style="font-weight:700;color:var(--brown);margin-bottom:10px">¿Qué sigue?</div>
-        <div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start"><span>1️⃣</span> El cocinero te contacta por WhatsApp</div>
-        <div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start"><span>2️⃣</span> Confirman el pago directo entre ustedes</div>
-        <div style="display:flex;gap:10px;align-items:flex-start"><span>3️⃣</span> ¡Disfruta tu comida casera!</div>
+        <div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start"><span>1️⃣</span> Paga al cocinero por Venmo, PayPal, Zelle o QR</div>
+        <div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start"><span>2️⃣</span> Confirma el pago por WhatsApp si es necesario</div>
+        <div style="display:flex;gap:10px;align-items:flex-start"><span>3️⃣</span> ¡Disfruta tu comida casera! 🍽️</div>
       </div>
       <button class="btn-order" style="padding:14px 32px;font-size:15px" onclick="showPage('home')">Volver al inicio</button>
     </div>
@@ -1577,13 +1718,13 @@
 <!-- ══════════════════════════════════════════
      DASHBOARD COCINERO — gestión de menú
 ══════════════════════════════════════════ -->
-<div id="page-dashboard" class="page">
+<div id="page-cocina" class="page">
   <div style="max-width:800px;margin:0 auto;padding:28px 20px">
 
     <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:28px">
       <div>
-        <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--brown)">Mi Menú 👨‍🍳</div>
+        <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--brown)">Mi Cocina 👨‍🍳</div>
         <div style="font-size:14px;color:var(--text-muted);margin-top:2px">Agrega, edita o elimina tus platillos</div>
       </div>
       <button onclick="openDishModal()" style="background:var(--orange);color:white;border:none;border-radius:12px;padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">
@@ -1998,20 +2139,40 @@
 <!-- MOBILE BOTTOM NAV -->
 <div class="mobile-nav" id="mobile-nav">
   <button onclick="showPage('home')" id="mn-home">
-    <span class="mn-icon">🏠</span><span class="mn-label" data-i18n="nav-home">Inicio</span>
+    <span class="mn-icon">🏠</span><span class="mn-label">Inicio</span>
   </button>
   <button onclick="showPage('map')" id="mn-map">
-    <span class="mn-icon">🗺️</span><span class="mn-label" data-i18n="nav-map">Mapa</span>
+    <span class="mn-icon">🗺️</span><span class="mn-label">Mapa</span>
   </button>
-  <button onclick="showPage('profile')" id="mn-profile">
-    <span class="mn-icon">👨‍🍳</span><span class="mn-label" data-i18n="nav-profile">Cocineros</span>
+  <button onclick="toggleCocinaMenu()" id="mn-profile">
+    <span class="mn-icon">👨‍🍳</span><span class="mn-label">Cocineros</span>
   </button>
-  <button onclick="showPage('dashboard')" id="mn-dashboard">
-    <span class="mn-icon">📋</span><span class="mn-label" data-i18n="nav-dashboard">Mi Menú</span>
+  <button onclick="showPage('cocina')" id="mn-cocina">
+    <span class="mn-icon">🍳</span><span class="mn-label">Mi Cocina</span>
   </button>
   <button onclick="toggleMobileMenu()" id="mn-more">
-    <span class="mn-icon">☰</span><span class="mn-label" data-i18n="nav-more">Más</span>
+    <span class="mn-icon">☰</span><span class="mn-label">Más</span>
   </button>
+</div>
+
+<!-- COCINEROS SUBMENU -->
+<div id="cocina-submenu" style="display:none;position:fixed;bottom:70px;left:0;right:0;z-index:99;background:white;border-top:1px solid var(--border);box-shadow:0 -4px 24px rgba(0,0,0,0.12);border-radius:20px 20px 0 0;padding:20px 16px">
+  <div style="font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">🔍 Buscar Cocineros</div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <button onclick="activeFilter='todos';showPage('map');if(leafletMap)placeAllMarkers();closeCocinaMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;-webkit-appearance:none">
+      <span style="font-size:22px">👨‍🍳</span>
+      <div><div>Todos los Cocineros</div><div style="font-size:12px;color:var(--text-muted);font-weight:400">Ver todos disponibles cerca de ti</div></div>
+    </button>
+    <button onclick="showPage('map');closeCocinaMenu();setTimeout(()=>document.getElementById('filter-food').scrollIntoView(),300)" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;-webkit-appearance:none">
+      <span style="font-size:22px">🌮</span>
+      <div><div>Por Tipo de Comida</div><div style="font-size:12px;color:var(--text-muted);font-weight:400">Mexicana · Italiana · Asiática · Local</div></div>
+    </button>
+    <button onclick="showPage('map');closeCocinaMenu();setTimeout(()=>document.getElementById('filter-service').scrollIntoView(),300)" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;-webkit-appearance:none">
+      <span style="font-size:22px">🛵</span>
+      <div><div>Por Servicio</div><div style="font-size:12px;color:var(--text-muted);font-weight:400">Delivery · Recogida · Cenar en casa</div></div>
+    </button>
+  </div>
+  <button onclick="closeCocinaMenu()" style="width:100%;margin-top:14px;background:none;border:none;font-size:13px;color:var(--text-muted);cursor:pointer;padding:8px;-webkit-appearance:none">✕ Cerrar</button>
 </div>
 
 <!-- MOBILE MORE MENU -->
@@ -2919,6 +3080,9 @@ document.addEventListener('click', e => {
   if (!e.target.closest('#mobile-more-menu') && !e.target.closest('#mn-more')) {
     closeMobileMenu();
   }
+  if (!e.target.closest('#cocina-submenu') && !e.target.closest('#mn-profile')) {
+    closeCocinaMenu();
+  }
   if (e.target.closest('#emoji-picker') && e.target.tagName === 'SPAN') {
     document.getElementById('dish-emoji').value = e.target.textContent;
     document.querySelectorAll('#emoji-picker span').forEach(s => s.style.background = '');
@@ -2926,6 +3090,16 @@ document.addEventListener('click', e => {
     e.target.style.borderRadius = '6px';
   }
 });
+
+function toggleCocinaMenu() {
+  const m = document.getElementById('cocina-submenu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  // Close other menus
+  document.getElementById('mobile-more-menu').style.display = 'none';
+}
+function closeCocinaMenu() {
+  document.getElementById('cocina-submenu').style.display = 'none';
+}
 
 function toggleMobileMenu() {
   const m = document.getElementById('mobile-more-menu');
@@ -2954,7 +3128,7 @@ const translations = {
     'nav-home': 'Inicio',
     'nav-map': 'Mapa',
     'nav-profile': 'Cocineros',
-    'nav-dashboard': 'Mi Menú',
+    'nav-cocina': 'Mi Cocina',
     'nav-more': 'Más',
     'note': '💡 Clientes pagan directo al cocinero · Micasero cobra membresía solo al cocinero',
   },
@@ -2973,7 +3147,7 @@ const translations = {
     'nav-home': 'Home',
     'nav-map': 'Map',
     'nav-profile': 'Cooks',
-    'nav-dashboard': 'My Menu',
+    'nav-cocina': 'My Menu',
     'nav-more': 'More',
     'note': '💡 Clients pay the cook directly · Micasero only charges cooks a membership fee',
   },
@@ -2992,7 +3166,7 @@ const translations = {
     'nav-home': 'Início',
     'nav-map': 'Mapa',
     'nav-profile': 'Cozinheiros',
-    'nav-dashboard': 'Meu Menu',
+    'nav-cocina': 'Meu Menu',
     'nav-more': 'Mais',
     'note': '💡 Clientes pagam direto ao cozinheiro · Micasero cobra apenas a adesão do cozinheiro',
   }
@@ -3037,7 +3211,7 @@ function setLang(lang) {
     'Cocineros':         {'en':'Cooks',             'pt':'Cozinheiros'},
     'Iniciar Sesión':    {'en':'Log In',            'pt':'Entrar'},
     'Regístrate':        {'en':'Sign Up',           'pt':'Cadastre-se'},
-    'Mi Menú':           {'en':'My Menu',           'pt':'Meu Menu'},
+    'Mi Cocina':           {'en':'My Menu',           'pt':'Meu Menu'},
     'Más':               {'en':'More',              'pt':'Mais'},
     '💡 Clientes pagan directo al cocinero · Micasero cobra membresía solo al cocinero': {
       'en':'💡 Clients pay the cook directly · Micasero only charges cooks a membership fee',
@@ -3074,6 +3248,19 @@ function setLang(lang) {
   document.getElementById('mobile-more-menu') && translateNode(document.getElementById('mobile-more-menu'));
 
   showToast(lang==='es'?'🇪🇸 Español activado':lang==='en'?'🇺🇸 English activated':'🇧🇷 Português ativado');
+}
+
+function showRegForm(type) {
+  document.getElementById('reg-type-select').style.display = 'none';
+  document.getElementById('reg-form-cliente').style.display = type === 'cliente' ? 'block' : 'none';
+  document.getElementById('reg-form-cocinero').style.display = type === 'cocinero' ? 'block' : 'none';
+}
+
+function selectPlan(plan) {
+  ['free','pro'].forEach(p => {
+    const btn = document.getElementById('plan-'+p);
+    btn.classList.toggle('selected', p === plan);
+  });
 }
 
 // ════════════════════════════════════════

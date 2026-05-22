@@ -109,8 +109,8 @@
   }
 
   /* ── PAGES ── */
-  .page { display: none; padding-top: 64px; min-height: 100vh; }
-  .page.active { display: block; }
+  .page { display: none; padding-top: 64px; min-height: 100vh; overflow: hidden; }
+  .page.active { display: block; overflow: visible; }
 
   /* ── HOME PAGE ── */
   .hero {
@@ -2919,6 +2919,7 @@ function showPage(name) {
   window.scrollTo(0, 0);
   if (name === 'checkout') { renderCheckout(); coStep(1); }
   if (name === 'map') { setTimeout(initLeafletMap, 100); }
+  if (name === 'cocina') { renderDashboard(); }
 }
 
 
@@ -3658,7 +3659,6 @@ function selectPlan(plan) {
 // INIT
 // ════════════════════════════════════════
 renderFeaturedCooks();
-renderDashboard();
 renderMap();
 renderReviews();
 </script>

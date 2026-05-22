@@ -982,8 +982,19 @@
           Soy María, apasionada de la cocina casera con 12 años de experiencia. Mi especialidad es la comida tradicional mexicana con un toque moderno, siempre con ingredientes frescos y de temporada. ¡Me encanta compartir mi amor por la comida con mi comunidad!
         </p>
 
-        <h3 class="section-title" style="margin-bottom:16px">Mi Menu</h3>
+        <h3 class="section-title" style="margin-bottom:16px">🍽️ Menú</h3>
         <div class="menu-grid" id="menu-items"></div>
+
+        <!-- Ir al Pago — aparece solo cuando hay items en el carrito -->
+        <div id="profile-cart-cta" style="display:none;margin-top:24px;background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:1.5px solid #F4C9A8;border-radius:16px;padding:18px 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div>
+              <div style="font-weight:700;font-size:15px;color:var(--brown)">🛒 Tu pedido está listo</div>
+              <div style="font-size:13px;color:var(--text-muted)" id="profile-cart-summary">0 platillos</div>
+            </div>
+            <button class="btn-order" style="padding:14px 28px;font-size:15px;white-space:nowrap" onclick="goToCheckout()">Ir al Pago →</button>
+          </div>
+        </div>
       </div>
 
       <div class="profile-sidebar">
@@ -1019,12 +1030,11 @@
             <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Tasa de repetición</span><strong>78%</strong></div>
           </div>
         </div>
-        <div style="background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:1.5px solid #F4C9A8;border-radius:16px;padding:16px 20px;margin-top:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
-          <div>
-            <div style="font-weight:700;font-size:15px;color:var(--brown)">🤝 Pagas directo al cocinero</div>
-            <div style="font-size:13px;color:var(--text-muted)">Venmo · PayPal · Zelle · QR</div>
+        <div class="sidebar-card">
+          <h4>💳 Pagas directo al cocinero</h4>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.8">
+            📲 Venmo · 💙 PayPal<br>💚 Zelle · 📱 QR
           </div>
-          <button class="btn-order" style="padding:12px 24px;font-size:15px;white-space:nowrap" onclick="goToCheckout()">Ir al Pago →</button>
         </div>
       </div>
     </div>
@@ -1392,7 +1402,7 @@
         <span style="font-size:18px;flex-shrink:0">🤝</span>
         <span>Este dinero va <strong>directo al cocinero</strong>. Micasero no cobra comisión sobre tus pedidos.</span>
       </div>
-      <button class="btn-pay" onclick="coStep(2)">Continuar → Elegir Entrega</button>
+      <button style="width:100%;background:var(--orange);color:white;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="coStep(2)">Continuar → Elegir Entrega</button>
     </div>
 
     <!-- PASO 2: Tipo de entrega -->
@@ -1445,8 +1455,8 @@
         </div>
       </div>
       <div style="display:flex;gap:12px">
-        <button class="btn-secondary" style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:var(--warm);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-weight:600" onclick="coStep(1)">← Atrás</button>
-        <button class="btn-pay" style="flex:2" onclick="coStep(3)">Continuar → Forma de Pago</button>
+        <button style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:#6C757D;color:white;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;-webkit-appearance:none" onclick="coStep(1)">← Atrás</button>
+        <button style="flex:2;background:#2563EB;color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="coStep(3)">Continuar → Forma de Pago</button>
       </div>
     </div>
 
@@ -1490,6 +1500,67 @@
             </div>
             <button onclick="navigator.clipboard.writeText('+12065550123');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
           </div>
+          <!-- QR Code -->
+          <div style="background:white;border-radius:10px;padding:12px 14px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <span style="font-size:22px">📱</span>
+              <div style="flex:1">
+                <div style="font-weight:600;font-size:14px">Código QR</div>
+                <div style="font-size:13px;color:var(--text-muted)">Escanea para pagar directo</div>
+              </div>
+              <button onclick="toggleQR()" style="background:var(--warm);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600" id="qr-toggle-btn">Ver QR</button>
+            </div>
+            <div id="qr-code-display" style="display:none;text-align:center;padding:16px;background:var(--warm);border-radius:10px">
+              <!-- QR simulado con patrón visual -->
+              <svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg" style="border:4px solid white;border-radius:8px;background:white">
+                <rect width="140" height="140" fill="white"/>
+                <!-- Esquinas del QR -->
+                <rect x="10" y="10" width="40" height="40" fill="none" stroke="#111" stroke-width="4"/>
+                <rect x="16" y="16" width="28" height="28" fill="#111"/>
+                <rect x="90" y="10" width="40" height="40" fill="none" stroke="#111" stroke-width="4"/>
+                <rect x="96" y="16" width="28" height="28" fill="#111"/>
+                <rect x="10" y="90" width="40" height="40" fill="none" stroke="#111" stroke-width="4"/>
+                <rect x="16" y="96" width="28" height="28" fill="#111"/>
+                <!-- Patrón centro -->
+                <rect x="55" y="10" width="6" height="6" fill="#111"/>
+                <rect x="65" y="10" width="6" height="6" fill="#111"/>
+                <rect x="55" y="20" width="6" height="6" fill="#111"/>
+                <rect x="75" y="20" width="6" height="6" fill="#111"/>
+                <rect x="65" y="30" width="6" height="6" fill="#111"/>
+                <rect x="55" y="40" width="6" height="6" fill="#111"/>
+                <rect x="75" y="40" width="6" height="6" fill="#111"/>
+                <rect x="10" y="55" width="6" height="6" fill="#111"/>
+                <rect x="20" y="55" width="6" height="6" fill="#111"/>
+                <rect x="30" y="65" width="6" height="6" fill="#111"/>
+                <rect x="10" y="75" width="6" height="6" fill="#111"/>
+                <rect x="20" y="75" width="6" height="6" fill="#111"/>
+                <rect x="55" y="55" width="6" height="6" fill="#111"/>
+                <rect x="65" y="55" width="6" height="6" fill="#111"/>
+                <rect x="75" y="55" width="6" height="6" fill="#111"/>
+                <rect x="55" y="65" width="6" height="6" fill="#111"/>
+                <rect x="75" y="65" width="6" height="6" fill="#111"/>
+                <rect x="55" y="75" width="6" height="6" fill="#111"/>
+                <rect x="65" y="75" width="6" height="6" fill="#111"/>
+                <rect x="75" y="75" width="6" height="6" fill="#111"/>
+                <rect x="90" y="55" width="6" height="6" fill="#111"/>
+                <rect x="105" y="55" width="6" height="6" fill="#111"/>
+                <rect x="120" y="55" width="6" height="6" fill="#111"/>
+                <rect x="95" y="65" width="6" height="6" fill="#111"/>
+                <rect x="110" y="65" width="6" height="6" fill="#111"/>
+                <rect x="90" y="75" width="6" height="6" fill="#111"/>
+                <rect x="100" y="75" width="6" height="6" fill="#111"/>
+                <rect x="115" y="75" width="6" height="6" fill="#111"/>
+                <rect x="90" y="90" width="6" height="6" fill="#111"/>
+                <rect x="100" y="95" width="6" height="6" fill="#111"/>
+                <rect x="115" y="90" width="6" height="6" fill="#111"/>
+                <rect x="105" y="100" width="6" height="6" fill="#111"/>
+                <rect x="120" y="105" width="6" height="6" fill="#111"/>
+                <rect x="90" y="110" width="6" height="6" fill="#111"/>
+                <rect x="110" y="115" width="6" height="6" fill="#111"/>
+              </svg>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:8px">Escanea con tu app de pagos</div>
+            </div>
+          </div>
           <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
             <span style="font-size:22px">💬</span>
             <div style="flex:1">
@@ -1513,8 +1584,8 @@
       </div>
 
       <div style="display:flex;gap:12px">
-        <button class="btn-secondary" style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:var(--warm);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-weight:600" onclick="coStep(2)">← Atrás</button>
-        <button class="btn-pay" style="flex:2;background:var(--green)" onclick="processPayment()">✅ Confirmar Pedido</button>
+        <button style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:#6C757D;color:white;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;-webkit-appearance:none" onclick="coStep(2)">← Atrás</button>
+        <button style="flex:2;background:#4CAF50;color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="processPayment()">✅ Confirmar Pedido</button>
       </div>
       <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:10px">Micasero no cobra comisión sobre este pedido</p>
     </div>
@@ -2626,7 +2697,32 @@ function addToCart(id, name, price, emoji) {
     cart[id] = { name, price, emoji, qty: 1 };
   }
   updateCartUI();
+  updateProfileCTA();
   showToast(`🛒 ${name} agregado al carrito`);
+}
+
+function toggleQR() {
+  const qr = document.getElementById('qr-code-display');
+  const btn = document.getElementById('qr-toggle-btn');
+  if (!qr) return;
+  const visible = qr.style.display !== 'none';
+  qr.style.display = visible ? 'none' : 'block';
+  if (btn) btn.textContent = visible ? 'Ver QR' : 'Ocultar QR';
+}
+
+function updateProfileCTA() {
+  const cta = document.getElementById('profile-cart-cta');
+  const summary = document.getElementById('profile-cart-summary');
+  if (!cta) return;
+  const items = Object.values(cart);
+  const count = items.reduce((s, v) => s + v.qty, 0);
+  const total = items.reduce((s, v) => s + v.price * v.qty, 0);
+  if (count > 0) {
+    cta.style.display = 'block';
+    if (summary) summary.textContent = `${count} platillo${count>1?'s':''} · $${total.toFixed(2)}`;
+  } else {
+    cta.style.display = 'none';
+  }
 }
 
 function updateCartQty(id, delta) {
@@ -2920,6 +3016,7 @@ function showPage(name) {
   if (name === 'checkout') { renderCheckout(); coStep(1); }
   if (name === 'map') { setTimeout(initLeafletMap, 100); }
   if (name === 'cocina') { renderDashboard(); }
+  if (name === 'profile') { renderMenu(); }
 }
 
 
@@ -3644,8 +3741,8 @@ function markReady(btn) {
 }
 
 function showRegForm(type) {
-  document.getElementById('reg-form-cliente').style.display = type === 'cliente' ? 'block' : 'none';
-  document.getElementById('reg-form-cocinero').style.display = type === 'cocinero' ? 'block' : 'none';
+  const rfc = document.getElementById('reg-form-cliente'); if(rfc) rfc.style.display = type === 'cliente' ? 'block' : 'none';
+  const rfco = document.getElementById('reg-form-cocinero'); if(rfco) rfco.style.display = type === 'cocinero' ? 'block' : 'none';
 }
 
 function selectPlan(plan) {

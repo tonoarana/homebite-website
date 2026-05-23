@@ -1185,13 +1185,13 @@
 
           <!-- Plan Fundador -->
           <div id="plan-fundador" onclick="selectPlan('fundador')" style="background:linear-gradient(135deg,#2D1507,#5C2810);border:2px solid #F4A020;border-radius:16px;padding:16px 20px;cursor:pointer;position:relative">
-            <div style="position:absolute;top:12px;right:12px;background:#F4A020;color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">⭐ SOLO 20 LUGARES</div>
+            <div style="position:absolute;top:12px;right:12px;background:#F4A020;color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px" id="reg-founder-badge">⭐ SOLO 20 LUGARES</div>
             <div style="display:flex;align-items:center;gap:14px">
               <span style="font-size:28px">🏅</span>
               <div>
                 <div style="font-weight:700;font-size:15px;color:#F4A020">Plan Fundador</div>
-                <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px">3 meses gratis · luego $7/mes </div>
-                <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px">Solo para los primeros 20 cocineros de tu ciudad</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px">3 meses gratis · luego $7/mes</div>
+                <div style="font-size:12px;color:#F4A020;margin-top:4px;font-weight:700" id="reg-founder-counter">🏅 Quedan <span id="reg-spots-left">20</span> de 20 lugares</div>
               </div>
             </div>
           </div>
@@ -1782,11 +1782,19 @@
 
         <!-- PLAN FUNDADOR -->
         <div style="background:linear-gradient(160deg,#2D1507,#5C2810);border-radius:24px;padding:32px;position:relative;overflow:hidden;border:2px solid #F4A020">
-          <div style="position:absolute;top:16px;right:16px;background:#F4A020;color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px">⭐ SOLO 20 LUGARES</div>
+          <div style="position:absolute;top:16px;right:16px;background:#F4A020;color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px" id="mem-founder-badge">⭐ SOLO 20 LUGARES</div>
           <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Plan Fundador</div>
           <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:#F4A020">3 meses gratis</div>
           <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:rgba(255,255,255,0.8);margin-bottom:4px">→ luego $7/mes</div>
-          <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:24px">Solo primeros 20 cocineros por ciudad</div>
+
+          <!-- Contador de lugares -->
+          <div style="background:rgba(244,160,32,0.15);border:1px solid rgba(244,160,32,0.4);border-radius:10px;padding:10px 14px;margin-bottom:20px">
+            <div style="font-size:13px;color:#F4A020;font-weight:700" id="mem-founder-counter">🏅 Quedan <span id="mem-spots-left">20</span> de 20 lugares</div>
+            <div style="margin-top:6px;background:rgba(255,255,255,0.1);border-radius:20px;height:6px;overflow:hidden">
+              <div id="mem-spots-bar" style="height:100%;background:#F4A020;border-radius:20px;transition:width 0.5s;width:100%"></div>
+            </div>
+          </div>
+
           <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;font-size:14px;color:rgba(255,255,255,0.85)">
             <div style="display:flex;gap:10px;align-items:center"><span style="color:#F4A020;font-size:16px">✓</span> Todo lo del Plan Pro incluido</div>
             <div style="display:flex;gap:10px;align-items:center"><span style="color:#F4A020;font-size:16px">✓</span> 3 meses completamente gratis</div>
@@ -1794,7 +1802,11 @@
             <div style="display:flex;gap:10px;align-items:center"><span style="color:#F4A020;font-size:16px">✓</span> Posición #1 en el mapa</div>
             <div style="display:flex;gap:10px;align-items:center"><span style="color:#F4A020;font-size:16px">✓</span> Después solo $7/mes</div>
           </div>
-          <button class="btn-order" style="width:100%;background:#F4A020;border:none" onclick="showToast('🏅 ¡Eres Cocinero Fundador! 3 meses gratis · luego $7/mes')">Ser Cocinero Fundador →</button>
+
+          <!-- Botón normal o lista de espera -->
+          <div id="founder-btn-section">
+            <button id="founder-main-btn" style="width:100%;background:#F4A020;color:white;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer" onclick="claimFounderSpot()">🏅 Ser Cocinero Fundador →</button>
+          </div>
         </div>
 
         <!-- PLAN BÁSICO -->
@@ -3175,6 +3187,7 @@ function showPage(name) {
   if (name === 'map') { setTimeout(initLeafletMap, 100); }
   if (name === 'cocina') { renderDashboard(); }
   if (name === 'profile') { renderMenu(); }
+  if (name === 'membresia') { updateFounderUI(); }
 }
 
 
@@ -3898,6 +3911,79 @@ function markReady(btn) {
   showToast('✅ ¡Pedido listo! El cliente fue notificado');
 }
 
+// ════════════════════════════════════════
+// FOUNDER COUNTER & WAITLIST
+// ════════════════════════════════════════
+const FOUNDER_TOTAL = 20;
+
+function getFounderSpots() {
+  return parseInt(localStorage.getItem('micasero_founder_spots') || FOUNDER_TOTAL);
+}
+
+function setFounderSpots(n) {
+  localStorage.setItem('micasero_founder_spots', n);
+}
+
+function updateFounderUI() {
+  const spots = getFounderSpots();
+  const pct = (spots / FOUNDER_TOTAL) * 100;
+
+  // Update all counters
+  ['mem-spots-left','reg-spots-left'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = spots;
+  });
+
+  // Update progress bar
+  const bar = document.getElementById('mem-spots-bar');
+  if (bar) bar.style.width = pct + '%';
+
+  // If sold out — show waitlist
+  const btnSection = document.getElementById('founder-btn-section');
+  if (btnSection) {
+    if (spots <= 0) {
+      btnSection.innerHTML = `
+        <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:16px;margin-bottom:12px">
+          <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:10px">😔 Los 20 lugares están tomados.<br>Únete a la lista de espera:</div>
+          <input id="waitlist-email" type="email" placeholder="tu@correo.com" style="width:100%;padding:10px 12px;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:13px;margin-bottom:8px;box-sizing:border-box">
+          <button onclick="joinWaitlist()" style="width:100%;background:#F4A020;color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">📋 Unirme a la lista de espera</button>
+        </div>`;
+      // Update badges
+      ['mem-founder-badge','reg-founder-badge'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.textContent = '⛔ AGOTADO'; el.style.background = '#888'; }
+      });
+      ['mem-founder-counter','reg-founder-counter'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '⛔ Los 20 lugares están tomados';
+      });
+      // Disable fundador card in registration
+      const card = document.getElementById('plan-fundador');
+      if (card) { card.style.opacity = '0.5'; card.onclick = null; card.style.cursor = 'not-allowed'; }
+    }
+  }
+}
+
+function claimFounderSpot() {
+  const spots = getFounderSpots();
+  if (spots <= 0) {
+    showToast('⛔ Ya no hay lugares disponibles');
+    return;
+  }
+  setFounderSpots(spots - 1);
+  updateFounderUI();
+  showToast(`🏅 ¡Felicidades! Eres Cocinero Fundador · ${spots-1} lugares restantes`);
+  showPage('register-cocinero');
+  cookRegStep(2);
+}
+
+function joinWaitlist() {
+  const email = document.getElementById('waitlist-email');
+  if (!email || !email.value) { showToast('Por favor ingresa tu email'); return; }
+  showToast(`📋 ¡Listo! Te avisamos cuando haya un lugar disponible · ${email.value}`);
+  email.value = '';
+}
+
 function showRegForm(type) {
   const rfc = document.getElementById('reg-form-cliente'); if(rfc) rfc.style.display = type === 'cliente' ? 'block' : 'none';
   const rfco = document.getElementById('reg-form-cocinero'); if(rfco) rfco.style.display = type === 'cocinero' ? 'block' : 'none';
@@ -3932,6 +4018,7 @@ function selectPlan(plan) {
 // ════════════════════════════════════════
 renderFeaturedCooks();
 renderMap();
+updateFounderUI();
 renderReviews();
 </script>
 </body>

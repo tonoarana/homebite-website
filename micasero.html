@@ -840,7 +840,7 @@
         <div style="display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;gap:12px;align-items:flex-start">
             <div style="width:28px;height:28px;background:#4CAF50;border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
-            <div><strong data-i18n="ck1-title">Elige tu plan</strong><br><span style="font-size:13px;color:var(--text-muted)" data-i18n="ck1-desc">Gratis 30 días o Pro desde $19/mes</span></div>
+            <div><strong data-i18n="ck1-title">Elige tu plan</strong><br><span style="font-size:13px;color:var(--text-muted)" data-i18n="ck1-desc">Básico $7/mes · Pro $10/mes</span></div>
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start">
             <div style="width:28px;height:28px;background:#4CAF50;border-radius:50%;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
@@ -1181,19 +1181,45 @@
       <div id="creg-step-1">
         <h2 style="margin-bottom:4px">🎁 Paso 1 — Elige tu Plan</h2>
         <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px">Empieza gratis, sin tarjeta de crédito</p>
-        <div style="display:flex;gap:12px;margin-bottom:24px">
-          <div id="plan-free" onclick="selectPlan('free')" style="flex:1;background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:2px solid var(--orange);border-radius:16px;padding:20px;text-align:center;cursor:pointer">
-            <div style="font-size:32px;margin-bottom:8px">🎁</div>
-            <div style="font-weight:700;font-size:16px;color:var(--brown)">Gratis</div>
-            <div style="font-size:13px;color:var(--text-muted);margin-top:4px">30 días</div>
-            <div style="font-size:12px;color:var(--green);font-weight:600;margin-top:8px">✓ Sin tarjeta</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+
+          <!-- Plan Fundador -->
+          <div id="plan-fundador" onclick="selectPlan('fundador')" style="background:linear-gradient(135deg,#2D1507,#5C2810);border:2px solid #F4A020;border-radius:16px;padding:16px 20px;cursor:pointer;position:relative">
+            <div style="position:absolute;top:12px;right:12px;background:#F4A020;color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">⭐ SOLO 20 LUGARES</div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <span style="font-size:28px">🏅</span>
+              <div>
+                <div style="font-weight:700;font-size:15px;color:#F4A020">Plan Fundador</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px">3 meses gratis · luego $7/mes · Sin tarjeta</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px">Solo para los primeros 20 cocineros de tu ciudad</div>
+              </div>
+            </div>
           </div>
-          <div id="plan-pro" onclick="selectPlan('pro')" style="flex:1;background:var(--warm);border:2px solid var(--border);border-radius:16px;padding:20px;text-align:center;cursor:pointer">
-            <div style="font-size:32px;margin-bottom:8px">⭐</div>
-            <div style="font-weight:700;font-size:16px;color:var(--brown)">Pro</div>
-            <div style="font-size:13px;color:var(--text-muted);margin-top:4px">$19/mes</div>
-            <div style="font-size:12px;color:var(--orange);font-weight:600;margin-top:8px">✓ Perfil destacado</div>
+
+          <!-- Plan Básico -->
+          <div id="plan-basico" onclick="selectPlan('basico')" style="background:var(--warm);border:2px solid var(--border);border-radius:16px;padding:16px 20px;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:14px">
+              <span style="font-size:28px">📦</span>
+              <div>
+                <div style="font-weight:700;font-size:15px;color:var(--brown)">Plan Básico — 2 meses gratis · luego $7/mes</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">3 meses gratis al inicio · Sin tarjeta</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Hasta 10 platillos · Perfil en el mapa</div>
+              </div>
+            </div>
           </div>
+
+          <!-- Plan Pro -->
+          <div id="plan-pro" onclick="selectPlan('pro')" style="background:var(--warm);border:2px solid var(--border);border-radius:16px;padding:16px 20px;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:14px">
+              <span style="font-size:28px">⭐</span>
+              <div>
+                <div style="font-weight:700;font-size:15px;color:var(--brown)">Plan Pro — 2 meses gratis · luego $10/mes</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">3 meses gratis al inicio · Sin tarjeta</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Menú ilimitado · Destacado en mapa · Verificado ✓</div>
+              </div>
+            </div>
+          </div>
+
         </div>
         <button onclick="cookRegStep(2)" class="btn-submit">Continuar →</button>
         <div class="auth-link" style="margin-top:12px">¿Eres cliente? <a onclick="showPage('register-cliente')">Regístrate aquí</a></div>
@@ -1319,25 +1345,69 @@
         <h2 style="margin-bottom:4px">💳 Paso 6 — Cómo Cobras</h2>
         <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px">El cliente verá esta info para pagarte directo</p>
         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
-          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px">
+          <!-- Métodos populares por región -->
+          <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🌎 Métodos Populares</div>
+
+          <!-- USA -->
+          <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:4px">🇺🇸 Estados Unidos</div>
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
               <input type="checkbox" checked style="accent-color:var(--orange)"> <strong>📲 Venmo</strong>
             </label>
             <input class="form-input" type="text" placeholder="@tu-usuario-venmo" style="font-size:13px">
           </div>
-          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px">
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
               <input type="checkbox" checked style="accent-color:var(--orange)"> <strong>💙 PayPal</strong>
             </label>
             <input class="form-input" type="email" placeholder="tu@paypal.com" style="font-size:13px">
           </div>
-          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px">
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
               <input type="checkbox" style="accent-color:var(--orange)"> <strong>💚 Zelle</strong>
             </label>
             <input class="form-input" type="tel" placeholder="+1 (206) 555-0123" style="font-size:13px">
           </div>
-          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px">
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
+              <input type="checkbox" style="accent-color:var(--orange)"> <strong>💵 CashApp</strong>
+            </label>
+            <input class="form-input" type="text" placeholder="$tu-cashtag" style="font-size:13px">
+          </div>
+
+          <!-- Paraguay / Latinoamérica -->
+          <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:12px">🇵🇾 Paraguay / Latinoamérica</div>
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
+              <input type="checkbox" style="accent-color:var(--orange)"> <strong>📱 Tigo Money</strong>
+            </label>
+            <input class="form-input" type="tel" placeholder="+595 981 123 456" style="font-size:13px">
+          </div>
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
+              <input type="checkbox" style="accent-color:var(--orange)"> <strong>💜 Billetera Personal</strong>
+            </label>
+            <input class="form-input" type="tel" placeholder="+595 971 123 456" style="font-size:13px">
+          </div>
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
+              <input type="checkbox" style="accent-color:var(--orange)"> <strong>🔵 MercadoPago</strong>
+            </label>
+            <input class="form-input" type="text" placeholder="usuario o teléfono" style="font-size:13px">
+          </div>
+
+          <!-- Brasil -->
+          <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:12px">🇧🇷 Brasil</div>
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
+              <input type="checkbox" style="accent-color:var(--orange)"> <strong>🟢 Pix</strong>
+            </label>
+            <input class="form-input" type="text" placeholder="CPF, teléfono o email Pix" style="font-size:13px">
+          </div>
+
+          <!-- Universal -->
+          <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:12px">🌍 Universal</div>
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:10px">
               <input type="checkbox" id="qr-check" style="accent-color:var(--orange)" onchange="document.getElementById('qr-upload-area').style.display=this.checked?'block':'none'"> <strong>📱 Código QR</strong>
             </label>
@@ -1350,10 +1420,47 @@
               <img id="qr-preview" style="display:none;width:160px;height:160px;object-fit:contain;border-radius:10px;margin:10px auto;border:1px solid var(--border)">
             </div>
           </div>
-          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px">
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer">
-              <input type="checkbox" style="accent-color:var(--orange)"> <strong>💳 Tarjeta de crédito</strong>
+              <input type="checkbox" style="accent-color:var(--orange)"> <strong>💳 Tarjeta de crédito/débito</strong>
             </label>
+          </div>
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px">
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
+              <input type="checkbox" style="accent-color:var(--orange)"> <strong>💵 Efectivo al entregar</strong>
+            </label>
+          </div>
+
+          <!-- 3 campos personalizados -->
+          <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">➕ Otros Métodos (hasta 3)</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <!-- Campo personalizado 1 -->
+            <div style="background:#F0F4FF;border:1.5px dashed #4A90D9;border-radius:12px;padding:14px">
+              <div style="font-size:12px;font-weight:700;color:#4A90D9;margin-bottom:10px">Método personalizado 1</div>
+              <div style="display:flex;gap:8px;margin-bottom:8px">
+                <input class="form-input" type="text" placeholder="Ej: Transferencia, Nequi, Yape..." style="font-size:13px;flex:2">
+                <input class="form-input" type="text" placeholder="Emoji 💰" style="font-size:13px;flex:0.5;text-align:center">
+              </div>
+              <input class="form-input" type="text" placeholder="Usuario, número o cuenta" style="font-size:13px">
+            </div>
+            <!-- Campo personalizado 2 -->
+            <div style="background:#F0F4FF;border:1.5px dashed #4A90D9;border-radius:12px;padding:14px">
+              <div style="font-size:12px;font-weight:700;color:#4A90D9;margin-bottom:10px">Método personalizado 2</div>
+              <div style="display:flex;gap:8px;margin-bottom:8px">
+                <input class="form-input" type="text" placeholder="Ej: Daviplata, Yappy, Nequi..." style="font-size:13px;flex:2">
+                <input class="form-input" type="text" placeholder="Emoji 💳" style="font-size:13px;flex:0.5;text-align:center">
+              </div>
+              <input class="form-input" type="text" placeholder="Usuario, número o cuenta" style="font-size:13px">
+            </div>
+            <!-- Campo personalizado 3 -->
+            <div style="background:#F0F4FF;border:1.5px dashed #4A90D9;border-radius:12px;padding:14px">
+              <div style="font-size:12px;font-weight:700;color:#4A90D9;margin-bottom:10px">Método personalizado 3</div>
+              <div style="display:flex;gap:8px;margin-bottom:8px">
+                <input class="form-input" type="text" placeholder="Ej: Bizum, Revolut, Wise..." style="font-size:13px;flex:2">
+                <input class="form-input" type="text" placeholder="Emoji 🏦" style="font-size:13px;flex:0.5;text-align:center">
+              </div>
+              <input class="form-input" type="text" placeholder="Usuario, número o cuenta" style="font-size:13px">
+            </div>
           </div>
         </div>
         <div class="form-group">
@@ -1633,12 +1740,113 @@
     <div style="display:inline-block;background:rgba(255,255,255,0.15);color:#FFD9B8;font-size:12px;font-weight:600;padding:6px 16px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;border:1px solid rgba(255,255,255,0.2)">👨‍🍳 Para Cocineros</div>
     <h1 style="font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);font-weight:900;color:white;margin-bottom:12px">Haz crecer tu negocio<br>de comida casera</h1>
     <p style="color:rgba(255,255,255,0.8);font-size:16px;max-width:500px;margin:0 auto 28px">Micasero te da visibilidad y clientes. Tú cobras el 100% directo — sin comisiones.</p>
-    <!-- Botón directo al pago -->
-    <button onclick="showPage('pago-membresia')" style="background:white;color:var(--orange);border:none;border-radius:14px;padding:16px 36px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:all 0.2s">
-      💳 Activar membresía Pro — $19/mes
+    <button onclick="showPage('pago-membresia')" style="background:white;color:var(--orange);border:none;border-radius:14px;padding:16px 36px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
+      💳 Activar Plan Pro — 2 meses gratis · luego $10/mes
     </button>
-    <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:10px">o prueba gratis 30 días ↓</div>
+    <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:10px">o 2 meses gratis ↓</div>
   </div>
+
+  <!-- Cómo funciona -->
+  <div class="section" style="max-width:900px">
+    <div class="section-title" style="text-align:center">¿Cómo funciona para ti?</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-top:32px">
+      <div style="text-align:center;padding:24px 16px">
+        <div style="font-size:36px;margin-bottom:12px">📍</div>
+        <div style="font-family:'Playfair Display',serif;font-weight:700;margin-bottom:6px;color:var(--brown)">Apareces en el mapa</div>
+        <div style="font-size:13px;color:var(--text-muted)">Clientes cerca de ti te descubren en tiempo real</div>
+      </div>
+      <div style="text-align:center;padding:24px 16px">
+        <div style="font-size:36px;margin-bottom:12px">📋</div>
+        <div style="font-family:'Playfair Display',serif;font-weight:700;margin-bottom:6px;color:var(--brown)">Publicas tu menú</div>
+        <div style="font-size:13px;color:var(--text-muted)">Fotos, precios y descripción de tus platillos</div>
+      </div>
+      <div style="text-align:center;padding:24px 16px">
+        <div style="font-size:36px;margin-bottom:12px">💬</div>
+        <div style="font-family:'Playfair Display',serif;font-weight:700;margin-bottom:6px;color:var(--brown)">Recibes pedidos</div>
+        <div style="font-size:13px;color:var(--text-muted)">El cliente te contacta y acuerdan el pago directo</div>
+      </div>
+      <div style="text-align:center;padding:24px 16px">
+        <div style="font-size:36px;margin-bottom:12px">💰</div>
+        <div style="font-family:'Playfair Display',serif;font-weight:700;margin-bottom:6px;color:var(--brown)">Cobras el 100%</div>
+        <div style="font-size:13px;color:var(--text-muted)">Micasero no toca tu dinero. Cero comisiones.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--warm);padding:60px 24px">
+    <div style="max-width:900px;margin:0 auto;text-align:center">
+      <div class="section-title">Planes de Membresía</div>
+      <div class="section-sub">Empieza gratis, crece sin límites.</div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:32px;text-align:left">
+
+        <!-- PLAN FUNDADOR -->
+        <div style="background:linear-gradient(160deg,#2D1507,#5C2810);border-radius:24px;padding:32px;position:relative;overflow:hidden;border:2px solid #F4A020">
+          <div style="position:absolute;top:16px;right:16px;background:#F4A020;color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px">⭐ FUNDADOR</div>
+          <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Primeros 20 cocineros</div>
+          <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:#F4A020">$0<span style="font-size:18px;font-weight:400;opacity:0.7">/3 meses</span></div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:24px">Sin tarjeta · Oferta de lanzamiento</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;font-size:14px;color:rgba(255,255,255,0.85)">
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#F4A020;font-size:16px">✓</span> Todo lo del Plan Pro</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#F4A020;font-size:16px">✓</span> 3 meses completamente gratis</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#F4A020;font-size:16px">✓</span> Insignia "Cocinero Fundador" 🏅</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#F4A020;font-size:16px">✓</span> Posición #1 en el mapa</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#F4A020;font-size:16px">✓</span> Solo para los primeros 20</div>
+          </div>
+          <button class="btn-order" style="width:100%;background:#F4A020;border:none" onclick="showToast('🏅 ¡Eres Cocinero Fundador! 3 meses gratis activados.')">Ser Cocinero Fundador →</button>
+        </div>
+
+        <!-- PLAN BÁSICO -->
+        <div style="background:var(--card-bg);border:1.5px solid var(--border);border-radius:24px;padding:32px;position:relative">
+          <div style="font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Plan Básico</div>
+          <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:var(--brown)">$7<span style="font-size:18px;font-weight:400;opacity:0.7">/mes</span></div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px">Incluye 2 meses gratis al inicio</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;font-size:14px">
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--green);font-size:16px">✓</span> Perfil en el mapa</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--green);font-size:16px">✓</span> Hasta 10 platillos en tu menú</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--green);font-size:16px">✓</span> Recibir reseñas</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--green);font-size:16px">✓</span> Pedidos ilimitados</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--green);font-size:16px">✓</span> 0% comisión</div>
+            <div style="display:flex;gap:10px;align-items:center;opacity:0.4"><span>✗</span> Posición destacada en mapa</div>
+            <div style="display:flex;gap:10px;align-items:center;opacity:0.4"><span>✗</span> Menú ilimitado</div>
+            <div style="display:flex;gap:10px;align-items:center;opacity:0.4"><span>✗</span> Insignia "Verificado"</div>
+          </div>
+          <button class="btn-order" onclick="showToast('🎉 ¡Plan Básico activado! 3 meses gratis incluidos.')">Empezar Gratis →</button>
+        </div>
+
+        <!-- PLAN PRO -->
+        <div style="background:linear-gradient(160deg,var(--brown) 0%,var(--brown-mid) 100%);border-radius:24px;padding:32px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:16px;right:16px;background:var(--orange);color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px">MÁS POPULAR</div>
+          <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Plan Pro</div>
+          <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:white">$10<span style="font-size:18px;font-weight:400;opacity:0.7">/mes</span></div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:24px">Incluye 2 meses gratis · Cancela cuando quieras</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;font-size:14px;color:rgba(255,255,255,0.85)">
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Todo lo del Plan Básico</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Posición destacada en el mapa</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Menú ilimitado de platillos</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Insignia "Verificado" ✓</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Estadísticas avanzadas</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Soporte prioritario</div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> 0% comisión sobre pedidos</div>
+          </div>
+          <button style="width:100%;background:var(--orange);color:white;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer" onclick="openMembresiaModal()">Suscribirme al Plan Pro →</button>
+        </div>
+
+      </div>
+
+      <!-- Nota urgencia Fundador -->
+      <div style="margin-top:24px;background:linear-gradient(135deg,#FFF8E8,#FFF0CC);border:1.5px solid #F4A020;border-radius:16px;padding:18px 24px;font-size:14px;color:var(--brown);text-align:center">
+        🏅 <strong>Oferta de lanzamiento:</strong> Los primeros 20 cocineros en cada ciudad reciben <strong>3 meses completamente gratis</strong> con todas las funciones Pro. ¡No te quedes fuera!
+      </div>
+
+      <!-- Nota transparencia -->
+      <div style="margin-top:20px;padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;font-size:14px;color:var(--text-muted);line-height:1.7;text-align:left">
+        <strong style="color:var(--brown)">💡 ¿Cómo gana Micasero?</strong><br>
+        Micasero cobra una membresía mensual al cocinero por aparecer en la plataforma. <strong>No cobramos comisión sobre tus pedidos</strong> — el dinero de tus clientes es tuyo al 100%. El pago entre cliente y cocinero siempre es directo.
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Cómo funciona para cocineros -->
   <div class="section" style="max-width:900px">
@@ -1678,7 +1886,7 @@
         <div style="background:var(--card-bg);border:1.5px solid var(--border);border-radius:24px;padding:32px;position:relative">
           <div style="font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Prueba Gratuita</div>
           <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:var(--brown)">$0</div>
-          <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px">Por 30 días · Sin tarjeta</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px">3 meses gratis · luego $7/mes</div>
           <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;font-size:14px">
             <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--green);font-size:16px">✓</span> Perfil en el mapa</div>
             <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--green);font-size:16px">✓</span> Hasta 5 platillos en tu menú</div>
@@ -1689,7 +1897,7 @@
             <div style="display:flex;gap:10px;align-items:center;opacity:0.4"><span>✗</span> Insignia "Verificado"</div>
             <div style="display:flex;gap:10px;align-items:center;opacity:0.4"><span>✗</span> Estadísticas avanzadas</div>
           </div>
-          <button class="btn-order" onclick="showToast('🎉 ¡Prueba gratuita activada! 30 días sin costo.')">Empezar Gratis →</button>
+          <button class="btn-order" onclick="showToast('🎉 ¡Prueba gratuita activada! 3 meses sin costo.')">Empezar Gratis →</button>
         </div>
 
         <!-- PLAN PRO -->
@@ -1697,7 +1905,7 @@
           <div style="position:absolute;top:16px;right:16px;background:var(--orange);color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px">MÁS POPULAR</div>
           <div style="position:absolute;bottom:-20px;right:-20px;width:120px;height:120px;background:rgba(255,255,255,0.04);border-radius:50%"></div>
           <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Plan Pro</div>
-          <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:white">$19<span style="font-size:18px;font-weight:400;opacity:0.7">/mes</span></div>
+          <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:white">$10<span style="font-size:18px;font-weight:400;opacity:0.7">/mes</span></div>
           <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:24px">Cancela cuando quieras</div>
           <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;font-size:14px;color:rgba(255,255,255,0.85)">
             <div style="display:flex;gap:10px;align-items:center"><span style="color:#7EE8A2;font-size:16px">✓</span> Todo lo del plan gratuito</div>
@@ -1732,7 +1940,7 @@
     <div style="text-align:center;margin-bottom:28px">
       <div style="font-size:40px;margin-bottom:10px">👨‍🍳</div>
       <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--brown)">Activa tu Plan Pro</div>
-      <div style="font-size:14px;color:var(--text-muted);margin-top:6px">$19/mes · Cancela cuando quieras · Sin comisiones</div>
+      <div style="font-size:14px;color:var(--text-muted);margin-top:6px">$10/mes · 2 meses gratis · Sin comisiones</div>
     </div>
 
     <!-- Qué incluye -->
@@ -1806,19 +2014,19 @@
       <!-- Resumen del cobro -->
       <div style="background:var(--warm);border-radius:12px;padding:16px;margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px">
-          <span style="color:var(--text-muted)">Plan Pro Mensual</span><span>$19.00</span>
+          <span style="color:var(--text-muted)">Plan Pro Mensual</span><span>$10.00</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:10px">
-          <span style="color:var(--text-muted)">Próximo cobro</span><span>en 30 días</span>
+          <span style="color:var(--text-muted)">Próximo cobro</span><span>en 3 meses</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px;border-top:1px dashed var(--border);padding-top:10px">
           <span>Hoy pagas</span>
-          <span style="color:var(--orange)">$19.00</span>
+          <span style="color:var(--orange)">$10.00</span>
         </div>
       </div>
 
       <button class="btn-pay" onclick="confirmarMembresia()" style="font-size:16px">
-        🔒 Pagar $19.00 y Activar Plan Pro
+        🔒 Pagar $10.00 y Activar Plan Pro
       </button>
       <p style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.5">
         Cifrado SSL 256-bit · Cancela en cualquier momento desde tu perfil
@@ -1836,7 +2044,7 @@
       <div style="background:var(--warm);border-radius:16px;padding:20px;text-align:left;font-size:14px;margin-bottom:24px">
         <div style="font-weight:700;color:var(--brown);margin-bottom:12px">📋 Resumen de membresía</div>
         <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-muted)">Plan</span><strong>Pro Mensual</strong></div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-muted)">Cobrado hoy</span><strong>$19.00</strong></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-muted)">Cobrado hoy</span><strong>$10.00</strong></div>
         <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-muted)">Próximo cobro</span><strong id="fecha-proxima">—</strong></div>
         <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Comisión por pedido</span><strong style="color:var(--green)">0%</strong></div>
       </div>
@@ -2314,7 +2522,7 @@
         <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">5. Retención de datos</h3>
         <div style="display:flex;flex-direction:column;gap:8px">
           <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Cuenta activa:</strong> Conservamos tu información mientras tu cuenta esté activa.</div>
-          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Cuenta eliminada:</strong> Eliminamos tu perfil e información personal en 30 días. Los registros de pago de membresía se conservan hasta 7 años por obligaciones fiscales y contables.</div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Cuenta eliminada:</strong> Eliminamos tu perfil e información personal en 3 meses. Los registros de pago de membresía se conservan hasta 7 años por obligaciones fiscales y contables.</div>
           <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Contenido público:</strong> Las reseñas que escribiste pueden permanecer anonimizadas después de eliminar tu cuenta.</div>
         </div>
       </div>
@@ -2540,7 +2748,7 @@
         <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. Reembolsos de membresía</h3>
         <div style="display:flex;flex-direction:column;gap:10px">
           <div style="background:var(--warm);border-radius:10px;padding:14px">
-            <strong>Período de prueba gratuito (30 días):</strong> No se cobra nada, no hay reembolso necesario.
+            <strong>Período de prueba gratuito (3 meses):</strong> No se cobra nada, no hay reembolso necesario.
           </div>
           <div style="background:var(--warm);border-radius:10px;padding:14px">
             <strong>Primer mes pagado:</strong> Reembolso completo si se solicita dentro de los primeros <strong>3 días</strong> del cobro.
@@ -3442,7 +3650,7 @@ const translations = {
     'cs2-title': 'Elige tu cocinero', 'cs2-desc': 'Ve su perfil, menú y método de cobro',
     'cs3-title': 'Elige tus platillos', 'cs3-desc': 'Agrega al carrito desde el menú del cocinero',
     'cs4-title': 'Paga al cocinero', 'cs4-desc': 'Venmo, PayPal, Zelle, QR o tarjeta — directo al cocinero',
-    'ck1-title': 'Elige tu plan', 'ck1-desc': 'Gratis 30 días o Pro desde $19/mes',
+    'ck1-title': 'Elige tu plan', 'ck1-desc': 'Gratis 3 meses · Básico $7/mes · Pro $10/mes',
     'ck2-title': 'Arma tu perfil', 'ck2-desc': 'Info personal, tipo de comida y menú',
     'ck3-title': 'Agrega tu método de cobro', 'ck3-desc': 'Venmo, PayPal, Zelle, QR o tarjeta',
     'ck4-title': '¡Cobra directo!', 'ck4-desc': '0% comisión — el dinero es tuyo',
@@ -3476,7 +3684,7 @@ const translations = {
     'cs2-title': 'Choose your cook', 'cs2-desc': 'See their profile, menu and payment method',
     'cs3-title': 'Choose your dishes', 'cs3-desc': 'Add to cart from the cook\'s menu',
     'cs4-title': 'Pay the cook', 'cs4-desc': 'Venmo, PayPal, Zelle, QR or card — directly to the cook',
-    'ck1-title': 'Choose your plan', 'ck1-desc': 'Free 30 days or Pro from $19/month',
+    'ck1-title': 'Choose your plan', 'ck1-desc': 'Free 3 months · Basic $7/mo · Pro $10/month',
     'ck2-title': 'Set up your profile', 'ck2-desc': 'Personal info, food type and menu',
     'ck3-title': 'Add your payment method', 'ck3-desc': 'Venmo, PayPal, Zelle, QR or card',
     'ck4-title': 'Get paid directly!', 'ck4-desc': '0% commission — the money is yours',
@@ -3510,7 +3718,7 @@ const translations = {
     'cs2-title': 'Escolha seu cozinheiro', 'cs2-desc': 'Veja o perfil, menu e forma de pagamento',
     'cs3-title': 'Escolha seus pratos', 'cs3-desc': 'Adicione ao carrinho pelo menu do cozinheiro',
     'cs4-title': 'Pague o cozinheiro', 'cs4-desc': 'Pix, PayPal, Zelle, QR ou cartão — direto ao cozinheiro',
-    'ck1-title': 'Escolha seu plano', 'ck1-desc': 'Grátis 30 dias ou Pro a partir de $19/mês',
+    'ck1-title': 'Escolha seu plano', 'ck1-desc': 'Grátis 3 meses · Básico $7/mês · Pro $10/mês',
     'ck2-title': 'Monte seu perfil', 'ck2-desc': 'Info pessoal, tipo de comida e menu',
     'ck3-title': 'Adicione sua forma de pagamento', 'ck3-desc': 'Pix, PayPal, Zelle, QR ou cartão',
     'ck4-title': 'Receba direto!', 'ck4-desc': '0% comissão — o dinheiro é seu',
@@ -3746,9 +3954,26 @@ function showRegForm(type) {
 }
 
 function selectPlan(plan) {
-  ['free','pro'].forEach(p => {
+  ['fundador','basico','pro'].forEach(p => {
     const btn = document.getElementById('plan-'+p);
-    btn.classList.toggle('selected', p === plan);
+    if (!btn) return;
+    if (p === plan) {
+      if (p === 'fundador') {
+        btn.style.border = '2px solid #F4A020';
+        btn.style.background = 'linear-gradient(135deg,#2D1507,#5C2810)';
+      } else {
+        btn.style.border = '2px solid var(--orange)';
+        btn.style.background = 'linear-gradient(135deg,#FFF8F0,#FEE8D4)';
+      }
+    } else {
+      if (p === 'fundador') {
+        btn.style.border = '2px solid #5C3010';
+        btn.style.background = 'linear-gradient(135deg,#2D1507,#4A2010)';
+      } else {
+        btn.style.border = '2px solid var(--border)';
+        btn.style.background = 'var(--warm)';
+      }
+    }
   });
 }
 

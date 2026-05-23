@@ -1490,15 +1490,222 @@
   <div class="checkout-container" style="max-width:700px">
 
     <!-- Pasos -->
-    <div style="display:flex;align-items:center;gap:0;margin-bottom:32px">
+    <div style="display:flex;align-items:center;gap:0;margin-bottom:32px;overflow-x:auto">
       <div class="co-step active" id="step-ind-1"><span>1</span> Resumen</div>
       <div class="co-step-line"></div>
       <div class="co-step" id="step-ind-2"><span>2</span> Entrega</div>
       <div class="co-step-line"></div>
-      <div class="co-step" id="step-ind-3"><span>3</span> Pago</div>
+      <div class="co-step" id="step-ind-3"><span>3</span> Confirmar</div>
       <div class="co-step-line"></div>
-      <div class="co-step" id="step-ind-4"><span>4</span> Listo</div>
+      <div class="co-step" id="step-ind-4"><span>4</span> Pagar</div>
+      <div class="co-step-line"></div>
+      <div class="co-step" id="step-ind-5"><span>5</span> ¡Listo!</div>
     </div>
+
+    <!-- PASO 1: Resumen del pedido -->
+    <div id="co-step-1">
+      <div class="checkout-title">🛒 Resumen de tu Pedido</div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:20px;margin:16px 0">
+        <div id="checkout-items"></div>
+        <div style="display:flex;justify-content:space-between;padding-top:14px;margin-top:4px;border-top:2px dashed var(--border);font-size:18px;font-weight:700">
+          <span>Total</span>
+          <span style="color:var(--orange);font-family:'Playfair Display',serif" id="checkout-total">$0.00</span>
+        </div>
+      </div>
+      <div style="background:#FFF8F0;border:1.5px solid #F4C9A8;border-radius:12px;padding:14px 16px;font-size:13px;color:var(--brown-mid);display:flex;gap:10px;align-items:flex-start;margin-bottom:20px">
+        <span style="font-size:18px;flex-shrink:0">🤝</span>
+        <span>Este dinero va <strong>directo al cocinero</strong>. Micasero no cobra comisión sobre tus pedidos.</span>
+      </div>
+      <button style="width:100%;background:var(--orange);color:white;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="coStep(2)">Continuar → Elegir Entrega</button>
+    </div>
+
+    <!-- PASO 2: Tipo de entrega -->
+    <div id="co-step-2" style="display:none">
+      <div class="checkout-title">🚚 ¿Cómo recibirás tu pedido?</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0">
+        <div class="delivery-opt selected" id="del-delivery" onclick="selectDelivery2('delivery')">
+          <div class="delivery-opt-icon">🛵</div>
+          <div class="delivery-opt-info">
+            <div class="delivery-opt-name">Delivery a domicilio</div>
+            <div class="delivery-opt-desc">El cocinero o un repartidor te lo lleva · ~30–45 min</div>
+          </div>
+          <div class="pm-check selected" id="del-check-delivery">✓</div>
+        </div>
+        <div class="delivery-opt" id="del-pickup" onclick="selectDelivery2('pickup')">
+          <div class="delivery-opt-icon">🏠</div>
+          <div class="delivery-opt-info">
+            <div class="delivery-opt-name">Recogida en domicilio del cocinero</div>
+            <div class="delivery-opt-desc">Tú pasas a recogerlo · Listo en ~20 min</div>
+          </div>
+          <div class="pm-check" id="del-check-pickup"></div>
+        </div>
+        <div class="delivery-opt" id="del-cena" onclick="selectDelivery2('cena')">
+          <div class="delivery-opt-icon">🕯️</div>
+          <div class="delivery-opt-info">
+            <div class="delivery-opt-name">Cena privada en casa del cocinero</div>
+            <div class="delivery-opt-desc">Experiencia única · Requiere reserva con anticipación</div>
+          </div>
+          <div class="pm-check" id="del-check-cena"></div>
+        </div>
+      </div>
+      <div id="cena-note" style="display:none;background:#F5EFF9;border:1px solid #C39BD3;border-radius:12px;padding:14px 16px;margin-top:-8px;margin-bottom:12px;font-size:13px;color:#6C3483;line-height:1.6">
+        🕯️ <strong>Cena privada:</strong> El cocinero te contactará para confirmar fecha, hora y número de personas.
+      </div>
+      <div id="cook-address-note" style="display:none;background:#F0FFF4;border:1.5px solid #4CAF50;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13px">
+        <div style="font-weight:700;color:var(--brown);margin-bottom:6px">📍 Dirección del cocinero:</div>
+        <div style="color:var(--brown-mid)">Chef María Rodríguez<br>123 Winslow Way, Bainbridge Island, WA 98110</div>
+        <button onclick="showToast('🗺️ Abriendo Maps...')" style="margin-top:10px;background:#4CAF50;color:white;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;-webkit-appearance:none">Ver en Mapa 🗺️</button>
+      </div>
+      <div id="del-address-block" style="display:block">
+        <div class="form-group">
+          <label class="form-label">Tu dirección de entrega</label>
+          <input class="form-input" id="del-address" type="text" placeholder="Calle, número, colonia">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notas para el cocinero (opcional)</label>
+          <input class="form-input" id="del-notes" type="text" placeholder="Ej. Sin picante, tocar timbre 2B…">
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <button style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:#6C757D;color:white;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;-webkit-appearance:none" onclick="coStep(1)">← Atrás</button>
+        <button style="flex:2;background:var(--orange);color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="coStep(3)">Continuar → Confirmar Pedido</button>
+      </div>
+    </div>
+
+    <!-- PASO 3: Confirmar Pedido -->
+    <div id="co-step-3" style="display:none">
+      <div class="checkout-title">✅ Confirmar tu Pedido</div>
+      <p style="color:var(--text-muted);font-size:14px;margin:0 0 20px">Revisa tu pedido antes de enviarlo al cocinero:</p>
+
+      <!-- Resumen final -->
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px">
+        <div style="font-weight:700;color:var(--brown);margin-bottom:12px">🍽️ Tu pedido</div>
+        <div id="confirm-items"></div>
+        <div style="display:flex;justify-content:space-between;padding-top:12px;margin-top:8px;border-top:2px dashed var(--border);font-size:16px;font-weight:700">
+          <span>Total a pagar</span>
+          <span style="color:var(--orange)" id="confirm-total">$0.00</span>
+        </div>
+      </div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:20px;font-size:14px">
+        <div style="font-weight:700;color:var(--brown);margin-bottom:8px">🚚 Entrega</div>
+        <div style="color:var(--text-muted)" id="confirm-delivery">Delivery a domicilio</div>
+      </div>
+      <div style="background:#FFF8F0;border:1.5px solid #F4C9A8;border-radius:12px;padding:14px;font-size:13px;color:var(--brown-mid);margin-bottom:20px">
+        💡 Al confirmar, el cocinero recibe tu pedido y le pagarás directamente.
+      </div>
+      <div style="display:flex;gap:12px">
+        <button style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:#6C757D;color:white;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;-webkit-appearance:none" onclick="coStep(2)">← Atrás</button>
+        <button style="flex:2;background:#4CAF50;color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="coStep(4)">✅ Confirmar Pedido</button>
+      </div>
+    </div>
+
+    <!-- PASO 4: Información de Pago al Cocinero -->
+    <div id="co-step-4" style="display:none">
+      <div class="checkout-title">💸 Pagar al Cocinero</div>
+      <p style="color:var(--text-muted);font-size:14px;margin:8px 0 20px">Tu pedido fue confirmado 🎉 Ahora págale directamente al cocinero:</p>
+
+      <div style="background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:1.5px solid #F4C9A8;border-radius:16px;padding:20px;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="font-size:36px">👩‍🍳</span>
+          <div>
+            <div style="font-weight:700;font-size:16px;color:var(--brown)">Chef María Rodríguez</div>
+            <div style="font-size:13px;color:var(--text-muted)">⭐ 4.9 · 127 reseñas</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">📲</span>
+            <div style="flex:1"><div style="font-weight:600;font-size:14px">Venmo</div><div style="font-size:13px;color:var(--text-muted)">@maria.rodriguez</div></div>
+            <button onclick="navigator.clipboard.writeText('@maria.rodriguez');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
+          </div>
+          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">💙</span>
+            <div style="flex:1"><div style="font-weight:600;font-size:14px">PayPal</div><div style="font-size:13px;color:var(--text-muted)">maria.rodriguez@email.com</div></div>
+            <button onclick="navigator.clipboard.writeText('maria.rodriguez@email.com');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
+          </div>
+          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">💚</span>
+            <div style="flex:1"><div style="font-weight:600;font-size:14px">Zelle</div><div style="font-size:13px;color:var(--text-muted)">+1 (206) 555-0123</div></div>
+            <button onclick="navigator.clipboard.writeText('+12065550123');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
+          </div>
+          <!-- QR -->
+          <div style="background:white;border-radius:10px;padding:12px 14px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <span style="font-size:22px">📱</span>
+              <div style="flex:1"><div style="font-weight:600;font-size:14px">Código QR</div><div style="font-size:13px;color:var(--text-muted)">Escanea para pagar directo</div></div>
+              <button onclick="toggleQR()" style="background:var(--warm);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600" id="qr-toggle-btn">Ver QR</button>
+            </div>
+            <div id="qr-code-display" style="display:none;text-align:center;padding:12px;background:var(--warm);border-radius:10px">
+              <svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg" style="border:4px solid white;border-radius:8px;background:white">
+                <rect width="140" height="140" fill="white"/>
+                <rect x="10" y="10" width="40" height="40" fill="none" stroke="#111" stroke-width="4"/>
+                <rect x="16" y="16" width="28" height="28" fill="#111"/>
+                <rect x="90" y="10" width="40" height="40" fill="none" stroke="#111" stroke-width="4"/>
+                <rect x="96" y="16" width="28" height="28" fill="#111"/>
+                <rect x="10" y="90" width="40" height="40" fill="none" stroke="#111" stroke-width="4"/>
+                <rect x="16" y="96" width="28" height="28" fill="#111"/>
+                <rect x="55" y="10" width="6" height="6" fill="#111"/><rect x="65" y="10" width="6" height="6" fill="#111"/>
+                <rect x="55" y="20" width="6" height="6" fill="#111"/><rect x="75" y="20" width="6" height="6" fill="#111"/>
+                <rect x="65" y="30" width="6" height="6" fill="#111"/><rect x="55" y="40" width="6" height="6" fill="#111"/>
+                <rect x="55" y="55" width="6" height="6" fill="#111"/><rect x="65" y="55" width="6" height="6" fill="#111"/>
+                <rect x="75" y="55" width="6" height="6" fill="#111"/><rect x="55" y="65" width="6" height="6" fill="#111"/>
+                <rect x="75" y="65" width="6" height="6" fill="#111"/><rect x="55" y="75" width="6" height="6" fill="#111"/>
+              </svg>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:8px">Escanea con tu app de pagos</div>
+            </div>
+          </div>
+          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">💬</span>
+            <div style="flex:1"><div style="font-weight:600;font-size:14px">WhatsApp</div><div style="font-size:13px;color:var(--text-muted)">+1 (206) 555-0123</div></div>
+            <a href="https://wa.me/12065550123" target="_blank" style="background:#25D366;color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;text-decoration:none">Escribir</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen del pago -->
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:20px">
+        <div style="font-weight:700;color:var(--brown);margin-bottom:8px">Resumen del pedido</div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--text-muted);margin-bottom:4px"><span>Pedido a</span><span>Chef María Rodríguez</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--text-muted);margin-bottom:4px"><span>Entrega</span><span id="summary-delivery">Delivery</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"><span>Total</span><span style="color:var(--orange)" id="summary-total">$0.00</span></div>
+      </div>
+
+      <div style="background:#F0FFF4;border:1.5px solid #4CAF50;border-radius:12px;padding:14px;font-size:13px;color:#2E7D52;margin-bottom:20px">
+        ⏳ <strong>Esperando confirmación del cocinero.</strong> Una vez que reciba tu pago, confirmará el pedido y comenzará a prepararlo.
+      </div>
+
+      <button onclick="processPayment()" style="width:100%;background:#4CAF50;color:white;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none">Ya pagué · Notificar al Cocinero ✅</button>
+    </div>
+
+    <!-- PASO 5: ¡Pedido Confirmado! -->
+    <div id="co-step-5" style="display:none;text-align:center;padding:40px 20px">
+      <div style="font-size:64px;margin-bottom:16px">🎉</div>
+      <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--brown);margin-bottom:8px">¡Pedido en Camino!</div>
+      <p style="color:var(--text-muted);font-size:15px;line-height:1.7;max-width:400px;margin:0 auto 24px">El cocinero recibió tu notificación de pago y está preparando tu pedido.</p>
+      <div style="background:#F0FFF4;border:1.5px solid #4CAF50;border-radius:16px;padding:20px;max-width:360px;margin:0 auto 20px;text-align:left">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <span style="font-size:28px">👩‍🍳</span>
+          <div>
+            <div style="font-weight:700;color:var(--brown)">Chef María Rodríguez</div>
+            <div style="font-size:12px;color:var(--green);font-weight:600">✅ Pago notificado</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.8">
+          ⏱️ Tiempo estimado: <strong>35 minutos</strong><br>
+          📞 Contacto: +1 (206) 555-0123
+        </div>
+      </div>
+      <div style="background:var(--warm);border-radius:16px;padding:20px;max-width:360px;margin:0 auto 28px;text-align:left;font-size:14px">
+        <div style="font-weight:700;color:var(--brown);margin-bottom:10px">¿Qué sigue?</div>
+        <div style="display:flex;gap:10px;margin-bottom:8px"><span>1️⃣</span> El cocinero confirma que recibió tu pago</div>
+        <div style="display:flex;gap:10px;margin-bottom:8px"><span>2️⃣</span> Prepara tu pedido con amor 🍽️</div>
+        <div style="display:flex;gap:10px"><span>3️⃣</span> ¡Disfruta tu comida casera!</div>
+      </div>
+      <button class="btn-order" style="padding:14px 32px;font-size:15px" onclick="showPage('home')">Volver al inicio</button>
+    </div>
+
+  </div>
+</div>
 
     <!-- PASO 1: Resumen del pedido -->
     <div id="co-step-1">
@@ -1573,173 +1780,6 @@
       </div>
     </div>
 
-    <!-- PASO 3: Método de pago DIRECTO AL COCINERO -->
-    <div id="co-step-3" style="display:none">
-      <div class="checkout-title">💸 Información de Pago del Cocinero</div>
-      <p style="color:var(--text-muted);font-size:14px;margin:8px 0 20px">El cocinero acepta los siguientes métodos de pago. Elige el que prefieras:</p>
-
-      <!-- Cook payment info card -->
-      <div style="background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:1.5px solid var(--orange-light);border-radius:16px;padding:20px;margin-bottom:20px">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-          <div style="font-size:36px">👩‍🍳</div>
-          <div>
-            <div style="font-weight:700;font-size:16px;color:var(--brown)">Chef María Rodríguez</div>
-            <div style="font-size:13px;color:var(--text-muted)">⭐ 4.9 · 127 reseñas</div>
-          </div>
-        </div>
-        <!-- Payment methods from cook's profile -->
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
-            <span style="font-size:22px">📲</span>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:14px">Venmo</div>
-              <div style="font-size:13px;color:var(--text-muted)">@maria.rodriguez</div>
-            </div>
-            <button onclick="navigator.clipboard.writeText('@maria.rodriguez');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
-          </div>
-          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
-            <span style="font-size:22px">💙</span>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:14px">PayPal</div>
-              <div style="font-size:13px;color:var(--text-muted)">maria.rodriguez@email.com</div>
-            </div>
-            <button onclick="navigator.clipboard.writeText('maria.rodriguez@email.com');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
-          </div>
-          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
-            <span style="font-size:22px">💚</span>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:14px">Zelle</div>
-              <div style="font-size:13px;color:var(--text-muted)">+1 (206) 555-0123</div>
-            </div>
-            <button onclick="navigator.clipboard.writeText('+12065550123');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
-          </div>
-          <!-- QR Code -->
-          <div style="background:white;border-radius:10px;padding:12px 14px">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-              <span style="font-size:22px">📱</span>
-              <div style="flex:1">
-                <div style="font-weight:600;font-size:14px">Código QR</div>
-                <div style="font-size:13px;color:var(--text-muted)">Escanea para pagar directo</div>
-              </div>
-              <button onclick="toggleQR()" style="background:var(--warm);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600" id="qr-toggle-btn">Ver QR</button>
-            </div>
-            <div id="qr-code-display" style="display:none;text-align:center;padding:16px;background:var(--warm);border-radius:10px">
-              <!-- QR simulado con patrón visual -->
-              <svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg" style="border:4px solid white;border-radius:8px;background:white">
-                <rect width="140" height="140" fill="white"/>
-                <!-- Esquinas del QR -->
-                <rect x="10" y="10" width="40" height="40" fill="none" stroke="#111" stroke-width="4"/>
-                <rect x="16" y="16" width="28" height="28" fill="#111"/>
-                <rect x="90" y="10" width="40" height="40" fill="none" stroke="#111" stroke-width="4"/>
-                <rect x="96" y="16" width="28" height="28" fill="#111"/>
-                <rect x="10" y="90" width="40" height="40" fill="none" stroke="#111" stroke-width="4"/>
-                <rect x="16" y="96" width="28" height="28" fill="#111"/>
-                <!-- Patrón centro -->
-                <rect x="55" y="10" width="6" height="6" fill="#111"/>
-                <rect x="65" y="10" width="6" height="6" fill="#111"/>
-                <rect x="55" y="20" width="6" height="6" fill="#111"/>
-                <rect x="75" y="20" width="6" height="6" fill="#111"/>
-                <rect x="65" y="30" width="6" height="6" fill="#111"/>
-                <rect x="55" y="40" width="6" height="6" fill="#111"/>
-                <rect x="75" y="40" width="6" height="6" fill="#111"/>
-                <rect x="10" y="55" width="6" height="6" fill="#111"/>
-                <rect x="20" y="55" width="6" height="6" fill="#111"/>
-                <rect x="30" y="65" width="6" height="6" fill="#111"/>
-                <rect x="10" y="75" width="6" height="6" fill="#111"/>
-                <rect x="20" y="75" width="6" height="6" fill="#111"/>
-                <rect x="55" y="55" width="6" height="6" fill="#111"/>
-                <rect x="65" y="55" width="6" height="6" fill="#111"/>
-                <rect x="75" y="55" width="6" height="6" fill="#111"/>
-                <rect x="55" y="65" width="6" height="6" fill="#111"/>
-                <rect x="75" y="65" width="6" height="6" fill="#111"/>
-                <rect x="55" y="75" width="6" height="6" fill="#111"/>
-                <rect x="65" y="75" width="6" height="6" fill="#111"/>
-                <rect x="75" y="75" width="6" height="6" fill="#111"/>
-                <rect x="90" y="55" width="6" height="6" fill="#111"/>
-                <rect x="105" y="55" width="6" height="6" fill="#111"/>
-                <rect x="120" y="55" width="6" height="6" fill="#111"/>
-                <rect x="95" y="65" width="6" height="6" fill="#111"/>
-                <rect x="110" y="65" width="6" height="6" fill="#111"/>
-                <rect x="90" y="75" width="6" height="6" fill="#111"/>
-                <rect x="100" y="75" width="6" height="6" fill="#111"/>
-                <rect x="115" y="75" width="6" height="6" fill="#111"/>
-                <rect x="90" y="90" width="6" height="6" fill="#111"/>
-                <rect x="100" y="95" width="6" height="6" fill="#111"/>
-                <rect x="115" y="90" width="6" height="6" fill="#111"/>
-                <rect x="105" y="100" width="6" height="6" fill="#111"/>
-                <rect x="120" y="105" width="6" height="6" fill="#111"/>
-                <rect x="90" y="110" width="6" height="6" fill="#111"/>
-                <rect x="110" y="115" width="6" height="6" fill="#111"/>
-              </svg>
-              <div style="font-size:12px;color:var(--text-muted);margin-top:8px">Escanea con tu app de pagos</div>
-            </div>
-          </div>
-          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
-            <span style="font-size:22px">💬</span>
-            <div style="flex:1">
-              <div style="font-weight:600;font-size:14px">WhatsApp / Teléfono</div>
-              <div style="font-size:13px;color:var(--text-muted)">+1 (206) 555-0123</div>
-            </div>
-            <a href="https://wa.me/12065550123" target="_blank" style="background:#25D366;color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;text-decoration:none">Escribir</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Resumen final -->
-      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;font-size:14px">
-        <div style="font-weight:700;color:var(--brown);margin-bottom:10px">Resumen del pedido</div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text-muted)">Pedido a</span><span>Chef María Rodríguez</span></div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text-muted)">Entrega</span><span id="summary-delivery">Delivery</span></div>
-        <div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);font-weight:700;font-size:16px">
-          <span>Total a pagar al cocinero</span>
-          <span style="color:var(--orange)" id="summary-total">$0.00</span>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:12px">
-        <button style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:#6C757D;color:white;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;-webkit-appearance:none" onclick="coStep(2)">← Atrás</button>
-        <button style="flex:2;background:#4CAF50;color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="processPayment()">✅ Confirmar Pedido</button>
-      </div>
-      <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:10px">Micasero no cobra comisión sobre este pedido</p>
-    </div>
-
-    <!-- PASO 4: Confirmado -->
-    <div id="co-step-4" style="display:none;text-align:center;padding:40px 20px">
-      <div style="font-size:64px;margin-bottom:16px">🎉</div>
-      <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--brown);margin-bottom:8px">¡Pedido Confirmado!</div>
-      <p style="color:var(--text-muted);font-size:15px;line-height:1.7;max-width:400px;margin:0 auto 16px">
-        El cocinero recibió tu pedido. Aquí está la confirmación:
-      </p>
-      <!-- Cook auto-confirmation card -->
-      <div style="background:#F0FFF4;border:1.5px solid #4CAF50;border-radius:16px;padding:20px;max-width:360px;margin:0 auto 20px;text-align:left">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-          <span style="font-size:28px">👩‍🍳</span>
-          <div>
-            <div style="font-weight:700;color:var(--brown)">Chef María Rodríguez</div>
-            <div style="font-size:12px;color:var(--green);font-weight:600">✅ Confirmó tu pedido</div>
-          </div>
-        </div>
-        <div style="font-size:13px;color:var(--text-muted);line-height:1.8">
-          ⏱️ Tiempo estimado: <strong>35 minutos</strong><br>
-          💰 Recuerda pagar por Venmo, PayPal o Zelle<br>
-          📞 +1 (206) 555-0123
-        </div>
-      </div>
-      <div style="background:var(--warm);border-radius:16px;padding:20px;max-width:360px;margin:0 auto 28px;text-align:left;font-size:14px">
-        <div style="font-weight:700;color:var(--brown);margin-bottom:10px">¿Qué sigue?</div>
-        <div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start"><span>1️⃣</span> Paga al cocinero por Venmo, PayPal o Zelle</div>
-        <div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start"><span>2️⃣</span> El cocinero comienza a preparar tu pedido</div>
-        <div style="display:flex;gap:10px;align-items:flex-start"><span>3️⃣</span> ¡Disfruta tu comida casera! 🍽️</div>
-      </div>
-      <button class="btn-order" style="padding:14px 32px;font-size:15px" onclick="showPage('home')">Volver al inicio</button>
-    </div>
-
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     MEMBRESÍA PAGE — para cocineros
-══════════════════════════════════════════ -->
 <div id="page-membresia" class="page">
   <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin:16px 20px 0;padding:0;display:flex;align-items:center;gap:4px;-webkit-appearance:none">← Volver</button>
   <div style="background:linear-gradient(135deg,var(--brown) 0%,var(--brown-mid) 60%,var(--orange) 100%);padding:60px 24px 50px;text-align:center">
@@ -2996,63 +3036,50 @@ function renderCheckout() {
 }
 
 function coStep(n) {
-  [1,2,3,4].forEach(i => {
-    document.getElementById('co-step-'+i).style.display = i===n ? 'block' : 'none';
+  [1,2,3,4,5].forEach(i => {
+    const s = document.getElementById('co-step-'+i);
+    if (s) s.style.display = i===n ? 'block' : 'none';
     const ind = document.getElementById('step-ind-'+i);
-    ind.classList.remove('active','done');
-    if (i === n) ind.classList.add('active');
-    else if (i < n) ind.classList.add('done');
+    if (ind) {
+      ind.classList.remove('active','done');
+      if (i===n) ind.classList.add('active');
+      else if (i<n) ind.classList.add('done');
+    }
   });
-  if (n === 3) {
+  if (n===3) {
+    const items = Object.values(cart);
+    const ci = document.getElementById('confirm-items');
+    const ct = document.getElementById('confirm-total');
+    const cd = document.getElementById('confirm-delivery');
+    if (ci) ci.innerHTML = items.map(v =>
+      `<div style="display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span>${v.emoji||'🍽️'} ${v.name} × ${v.qty}</span>
+        <span style="color:var(--orange)">$${(v.price*v.qty).toFixed(2)}</span>
+      </div>`).join('');
+    const total = items.reduce((s,v)=>s+v.price*v.qty,0);
+    if (ct) ct.textContent = '$'+total.toFixed(2);
+    if (cd) cd.textContent = currentDelivery==='delivery'?'Delivery a domicilio 🛵':
+      currentDelivery==='pickup'?'Recogida en domicilio 🏠':'Cena privada 🕯️';
+  }
+  if (n===4) {
     const sd = document.getElementById('summary-delivery');
-    if (sd) sd.textContent = currentDelivery === 'delivery' ? 'Delivery 🛵' : currentDelivery === 'cena' ? 'Cena privada 🕯️' : 'Recogida 🏠';
-    renderCheckout();
+    if (sd) sd.textContent = currentDelivery==='delivery'?'Delivery 🛵':
+      currentDelivery==='cena'?'Cena privada 🕯️':'Recogida 🏠';
+    const ct2 = document.getElementById('checkout-total');
+    const st = document.getElementById('summary-total');
+    if (st && ct2) st.textContent = ct2.textContent;
   }
   window.scrollTo(0,0);
 }
 
-function selectDelivery2(type) {
-  currentDelivery = type;
-  ['delivery','pickup','cena'].forEach(t => {
-    const el = document.getElementById('del-'+t);
-    if (el) el.classList.remove('selected');
-    const c = document.getElementById('del-check-'+t);
-    if (c) { c.classList.remove('selected'); c.textContent=''; }
-  });
-  const sel = document.getElementById('del-'+type);
-  if (sel) sel.classList.add('selected');
-  const chk = document.getElementById('del-check-'+type);
-  if (chk) { chk.classList.add('selected'); chk.textContent='✓'; }
-  const addrBlock = document.getElementById('del-address-block');
-  if (addrBlock) addrBlock.style.display = type==='delivery' ? 'block' : 'none';
-  const cenaNote = document.getElementById('cena-note');
-  if (cenaNote) cenaNote.style.display = type==='cena' ? 'block' : 'none';
-  const cookAddr = document.getElementById('cook-address-note');
-  if (cookAddr) cookAddr.style.display = (type==='pickup'||type==='cena') ? 'block' : 'none';
-}
-
-function selectPayMethod(method) {
-  currentPayMethod = method;
-  ['transfer','digital','whatsapp'].forEach(m => {
-    document.getElementById('pm-'+m).classList.remove('selected');
-    const c = document.getElementById('check-'+m);
-    c.classList.remove('selected'); c.textContent='';
-  });
-  document.getElementById('pm-'+method).classList.add('selected');
-  const chk = document.getElementById('check-'+method);
-  chk.classList.add('selected'); chk.textContent='✓';
-  document.getElementById('transfer-info').style.display = method==='transfer' ? 'block' : 'none';
-  document.getElementById('digital-info').style.display = method==='digital' ? 'block' : 'none';
-}
-
 function processPayment() {
-  coStep(4);
+  coStep(5);
   cart = {}; updateCartUI();
-  // Simulate cook confirmation notification
-  setTimeout(() => {
-    showToast('👩‍🍳 Chef María confirmó tu pedido · Tiempo estimado: 35 min');
-  }, 2000);
+  setTimeout(()=>{
+    showToast('👩‍🍳 Chef María recibió tu pago · Preparando tu pedido 🍽️');
+  },2000);
 }
+
 
 // ════════════════════════════════════════
 // MEMBRESÍA — página completa de pago

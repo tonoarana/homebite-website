@@ -778,8 +778,8 @@
           3️⃣ <span data-i18n="c-step3">Elige tus platillos</span><br>
           4️⃣ <span data-i18n="c-step4">Paga al cocinero</span>
         </div>
-        <button onclick="showPage('register-cliente')" style="width:100%;background:#4CAF50;color:white;border:none;border-radius:10px;padding:11px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none" data-i18n="client-btn">Regístrate →</button>
-        <button onclick="showPage('map')" style="width:100%;background:none;border:none;color:rgba(255,255,255,0.5);font-size:12px;margin-top:8px;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-appearance:none" data-i18n="client-explore">o Explorar sin registrarse</button>
+        <button onclick="showPage('map')" style="width:100%;background:#4CAF50;color:white;border:none;border-radius:10px;padding:11px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none" data-i18n="client-btn">Buscar Cocineros →</button>
+        <button onclick="showPage('register-cliente')" style="width:100%;background:none;border:none;color:rgba(255,255,255,0.4);font-size:11px;margin-top:8px;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-appearance:none" data-i18n="client-explore">o Crear cuenta (opcional)</button>
       </div>
 
       <!-- COCINERO -->
@@ -828,6 +828,9 @@
           </div>
           <div style="margin-top:8px">
             <button class="btn-order" onclick="showPage('map')" style="padding:12px 20px"><span data-i18n="btn-search-cooks">Buscar Cocineros →</span></button>
+          </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--text-muted);background:var(--warm);border-radius:10px;padding:10px">
+            💡 No necesitas cuenta para explorar y pedir. El registro es opcional — solo si quieres dejar reseñas.
           </div>
         </div>
       </div>
@@ -904,7 +907,7 @@
      MAP PAGE — Leaflet + OpenStreetMap
 ══════════════════════════════════════════ -->
 <div id="page-map" class="page">
-  <button onclick="history.back()||showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin:16px 20px 0;padding:0;display:flex;align-items:center;gap:4px;-webkit-appearance:none">← Volver</button>
+  <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin:16px 20px 4px;padding:0;display:flex;align-items:center;gap:4px;-webkit-appearance:none">← Inicio</button>
   <div class="map-container">
     <div class="map-header">
       <h2>Mapa de Cocineros Cercanos</h2>
@@ -957,6 +960,8 @@
      PROFILE PAGE
 ══════════════════════════════════════════ -->
 <div id="page-profile" class="page">
+  <!-- Back button — always visible at top -->
+  <button onclick="showPage('map')" style="background:rgba(0,0,0,0.3);border:none;color:white;font-size:14px;font-weight:600;cursor:pointer;padding:10px 16px;display:flex;align-items:center;gap:6px;-webkit-appearance:none;width:100%">← Regresar al Mapa · Ver otros cocineros</button>
   <div class="profile-hero">
     <div class="profile-avatar">👩‍🍳</div>
     <div class="profile-info">
@@ -973,8 +978,6 @@
   </div>
 
   <div class="profile-body">
-    <!-- Back button -->
-    <button onclick="history.back()||showPage('map')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;padding:0;display:flex;align-items:center;gap:4px">← Volver al Mapa</button>
     <div class="profile-grid">
       <div>
         <h3 class="section-title" style="margin-bottom:8px">Sobre Mí</h3>
@@ -992,7 +995,7 @@
               <div style="font-weight:700;font-size:15px;color:var(--brown)">🛒 Tu pedido está listo</div>
               <div style="font-size:13px;color:var(--text-muted)" id="profile-cart-summary">0 platillos</div>
             </div>
-            <button class="btn-order" style="padding:14px 28px;font-size:15px;white-space:nowrap" onclick="goToCheckout()">Ir al Pago →</button>
+            <button class="btn-order" style="padding:14px 28px;font-size:15px;white-space:nowrap" onclick="goToCheckout()">Ver tu Carrito 🛒</button>
           </div>
         </div>
       </div>
@@ -1042,7 +1045,7 @@
 </div>
 ══════════════════════════════════════════ -->
 <div id="page-reviews" class="page">
-  <button onclick="history.back()||showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin:16px 20px 0;padding:0;display:flex;align-items:center;gap:4px;-webkit-appearance:none">← Volver</button>
+  <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin:16px 20px 0;padding:0;display:flex;align-items:center;gap:4px;-webkit-appearance:none">← Volver</button>
   <div class="reviews-container">
     <div class="reviews-header">
       <div class="section-title">Reseñas de Platillos</div>
@@ -1184,8 +1187,10 @@
         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
 
           <!-- Plan Fundador -->
-          <div id="plan-fundador" onclick="selectPlan('fundador')" style="background:linear-gradient(135deg,#2D1507,#5C2810);border:2px solid #F4A020;border-radius:16px;padding:16px 20px;cursor:pointer;position:relative">
-            <div style="position:absolute;top:12px;right:12px;background:#F4A020;color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px" id="reg-founder-badge">⭐ SOLO 20 LUGARES</div>
+          <div style="margin-bottom:4px">
+            <span style="background:#F4A020;color:white;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;display:inline-block" id="reg-founder-badge">⭐ SOLO 20 LUGARES</span>
+          </div>
+          <div id="plan-fundador" onclick="selectPlan('fundador')" style="background:linear-gradient(135deg,#2D1507,#5C2810);border:2px solid #F4A020;border-radius:16px;padding:16px 20px;cursor:pointer">
             <div style="display:flex;align-items:center;gap:14px">
               <span style="font-size:28px">🏅</span>
               <div>
@@ -1552,6 +1557,7 @@
         <div style="color:var(--brown-mid)">Chef María Rodríguez<br>123 Winslow Way, Bainbridge Island, WA 98110</div>
         <button onclick="showToast('🗺️ Abriendo Maps...')" style="margin-top:10px;background:#4CAF50;color:white;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;-webkit-appearance:none">Ver en Mapa 🗺️</button>
       </div>
+      <div id="del-address-block" style="display:block">
         <div class="form-group">
           <label class="form-label">Tu dirección de entrega</label>
           <input class="form-input" id="del-address" type="text" placeholder="Calle, número, colonia">
@@ -1561,7 +1567,7 @@
           <input class="form-input" id="del-notes" type="text" placeholder="Ej. Sin picante, tocar timbre 2B…">
         </div>
       </div>
-      <div style="display:flex;gap:12px">
+      <div style="display:flex;gap:12px;margin-top:8px">
         <button style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:#6C757D;color:white;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;-webkit-appearance:none" onclick="coStep(1)">← Atrás</button>
         <button style="flex:2;background:#2563EB;color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="coStep(3)">Continuar → Forma de Pago</button>
       </div>
@@ -1735,7 +1741,7 @@
      MEMBRESÍA PAGE — para cocineros
 ══════════════════════════════════════════ -->
 <div id="page-membresia" class="page">
-  <button onclick="history.back()||showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin:16px 20px 0;padding:0;display:flex;align-items:center;gap:4px;-webkit-appearance:none">← Volver</button>
+  <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin:16px 20px 0;padding:0;display:flex;align-items:center;gap:4px;-webkit-appearance:none">← Volver</button>
   <div style="background:linear-gradient(135deg,var(--brown) 0%,var(--brown-mid) 60%,var(--orange) 100%);padding:60px 24px 50px;text-align:center">
     <div style="display:inline-block;background:rgba(255,255,255,0.15);color:#FFD9B8;font-size:12px;font-weight:600;padding:6px 16px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;border:1px solid rgba(255,255,255,0.2)">👨‍🍳 Para Cocineros</div>
     <h1 style="font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);font-weight:900;color:white;margin-bottom:12px">Haz crecer tu negocio<br>de comida casera</h1>
@@ -1781,8 +1787,11 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:32px;text-align:left">
 
         <!-- PLAN FUNDADOR -->
-        <div style="background:linear-gradient(160deg,#2D1507,#5C2810);border-radius:24px;padding:32px;position:relative;overflow:hidden;border:2px solid #F4A020">
-          <div style="position:absolute;top:16px;right:16px;background:#F4A020;color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px" id="mem-founder-badge">⭐ SOLO 20 LUGARES</div>
+        <div>
+          <div style="margin-bottom:6px">
+            <span style="background:#F4A020;color:white;font-size:11px;font-weight:700;padding:5px 16px;border-radius:20px;display:inline-block" id="mem-founder-badge">⭐ SOLO 20 LUGARES</span>
+          </div>
+          <div style="background:linear-gradient(160deg,#2D1507,#5C2810);border-radius:24px;padding:32px;position:relative;overflow:hidden;border:2px solid #F4A020">
           <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Plan Fundador</div>
           <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:#F4A020">3 meses gratis</div>
           <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:rgba(255,255,255,0.8);margin-bottom:4px">→ luego $7/mes</div>
@@ -1807,6 +1816,7 @@
           <div id="founder-btn-section">
             <button id="founder-main-btn" style="width:100%;background:#F4A020;color:white;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer" onclick="claimFounderSpot()">🏅 Ser Cocinero Fundador →</button>
           </div>
+        </div>
         </div>
 
         <!-- PLAN BÁSICO -->
@@ -2028,6 +2038,12 @@
       <h3>Tu Carrito 🛒</h3>
       <button class="close-btn" onclick="toggleCart()">✕</button>
     </div>
+    <!-- Botón regresar al menú -->
+    <div style="padding:12px 20px;border-bottom:1px solid var(--border);background:var(--warm)">
+      <button onclick="toggleCart();showPage('profile')" style="background:none;border:none;color:var(--orange);font-size:13px;font-weight:600;cursor:pointer;padding:0;display:flex;align-items:center;gap:6px;-webkit-appearance:none">
+        ← Regresar al menú · Agregar o quitar platillos
+      </button>
+    </div>
     <div class="cart-items" id="cart-items-list">
       <div class="empty-cart">
         <div class="empty-cart-icon">🍽️</div>
@@ -2040,7 +2056,7 @@
         <span>Total</span>
         <span id="cart-total">$0.00</span>
       </div>
-      <button class="btn-checkout" onclick="goToCheckout()">Proceder al Pago →</button>
+      <button class="btn-checkout" onclick="goToCheckout()">Continuar → Resumen del Pedido</button>
     </div>
   </div>
 </div>
@@ -2918,7 +2934,7 @@ function updateCartUI() {
   }
 
   if (items.length === 0) {
-    list.innerHTML = `<div class="empty-cart"><div class="empty-cart-icon">🍽️</div><p>Tu carrito está vacío</p><p style="font-size:13px;margin-top:4px">¡Agrega platillos deliciosos!</p></div>`;
+    list.innerHTML = `<div class="empty-cart"><div class="empty-cart-icon">🍽️</div><p>Tu carrito está vacío</p><p style="font-size:13px;margin-top:4px">¡Agrega platillos del menú!</p><button onclick="toggleCart();showPage('profile')" style="margin-top:12px;background:var(--orange);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">← Ver el Menú</button></div>`;
     footer.style.display = 'none';
   } else {
     list.innerHTML = items.map(([id,v]) => `
@@ -3183,7 +3199,8 @@ function showPage(name) {
   const mnBtn = document.getElementById('mn-' + name);
   if (mnBtn) mnBtn.classList.add('active');
   window.scrollTo(0, 0);
-  if (name === 'checkout') { renderCheckout(); coStep(1); }
+  if (name === 'register-cocinero') { cookRegStep(1); }
+  if (name === 'register-cliente') { }
   if (name === 'map') { setTimeout(initLeafletMap, 100); }
   if (name === 'cocina') { renderDashboard(); }
   if (name === 'profile') { renderMenu(); }
@@ -3587,8 +3604,8 @@ const translations = {
   es: {
     'home-title': 'Bienvenido a', 'home-subtitle': 'Comida casera cerca de ti',
     'client-title': 'Soy Cliente', 'cook-title': 'Soy Cocinero',
-    'client-btn': 'Regístrate →', 'cook-btn': 'Regístrate →',
-    'client-explore': 'o Explorar sin registrarse', 'cook-login': 'o Iniciar Sesión',
+    'client-btn': 'Buscar Cocineros →', 'cook-btn': 'Regístrate →',
+    'client-explore': 'o Crear cuenta (opcional)', 'cook-login': 'o Iniciar Sesión',
     'c-step1': 'Explora el mapa', 'c-step2': 'Elige tu cocinero',
     'c-step3': 'Elige tus platillos', 'c-step4': 'Paga al cocinero',
     'ck-step1': 'Elige tu plan', 'ck-step2': 'Arma tu perfil',
@@ -3621,8 +3638,8 @@ const translations = {
   en: {
     'home-title': 'Welcome to', 'home-subtitle': 'Home-cooked food near you',
     'client-title': "I'm a Client", 'cook-title': "I'm a Cook",
-    'client-btn': 'Sign Up →', 'cook-btn': 'Sign Up →',
-    'client-explore': 'or Explore without signing up', 'cook-login': 'or Log In',
+    'client-btn': 'Find Cooks →', 'cook-btn': 'Sign Up →',
+    'client-explore': 'or Create account (optional)', 'cook-login': 'or Log In',
     'c-step1': 'Explore the map', 'c-step2': 'Choose your cook',
     'c-step3': 'Choose your dishes', 'c-step4': 'Pay the cook',
     'ck-step1': 'Choose your plan', 'ck-step2': 'Set up your profile',
@@ -3655,8 +3672,8 @@ const translations = {
   pt: {
     'home-title': 'Bem-vindo ao', 'home-subtitle': 'Comida caseira perto de você',
     'client-title': 'Sou Cliente', 'cook-title': 'Sou Cozinheiro',
-    'client-btn': 'Cadastre-se →', 'cook-btn': 'Cadastre-se →',
-    'client-explore': 'ou Explorar sem cadastro', 'cook-login': 'ou Entrar',
+    'client-btn': 'Buscar Cozinheiros →', 'cook-btn': 'Cadastre-se →',
+    'client-explore': 'ou Criar conta (opcional)', 'cook-login': 'ou Entrar',
     'c-step1': 'Explore o mapa', 'c-step2': 'Escolha seu cozinheiro',
     'c-step3': 'Escolha seus pratos', 'c-step4': 'Pague o cozinheiro',
     'ck-step1': 'Escolha seu plano', 'ck-step2': 'Monte seu perfil',
@@ -3818,7 +3835,16 @@ function cookRegStep(step) {
       ind.classList.toggle('done', i < step);
     }
   }
-  // Scroll to top of page safely
+  // Reset photo preview if going back to step 1
+  if (step === 1) {
+    const photoArea = document.getElementById('creg-photo-area');
+    const photoResult = document.getElementById('creg-photo-result');
+    const menuList = document.getElementById('creg-menu-list');
+    if (photoArea) photoArea.style.display = 'block';
+    if (photoResult) photoResult.style.display = 'none';
+    if (menuList) menuList.innerHTML = '';
+    regDishes = [];
+  }
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 

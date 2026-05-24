@@ -7,7 +7,7 @@
 
 <!-- PWA Meta Tags -->
 <meta name="application-name" content="Micasero">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="no">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Micasero">
 <meta name="theme-color" content="#4A1E08">
@@ -2658,24 +2658,8 @@
   <div style="margin-top:8px;font-size:11px">© 2026 Micasero LLC · Wyoming, United States · Todos los derechos reservados</div>
 </div>
 
-<!-- MOBILE BOTTOM NAV -->
-<div class="mobile-nav" id="mobile-nav" style="display:grid!important;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:white;border-top:1px solid #e0d5c5;padding:8px 0 20px;grid-template-columns:repeat(5,1fr);box-shadow:0 -4px 20px rgba(0,0,0,0.08)">
-  <button onclick="showPage('home')" id="mn-home">
-    <span class="mn-icon">🏠</span><span class="mn-label" data-i18n="nav-home">Inicio</span>
-  </button>
-  <button onclick="showPage('map')" id="mn-map">
-    <span class="mn-icon">🗺️</span><span class="mn-label" data-i18n="nav-map">Mapa</span>
-  </button>
-  <button onclick="toggleCocinaMenu()" id="mn-profile">
-    <span class="mn-icon">👨‍🍳</span><span class="mn-label" data-i18n="nav-profile">Cocineros</span>
-  </button>
-  <button onclick="toggleCart()" id="mn-cart">
-    <span class="mn-icon">🛒</span><span class="mn-label" data-i18n="nav-cart">Carrito</span>
-  </button>
-  <button onclick="toggleMobileMenu()" id="mn-more">
-    <span class="mn-icon">☰</span><span class="mn-label" data-i18n="nav-more">Más</span>
-  </button>
 </div>
+
 
 <!-- COCINEROS SUBMENU -->
 <div id="cocina-submenu" style="display:none;position:fixed;bottom:70px;left:0;right:0;z-index:99;background:white;border-top:1px solid var(--border);box-shadow:0 -4px 24px rgba(0,0,0,0.12);border-radius:20px 20px 0 0;padding:20px 16px">
@@ -2921,6 +2905,27 @@
     </div>
   </div>
 </div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="mobile-nav" id="mobile-nav" style="display:grid!important;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:white;border-top:2px solid var(--orange);padding:8px 0 20px;grid-template-columns:repeat(5,1fr);box-shadow:0 -4px 20px rgba(0,0,0,0.15)">
+  <button onclick="showPage('home')" id="mn-home">
+    <span class="mn-icon">🏠</span><span class="mn-label" data-i18n="nav-home">Inicio</span>
+  </button>
+  <button onclick="showPage('map')" id="mn-map">
+    <span class="mn-icon">🗺️</span><span class="mn-label" data-i18n="nav-map">Mapa</span>
+  </button>
+  <button onclick="toggleCocinaMenu()" id="mn-profile">
+    <span class="mn-icon">👨‍🍳</span><span class="mn-label" data-i18n="nav-profile">Cocineros</span>
+  </button>
+  <button onclick="toggleCart()" id="mn-cart">
+    <span class="mn-icon">🛒</span><span class="mn-label" data-i18n="nav-cart">Carrito</span>
+  </button>
+  <button onclick="toggleMobileMenu()" id="mn-more">
+    <span class="mn-icon">☰</span><span class="mn-label" data-i18n="nav-more">Más</span>
+  </button>
+</div>
+
+
 
 <script>
 // ════════════════════════════════════════
@@ -4136,5 +4141,9 @@ document.addEventListener('DOMContentLoaded', function() {
   renderReviews();
 });
 </script>
+
+
+
+
 </body>
 </html>

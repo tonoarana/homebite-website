@@ -109,8 +109,9 @@
   }
 
   /* ── PAGES ── */
-  .page { display: none; padding-top: 64px; min-height: 100vh; overflow: hidden; }
-  .page.active { display: block; overflow: visible; }
+  .page { display: none; padding-top: 64px; min-height: 100vh; }
+  .page.active { display: block; }
+  body { overflow-x: hidden; }
 
   /* ── HOME PAGE ── */
   .hero {
@@ -867,40 +868,79 @@
   </div>
   <div style="height:1px;background:var(--border);margin:0 24px"></div>
 
-  <div class="section">
-    <div class="section-title"><span data-i18n="how-title">¿Cómo funciona Micasero?</span></div>
-    <div class="section-sub"><span data-i18n="how-sub">Simple, rápido y delicioso.</span></div>
-    <div class="how-grid">
-      <div class="how-card">
-        <div class="how-icon">🗺️</div>
-        <h3 data-i18n="how1-title">Encuentra tu Cocinero</h3>
-        <p data-i18n="how1-desc">Usa nuestro mapa interactivo para localizar chefs y ver sus menús directamente en tu área.</p>
-      </div>
-      <div class="how-card">
-        <div class="how-icon">🛒</div>
-        <h3 data-i18n="how2-title">Elige tu Platillo</h3>
-        <p data-i18n="how2-desc">Navega los menús, lee reseñas y agrega tus favoritos al carrito con un solo clic.</p>
-      </div>
-      <div class="how-card">
-        <div class="how-icon">🏠</div>
-        <h3 data-i18n="how3-title">Recibe o Recoge</h3>
-        <p data-i18n="how3-desc">Escoge delivery, recoge en casa del cocinero, o ¡vive una cena privada en su hogar!</p>
-      </div>
-      <div class="how-card">
-        <div class="how-icon">⭐</div>
-        <h3 data-i18n="how4-title">Apoya lo Local</h3>
-        <p data-i18n="how4-desc">Cada pedido ayuda a emprendedores culinarios a crecer y compartir su pasión.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="divider-section"></div>
-
+  <!-- Cocineros Destacados -->
   <div class="section">
     <div class="section-title"><span data-i18n="featured-title">Cocineros Destacados</span></div>
     <div class="section-sub"><span data-i18n="featured-sub">Los favoritos de tu comunidad esta semana.</span></div>
     <div class="featured-grid" id="featured-cooks"></div>
   </div>
+
+  <div style="height:1px;background:var(--border);margin:0 24px"></div>
+
+  <!-- Cómo funciona para el Cliente -->
+  <div class="section">
+    <div class="section-title"><span data-i18n="how-client-title">🍽️ ¿Cómo funciona para el Cliente?</span></div>
+    <div class="section-sub"><span data-i18n="how-sub">Simple, rápido y sin registro obligatorio.</span></div>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-icon">🗺️</div>
+        <h3 data-i18n="how1-title">Encuentra tu Cocinero</h3>
+        <p data-i18n="how1-desc">Usa nuestro mapa interactivo para localizar chefs y ver sus menús en tu área.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon">🛒</div>
+        <h3 data-i18n="how2-title">Elige tu Platillo</h3>
+        <p data-i18n="how2-desc">Navega los menús y agrega tus favoritos al carrito con un solo toque.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon">🏠</div>
+        <h3 data-i18n="how3-title">Recibe o Recoge</h3>
+        <p data-i18n="how3-desc">Escoge delivery, recoge en casa del cocinero, o vive una cena privada.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon">💰</div>
+        <h3 data-i18n="how4-title">Paga Directo</h3>
+        <p data-i18n="how4-desc">Pagas directo al cocinero — Venmo, PayPal, Zelle o QR. Sin intermediarios.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn-order" onclick="showPage('map')" style="padding:12px 28px">Buscar Cocineros →</button>
+    </div>
+  </div>
+
+  <div style="height:1px;background:var(--border);margin:0 24px"></div>
+
+  <!-- Cómo funciona para el Cocinero -->
+  <div class="section">
+    <div class="section-title"><span data-i18n="how-cook-title">👨‍🍳 ¿Cómo funciona para el Cocinero?</span></div>
+    <div class="section-sub"><span data-i18n="how-cook-sub">Publica tu menú y empieza a ganar desde casa.</span></div>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-icon">📋</div>
+        <h3 data-i18n="howc1-title">Crea tu Perfil</h3>
+        <p data-i18n="howc1-desc">Regístrate en minutos, sube tus platillos con fotos y precios.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon">📍</div>
+        <h3 data-i18n="howc2-title">Apareces en el Mapa</h3>
+        <p data-i18n="howc2-desc">Clientes cercanos te descubren en tiempo real en el mapa.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon">📬</div>
+        <h3 data-i18n="howc3-title">Recibes Pedidos</h3>
+        <p data-i18n="howc3-desc">Aceptas o rechazas pedidos desde tu dashboard. Tú mandas.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon">💵</div>
+        <h3 data-i18n="howc4-title">Cobras el 100%</h3>
+        <p data-i18n="howc4-desc">El cliente te paga directo. Micasero cobra solo la membresía — 0% comisión.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <button onclick="showPage('register-cocinero')" style="background:#4CAF50;color:white;border:none;border-radius:12px;padding:12px 28px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Registrarme como Cocinero →</button>
+    </div>
+  </div>
+
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -3648,7 +3688,7 @@ const translations = {
     'section-client': '🍽️ Si eres cliente', 'section-cook': '👨‍🍳 Si eres cocinero',
     'btn-search-cooks': 'Buscar Cocineros →', 'btn-activate': 'Activar membresía →',
     'featured-title': 'Cocineros Destacados', 'featured-sub': 'Los favoritos de tu comunidad esta semana.',
-    'how-title': '¿Cómo funciona Micasero?', 'how-sub': 'Simple, rápido y delicioso.',
+    'how-client-title': '🍽️ ¿Cómo funciona para el Cliente?', 'how-cook-title': '👨‍🍳 ¿Cómo funciona para el Cocinero?', 'how-cook-sub': 'Publica tu menú y empieza a ganar desde casa.', 'how-title': '¿Cómo funciona Micasero?', 'how-sub': 'Simple, rápido y delicioso.', 'howc1-title': 'Crea tu Perfil', 'howc1-desc': 'Regístrate en minutos y sube tus platillos.', 'howc2-title': 'Apareces en el Mapa', 'howc2-desc': 'Clientes cercanos te descubren en tiempo real.', 'howc3-title': 'Recibes Pedidos', 'howc3-desc': 'Aceptas o rechazas pedidos desde tu dashboard.', 'howc4-title': 'Cobras el 100%', 'howc4-desc': 'El cliente te paga directo. 0% comisión.',
     'how1-title': 'Encuentra tu Cocinero', 'how1-desc': 'Usa nuestro mapa para localizar chefs y ver sus menús en tu área.',
     'how2-title': 'Elige tu Platillo', 'how2-desc': 'Navega los menús y agrega tus favoritos al carrito.',
     'how3-title': 'Recibe o Recoge', 'how3-desc': 'Delivery, recoge en casa del cocinero, o cena privada.',
@@ -3682,7 +3722,7 @@ const translations = {
     'section-client': '🍽️ I am a Client', 'section-cook': '👨‍🍳 I am a Cook',
     'btn-search-cooks': 'Find Cooks →', 'btn-activate': 'Activate membership →',
     'featured-title': 'Featured Cooks', 'featured-sub': 'Community favorites this week.',
-    'how-title': 'How does Micasero work?', 'how-sub': 'Simple, fast and delicious.',
+    'how-client-title': '🍽️ How does it work for Clients?', 'how-cook-title': '👨‍🍳 How does it work for Cooks?', 'how-cook-sub': 'Publish your menu and start earning from home.', 'how-title': 'How does Micasero work?', 'how-sub': 'Simple, fast and delicious.', 'howc1-title': 'Create your Profile', 'howc1-desc': 'Sign up in minutes and upload your dishes.', 'howc2-title': 'Appear on the Map', 'howc2-desc': 'Nearby clients discover you in real time.', 'howc3-title': 'Receive Orders', 'howc3-desc': 'Accept or reject orders from your dashboard.', 'howc4-title': 'Earn 100%', 'howc4-desc': 'Client pays you directly. 0% commission.',
     'how1-title': 'Find your Cook', 'how1-desc': 'Use our map to find chefs and see their menus in your area.',
     'how2-title': 'Choose your Dish', 'how2-desc': 'Browse menus and add your favorites to the cart.',
     'how3-title': 'Receive or Pick Up', 'how3-desc': 'Delivery, pick up at the cook\'s home, or private dinner.',
@@ -3716,7 +3756,7 @@ const translations = {
     'section-client': '🍽️ Sou Cliente', 'section-cook': '👨‍🍳 Sou Cozinheiro',
     'btn-search-cooks': 'Buscar Cozinheiros →', 'btn-activate': 'Ativar adesão →',
     'featured-title': 'Cozinheiros em Destaque', 'featured-sub': 'Favoritos da comunidade esta semana.',
-    'how-title': 'Como funciona o Micasero?', 'how-sub': 'Simples, rápido e delicioso.',
+    'how-client-title': '🍽️ Como funciona para o Cliente?', 'how-cook-title': '👨‍🍳 Como funciona para o Cozinheiro?', 'how-cook-sub': 'Publique seu menu e comece a ganhar de casa.', 'how-title': 'Como funciona o Micasero?', 'how-sub': 'Simples, rápido e delicioso.', 'howc1-title': 'Crie seu Perfil', 'howc1-desc': 'Cadastre-se em minutos e suba seus pratos.', 'howc2-title': 'Apareça no Mapa', 'howc2-desc': 'Clientes próximos te descobrem em tempo real.', 'howc3-title': 'Receba Pedidos', 'howc3-desc': 'Aceite ou recuse pedidos pelo seu dashboard.', 'howc4-title': 'Receba 100%', 'howc4-desc': 'Cliente paga direto para você. 0% comissão.',
     'how1-title': 'Encontre seu Cozinheiro', 'how1-desc': 'Use nosso mapa para encontrar chefs e ver seus menus na sua área.',
     'how2-title': 'Escolha seu Prato', 'how2-desc': 'Navegue pelos menus e adicione seus favoritos ao carrinho.',
     'how3-title': 'Receba ou Retire', 'how3-desc': 'Delivery, retire na casa do cozinheiro, ou jantar privado.',
@@ -4068,7 +4108,9 @@ function selectPlan(plan) {
 
 // ════════════════════════════════════════
 // INIT
-// ════════════════════════════════════════
+// Hide all pages and show only home
+document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+document.getElementById('page-home').style.display = 'block';
 renderFeaturedCooks();
 renderMap();
 updateFounderUI();

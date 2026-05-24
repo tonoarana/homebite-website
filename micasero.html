@@ -694,9 +694,11 @@
   }
   .mobile-nav button .mn-icon { font-size: 22px; }
   .mobile-nav button.active { color: var(--orange); }
-  @media(max-width: 600px) {
-    .mobile-nav { display: grid; }
-    .page { padding-bottom: 80px; }
+  .mobile-nav { display: grid; }
+  .page { padding-bottom: 80px; }
+  @media(min-width: 769px) {
+    .mobile-nav { display: none; }
+    .page { padding-bottom: 0; }
   }
 </style>
 </head>

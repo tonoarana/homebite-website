@@ -2315,426 +2315,12 @@
   </div>
 </div>
 
-<!-- ── MODAL: Agregar / Editar platillo ── -->
-<div class="modal-overlay" id="dish-modal">
-  <div class="modal" style="max-width:460px">
-    <button class="modal-close" onclick="closeDishModal()">✕</button>
-    <h3 id="dish-modal-title">🍽️ Nuevo Platillo</h3>
-    <input type="hidden" id="dish-edit-id">
-
-    <div class="form-group">
-      <label class="form-label">Emoji del platillo</label>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px" id="emoji-picker">
-        <span>🍝</span><span>🌮</span><span>🍛</span><span>🍲</span><span>🍰</span>
-        <span>🥗</span><span>🍣</span><span>🥩</span><span>🫔</span><span>🥘</span>
-        <span>🍜</span><span>🥪</span><span>🍕</span><span>🥞</span><span>🍱</span>
-      </div>
-      <input class="form-input" id="dish-emoji" type="text" placeholder="Elige un emoji arriba o escribe uno" maxlength="2" style="margin-top:8px">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Nombre del platillo</label>
-      <input class="form-input" id="dish-name" type="text" placeholder="Ej. Tacos al Pastor">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Descripción</label>
-      <textarea class="form-input" id="dish-desc" placeholder="Ingredientes, preparación, alergenos..." style="min-height:80px;resize:vertical"></textarea>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="form-group">
-        <label class="form-label">Precio ($)</label>
-        <input class="form-input" id="dish-price" type="number" placeholder="0.00" step="0.50" min="0">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Categoría</label>
-        <select class="form-input" id="dish-category" style="cursor:pointer">
-          <option>Plato principal</option>
-          <option>Entrada</option>
-          <option>Sopa / Caldo</option>
-          <option>Postre</option>
-          <option>Bebida</option>
-          <option>Desayuno</option>
-          <option>Vegano</option>
-          <option>Sin Gluten</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Disponibilidad</label>
-      <div style="display:flex;gap:10px">
-        <div class="role-btn selected" id="avail-yes" onclick="setDishAvail(true)">✅ Disponible</div>
-        <div class="role-btn" id="avail-no" onclick="setDishAvail(false)">❌ Agotado</div>
-      </div>
-    </div>
-
-    <button class="btn-submit" onclick="saveDish()">💾 Guardar Platillo</button>
-  </div>
 
 
 
 
-<!-- ══════════════════════════════════════════
-     TÉRMINOS DE SERVICIO — Internacional
-══════════════════════════════════════════ -->
-<div id="page-terminos" class="page">
-  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
-    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
-    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Terms of Service / Términos de Servicio</h1>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Last updated / Última actualización: May 2026</p>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Micasero LLC · Wyoming, United States</p>
-
-    <!-- Aviso destacado -->
-    <div style="background:#FFF8F0;border-left:4px solid var(--orange);border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:28px;font-size:14px;line-height:1.7">
-      <strong>⚠️ Please read carefully before using Micasero.</strong><br>
-      By creating an account or using this platform, you agree to these terms in full. If you do not agree, do not use Micasero.<br><br>
-      <strong>Al crear una cuenta o usar esta plataforma, aceptas estos términos en su totalidad.</strong>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:28px;font-size:14px;line-height:1.8;color:var(--text)">
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">1. About Micasero / Sobre Micasero</h3>
-        <p>Micasero LLC ("Micasero", "we", "us") is a technology company incorporated in Wyoming, United States. Micasero operates an online marketplace platform that connects independent home cooks ("Cooks") with local customers ("Clients") who seek home-cooked meals.</p>
-        <p style="margin-top:8px"><strong>Micasero is a platform — not a food provider, restaurant, delivery service, employer, or payment processor for food transactions.</strong> Micasero's role is limited to providing software tools for discovery, visibility, and communication between Cooks and Clients.</p>
-      </div>
-
-      <div style="background:#F0F7FF;border-radius:12px;padding:16px 20px">
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. 🛡️ Platform Shield — No Liability for Food Transactions</h3>
-        <p>This is the most important section. <strong>Micasero does not process, handle, or guarantee food payments.</strong> All payments for food occur directly between Clients and Cooks using external methods (bank transfer, Venmo, PayPal, Zelle, WhatsApp, cash, etc.).</p>
-        <p style="margin-top:8px">Micasero is not responsible for and expressly disclaims all liability related to:</p>
-        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
-          <li>Food quality, safety, allergens, or health consequences</li>
-          <li>Foodborne illness or injury from consuming meals purchased through the platform</li>
-          <li>Disputes between Clients and Cooks regarding food, payment, or delivery</li>
-          <li>Non-delivery or late delivery of food orders</li>
-          <li>The accuracy of Cook profiles, descriptions, or pricing</li>
-          <li>Compliance by Cooks with local food safety, health, or business regulations</li>
-        </ul>
-        <p style="margin-top:10px">This limitation applies globally regardless of the country where the transaction occurs.</p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">3. Cook Responsibilities / Responsabilidades del Cocinero</h3>
-        <p>By registering as a Cook, you represent and warrant that:</p>
-        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
-          <li>You are solely responsible for complying with all local, state, national, and international laws regarding home food preparation, food safety, business licenses, and tax obligations in your jurisdiction</li>
-          <li>You have obtained all required permits, licenses, and certifications required by your local government</li>
-          <li>You will accurately represent your food, ingredients, allergens, and pricing</li>
-          <li>You will honor agreements made directly with Clients</li>
-          <li>You are an independent contractor, not an employee, agent, or partner of Micasero</li>
-        </ul>
-        <p style="margin-top:8px">Micasero does not verify food safety certifications, business licenses, or regulatory compliance. <strong>The Cook assumes full legal and financial responsibility for food prepared and sold.</strong></p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">4. Membership / Membresía</h3>
-        <p>Cooks receive a <strong>free 30-day trial</strong>. After the trial, Micasero charges a monthly membership fee of <strong>$15 USD/month</strong> (or local equivalent) to maintain an active, visible profile on the platform.</p>
-        <p style="margin-top:8px">If payment fails or the membership is canceled, the Cook's profile will be deactivated until the membership is reinstated. The membership fee is the <strong>only</strong> payment Micasero charges. Micasero does not charge commissions on food sales.</p>
-        <p style="margin-top:8px">Membership fees are non-refundable except where required by applicable law.</p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">5. Client Acknowledgment / Reconocimiento del Cliente</h3>
-        <p>By using Micasero as a Client, you acknowledge and agree that:</p>
-        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
-          <li>You are transacting directly with the Cook, not with Micasero</li>
-          <li>Micasero is not responsible for food quality, safety, or fulfillment</li>
-          <li>You assume all risk associated with purchasing and consuming food from independent home cooks</li>
-          <li>Any disputes must be resolved directly with the Cook</li>
-        </ul>
-      </div>
-
-      <div style="background:#FFF0F0;border-radius:12px;padding:16px 20px">
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">6. ⚖️ LIMITATION OF LIABILITY — CRITICAL</h3>
-        <p><strong>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, MICASERO LLC, ITS OFFICERS, DIRECTORS, EMPLOYEES, AND AGENTS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA, GOODWILL, OR OTHER INTANGIBLE LOSSES.</strong></p>
-        <p style="margin-top:8px">In no event shall Micasero's total liability to any party exceed the greater of: (a) the amount paid by that party to Micasero in the 12 months prior to the claim, or (b) $100 USD.</p>
-        <p style="margin-top:8px">This limitation applies regardless of the legal theory (contract, tort, negligence, strict liability, etc.) and even if Micasero has been advised of the possibility of such damages.</p>
-      </div>
-
-      <div style="background:#F0FFF4;border-radius:12px;padding:16px 20px">
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">7. ⚖️ Dispute Resolution — Mandatory Arbitration</h3>
-        <p><strong>PLEASE READ THIS SECTION CAREFULLY. IT AFFECTS YOUR LEGAL RIGHTS.</strong></p>
-        <p style="margin-top:8px">Any dispute, claim, or controversy arising from or relating to these Terms or your use of Micasero shall be resolved exclusively through <strong>binding individual arbitration</strong> administered by the American Arbitration Association (AAA) under its Consumer Arbitration Rules.</p>
-        <p style="margin-top:8px"><strong>Class Action Waiver:</strong> You agree to resolve disputes individually. <strong>You waive your right to participate in class action lawsuits or class-wide arbitration</strong> against Micasero.</p>
-        <p style="margin-top:8px">Exceptions: Either party may seek injunctive relief in a court of competent jurisdiction to prevent irreparable harm.</p>
-      </div>
-
-      <div style="background:#F0F4FF;border-radius:12px;padding:16px 20px">
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">8. 🌎 Governing Law & Jurisdiction</h3>
-        <p>These Terms are governed by the laws of the <strong>State of Wyoming, United States</strong>, without regard to conflict of law principles. Any legal proceedings not subject to arbitration shall be brought exclusively in the state or federal courts located in <strong>Wyoming, United States</strong>.</p>
-        <p style="margin-top:8px">By using Micasero from any country, you consent to this jurisdiction. This applies to users in Paraguay, Mexico, Spain, the United States, and all other countries where Micasero operates.</p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">9. International Use / Uso Internacional</h3>
-        <p>Micasero operates globally. Users are responsible for compliance with their local laws. Micasero makes no representation that the platform is appropriate or lawful in all jurisdictions. If use of Micasero is prohibited in your country, you must not use it.</p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">10. Indemnification / Indemnización</h3>
-        <p>You agree to defend, indemnify, and hold harmless Micasero LLC and its affiliates from any claims, liabilities, damages, losses, and expenses (including legal fees) arising from: (a) your use of the platform; (b) food you prepare or purchase; (c) your violation of these Terms; or (d) your violation of any applicable law.</p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">11. Modifications / Modificaciones</h3>
-        <p>Micasero reserves the right to modify these Terms at any time. We will provide at least 15 days' notice before material changes take effect. Continued use of the platform after changes constitutes acceptance.</p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">12. Contact / Contacto</h3>
-        <p>Micasero LLC<br>
-        Wyoming, United States<br>
-        Email: <strong>legal@micasero.app</strong></p>
-      </div>
-
-      <div style="background:var(--warm);border-radius:12px;padding:16px 20px;font-size:13px;color:var(--text-muted)">
-        ⚠️ <strong>Note:</strong> These Terms are designed for international use but do not replace legal advice. Micasero recommends consulting a startup attorney before launching commercially in new markets.
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     POLÍTICA DE PRIVACIDAD — Internacional
-══════════════════════════════════════════ -->
-<div id="page-privacidad" class="page">
-  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
-    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
-    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Privacy Policy / Política de Privacidad</h1>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Last updated / Última actualización: Mayo 2026</p>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Micasero LLC · Wyoming, United States</p>
-
-    <div style="background:#F0F4FF;border-left:4px solid #4A90D9;border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:28px;font-size:14px;line-height:1.7">
-      <strong>📋 Resumen simple:</strong> Micasero recopila solo lo necesario para funcionar. <strong>No vendemos tus datos.</strong> No procesamos pagos de comida. Los pagos de membresía van por Stripe (seguro, PCI-DSS). Puedes eliminar tu cuenta en cualquier momento.
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:28px;font-size:14px;line-height:1.8;color:var(--text)">
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">1. Información que recopilamos</h3>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="background:var(--warm);border-radius:10px;padding:14px">
-            <strong>📧 Información de cuenta</strong><br>
-            Nombre completo, correo electrónico, tipo de usuario (cliente/cocinero), foto de perfil (opcional), ciudad o zona aproximada.
-          </div>
-          <div style="background:var(--warm);border-radius:10px;padding:14px">
-            <strong>🍽️ Información del cocinero</strong><br>
-            Nombre del negocio, descripción, platillos y precios, fotos de platillos, métodos de contacto y pago que el cocinero elija publicar públicamente, horarios de disponibilidad.
-          </div>
-          <div style="background:var(--warm);border-radius:10px;padding:14px">
-            <strong>💳 Información de pago (solo membresía)</strong><br>
-            Los pagos de membresía son procesados por <strong>Stripe</strong>. Micasero almacena únicamente el identificador de la transacción y el estado del pago. <strong>Nunca almacenamos números de tarjeta, CVV, ni credenciales bancarias.</strong>
-          </div>
-          <div style="background:var(--warm);border-radius:10px;padding:14px">
-            <strong>📍 Ubicación</strong><br>
-            Solo con tu permiso explícito. Se usa para mostrar cocineros cercanos y para que el cocinero aparezca en el mapa. La ubicación exacta del cocinero nunca es pública — solo se muestra una zona aproximada.
-          </div>
-          <div style="background:var(--warm);border-radius:10px;padding:14px">
-            <strong>📱 Información del dispositivo</strong><br>
-            Modelo de dispositivo, versión del sistema operativo, versión de la app, token de notificaciones push (solo si las activas). No rastreamos tu actividad fuera de Micasero.
-          </div>
-          <div style="background:var(--warm);border-radius:10px;padding:14px">
-            <strong>📸 Contenido generado por el usuario</strong><br>
-            Fotos de platillos, reseñas y calificaciones que publicas voluntariamente.
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">2. Cómo usamos tu información</h3>
-        <ul style="margin:0 0 0 20px;display:flex;flex-direction:column;gap:8px">
-          <li>Crear y gestionar tu cuenta</li>
-          <li>Mostrar el perfil del cocinero en el mapa para que los clientes lo encuentren</li>
-          <li>Procesar el pago de membresía mensual</li>
-          <li>Enviarte notificaciones importantes sobre tu cuenta</li>
-          <li>Mejorar la plataforma, detectar errores y prevenir fraude</li>
-          <li>Cumplir con obligaciones legales internacionales</li>
-        </ul>
-        <p style="margin-top:10px;background:#F0FFF4;padding:12px;border-radius:10px"><strong>Lo que NO hacemos:</strong> No vendemos tu información. No la usamos para publicidad de terceros. No compartimos datos de clientes con cocineros más allá de lo acordado en un pedido.</p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">3. Con quién compartimos tu información</h3>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
-            <span style="font-size:20px">💳</span>
-            <div><strong>Stripe</strong> — procesamiento de pagos de membresía. <a href="https://stripe.com/privacy" target="_blank" style="color:var(--orange)">Ver su política de privacidad</a></div>
-          </div>
-          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
-            <span style="font-size:20px">🗄️</span>
-            <div><strong>Supabase</strong> — base de datos y autenticación segura. Datos almacenados en servidores con cifrado.</div>
-          </div>
-          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
-            <span style="font-size:20px">🗺️</span>
-            <div><strong>OpenStreetMap / Leaflet</strong> — visualización del mapa. No comparten datos de usuario.</div>
-          </div>
-          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
-            <span style="font-size:20px">🔔</span>
-            <div><strong>FCM / APNs</strong> — notificaciones push de Apple y Google, solo si las activas.</div>
-          </div>
-          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#FFF0F0;border-radius:10px">
-            <span style="font-size:20px">⚖️</span>
-            <div><strong>Autoridades legales</strong> — solo cuando sea requerido por ley aplicable, con orden judicial.</div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">4. 📸 Acceso a cámara y fotos</h3>
-        <p>Micasero solicita acceso a tu cámara y galería <strong>únicamente para estos fines:</strong></p>
-        <ul style="margin:10px 0 0 20px;display:flex;flex-direction:column;gap:6px">
-          <li><strong>Cocineros:</strong> subir foto de perfil y fotos de platillos para su menú</li>
-          <li><strong>Clientes:</strong> nunca se solicita acceso a cámara o galería</li>
-        </ul>
-        <p style="margin-top:10px">Las fotos se almacenan de forma segura y se muestran únicamente dentro de Micasero. <strong>No usamos tu cámara para ningún otro propósito y no compartimos tus fotos con anunciantes.</strong></p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">5. Retención de datos</h3>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Cuenta activa:</strong> Conservamos tu información mientras tu cuenta esté activa.</div>
-          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Cuenta eliminada:</strong> Eliminamos tu perfil e información personal en 3 meses. Los registros de pago de membresía se conservan hasta 7 años por obligaciones fiscales y contables.</div>
-          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Contenido público:</strong> Las reseñas que escribiste pueden permanecer anonimizadas después de eliminar tu cuenta.</div>
-        </div>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">6. 🔒 Seguridad</h3>
-        <ul style="margin:0 0 0 20px;display:flex;flex-direction:column;gap:6px">
-          <li>Todo el tráfico entre tu dispositivo y nuestros servidores está cifrado con <strong>HTTPS / TLS</strong></li>
-          <li>Las contraseñas se almacenan con hash seguro (bcrypt), nunca en texto plano</li>
-          <li>Los pagos son manejados por Stripe bajo infraestructura <strong>PCI-DSS</strong> certificada</li>
-          <li>Acceso a datos internos restringido solo al personal autorizado de Micasero</li>
-        </ul>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">7. 👶 Menores de edad</h3>
-        <p>Micasero <strong>no está dirigido a personas menores de 18 años.</strong> No recopilamos conscientemente información de menores. Si descubrimos que un menor ha creado una cuenta, la eliminaremos inmediatamente. Si eres padre/madre y crees que tu hijo tiene una cuenta, contáctanos en <strong>soporte@micasero.app</strong></p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">8. 🌎 Tus derechos (GDPR / CCPA)</h3>
-        <p>Dependiendo de tu país, tienes los siguientes derechos sobre tus datos:</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>✅ Acceso</strong><br>Ver qué datos tenemos sobre ti</div>
-          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>✏️ Corrección</strong><br>Corregir datos incorrectos</div>
-          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>🗑️ Eliminación</strong><br>Borrar tu cuenta y datos</div>
-          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>📦 Portabilidad</strong><br>Exportar tus datos</div>
-          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>🚫 Oposición</strong><br>Oponerte al procesamiento</div>
-          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>🔔 Notificaciones</strong><br>Desactivar desde ajustes</div>
-        </div>
-        <p style="margin-top:12px">Para ejercer cualquier derecho: <strong>privacidad@micasero.app</strong></p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">9. Cookies</h3>
-        <p>Usamos únicamente cookies técnicas necesarias para mantener tu sesión activa. <strong>No usamos cookies de publicidad ni de seguimiento de terceros.</strong></p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">10. Cambios a esta política</h3>
-        <p>Podemos actualizar esta política. Te notificaremos por correo o dentro de la app con al menos <strong>15 días de anticipación</strong> antes de cambios importantes.</p>
-      </div>
-
-      <div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">11. Contacto</h3>
-        <p>Micasero LLC · Wyoming, United States<br>
-        📧 Privacidad: <strong>privacidad@micasero.app</strong><br>
-        📧 Soporte general: <strong>soporte@micasero.app</strong></p>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     FOOTER con links legales
-══════════════════════════════════════════ -->
-<div style="background:var(--brown);color:rgba(255,255,255,0.6);text-align:center;padding:24px 20px 100px;font-size:13px">
-  <div style="font-family:'Playfair Display',serif;font-size:16px;color:white;margin-bottom:8px">Micasero</div>
-  <div style="margin-bottom:12px">Plataforma de comida casera local · Solo cobramos membresía al cocinero</div>
-  <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
-    <button onclick="showPage('terminos')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">⚖️ Términos</button>
-    <button onclick="showPage('privacidad')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">🔒 Privacidad</button>
-    <button onclick="showPage('cancelaciones')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">❌ Cancelaciones</button>
-    <button onclick="showPage('reembolsos')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">💰 Reembolsos</button>
-    <button onclick="showPage('delivery')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">🛵 Delivery</button>
-    <button onclick="showPage('contenido')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">📸 Contenido</button>
-  </div>
-  <div style="margin-top:10px">soporte@micasero.app · legal@micasero.app</div>
-  <div style="margin-top:8px;font-size:11px">© 2026 Micasero LLC · Wyoming, United States · Todos los derechos reservados</div>
-</div>
-
-</div>
 
 
-<!-- COCINEROS SUBMENU -->
-<div id="cocina-submenu" style="display:none;position:fixed;bottom:70px;left:0;right:0;z-index:99;background:white;border-top:1px solid var(--border);box-shadow:0 -4px 24px rgba(0,0,0,0.12);border-radius:20px 20px 0 0;padding:20px 16px">
-  <div style="font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">🔍 Buscar Cocineros</div>
-  <div style="display:flex;flex-direction:column;gap:10px">
-    <button onclick="activeFilter='todos';showPage('map');if(leafletMap)placeAllMarkers();closeCocinaMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;-webkit-appearance:none">
-      <span style="font-size:22px">👨‍🍳</span>
-      <div><div>Todos los Cocineros</div><div style="font-size:12px;color:var(--text-muted);font-weight:400">Ver todos disponibles cerca de ti</div></div>
-    </button>
-    <button onclick="showPage('map');closeCocinaMenu();setTimeout(()=>document.getElementById('filter-food').scrollIntoView(),300)" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;-webkit-appearance:none">
-      <span style="font-size:22px">🌮</span>
-      <div><div>Por Tipo de Comida</div><div style="font-size:12px;color:var(--text-muted);font-weight:400">Mexicana · Italiana · Asiática · Local</div></div>
-    </button>
-    <button onclick="showPage('map');closeCocinaMenu();setTimeout(()=>document.getElementById('filter-service').scrollIntoView(),300)" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;-webkit-appearance:none">
-      <span style="font-size:22px">🛵</span>
-      <div><div>Por Servicio</div><div style="font-size:12px;color:var(--text-muted);font-weight:400">Delivery · Recogida · Cenar en casa</div></div>
-    </button>
-  </div>
-  <button onclick="closeCocinaMenu()" style="width:100%;margin-top:14px;background:none;border:none;font-size:13px;color:var(--text-muted);cursor:pointer;padding:8px;-webkit-appearance:none">✕ Cerrar</button>
-</div>
-
-<!-- MOBILE MORE MENU -->
-<div id="mobile-more-menu" style="display:none;position:fixed;bottom:70px;left:0;right:0;z-index:99;background:white;border-top:1px solid var(--border);box-shadow:0 -4px 24px rgba(0,0,0,0.12);border-radius:20px 20px 0 0;padding:20px 16px 8px">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-    <button onclick="showPage('dashboard');closeMobileMenu()" style="background:#F0FFF4;border:1px solid #4CAF50;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:#2E7D52;-webkit-appearance:none">
-      <span style="font-size:22px">🍳</span><span data-i18n="nav-mymenu">Mi Menu</span>
-    </button>
-    <button onclick="showPage('pago-membresia');closeMobileMenu()" style="background:#FFF3EE;border:1px solid #F4C9A8;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);-webkit-appearance:none">
-      <span style="font-size:22px">💳</span>Membresía
-    </button>
-    <button onclick="showPage('login');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
-      <span style="font-size:22px">🔑</span>Iniciar Sesión
-    </button>
-    <button onclick="showPage('register');closeMobileMenu()" style="background:#4CAF50;border:none;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:white;-webkit-appearance:none">
-      <span style="font-size:22px">✨</span>Regístrate
-    </button>
-    <button onclick="showPage('reviews');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
-      <span style="font-size:22px">⭐</span>Reseñas
-    </button>
-    <button onclick="showPage('terminos');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
-      <span style="font-size:22px">⚖️</span>Términos
-    </button>
-    <button onclick="showPage('privacidad');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
-      <span style="font-size:22px">🔒</span>Privacidad
-    </button>
-    <button onclick="showPage('cancelaciones');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
-      <span style="font-size:22px">❌</span>Cancelaciones
-    </button>
-    <button onclick="showPage('reembolsos');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
-      <span style="font-size:22px">💰</span>Reembolsos
-    </button>
-    <button onclick="showPage('delivery');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
-      <span style="font-size:22px">🛵</span>Delivery
-    </button>
-  </div>
-
-  <!-- Selector de idioma -->
-  <div style="border-top:1px solid var(--border);padding-top:14px">
-    <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🌎 Idioma / Language</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button onclick="setLang('es');closeMobileMenu()" id="mobile-lang-es" style="background:var(--orange);color:white;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none">🇪🇸 Español</button>
-      <button onclick="setLang('en');closeMobileMenu()" id="mobile-lang-en" style="background:var(--warm);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;-webkit-appearance:none">🇺🇸 English</button>
-      <button onclick="setLang('pt');closeMobileMenu()" id="mobile-lang-pt" style="background:var(--warm);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;-webkit-appearance:none">🇧🇷 Português</button>
-    </div>
-  </div>
-  <button onclick="closeMobileMenu()" style="width:100%;margin-top:14px;background:none;border:none;font-size:13px;color:var(--text-muted);cursor:pointer;padding:8px;-webkit-appearance:none">✕ Cerrar</button>
-</div>
 
 <!-- ══════════════════════════════════════════
      POLÍTICA DE CANCELACIONES
@@ -3683,7 +3269,10 @@ function closeCocinaMenu() {
 
 function toggleMobileMenu() {
   const m = document.getElementById('mobile-more-menu');
-  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  if (!m) return;
+  const isHidden = m.style.display === 'none' || m.style.display === '';
+  m.style.display = isHidden ? 'block' : 'none';
+  m.style.webkitTransform = 'translateZ(0)';
 }
 function closeMobileMenu() {
   document.getElementById('mobile-more-menu').style.display = 'none';
@@ -4152,6 +3741,428 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+
+
+
+<!-- MOBILE MORE MENU -->
+<div id="mobile-more-menu" style="display:none;position:fixed;bottom:70px;left:0;right:0;z-index:9998;background:white;border-top:1px solid var(--border);box-shadow:0 -4px 24px rgba(0,0,0,0.12);border-radius:20px 20px 0 0;padding:20px 16px 8px;-webkit-transform:translateZ(0);transform:translateZ(0)">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+    <button onclick="showPage('dashboard');closeMobileMenu()" style="background:#F0FFF4;border:1px solid #4CAF50;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:#2E7D52;-webkit-appearance:none">
+      <span style="font-size:22px">🍳</span><span data-i18n="nav-mymenu">Mi Menu</span>
+    </button>
+    <button onclick="showPage('pago-membresia');closeMobileMenu()" style="background:#FFF3EE;border:1px solid #F4C9A8;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);-webkit-appearance:none">
+      <span style="font-size:22px">💳</span>Membresía
+    </button>
+    <button onclick="showPage('login');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">🔑</span>Iniciar Sesión
+    </button>
+    <button onclick="showPage('register');closeMobileMenu()" style="background:#4CAF50;border:none;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:white;-webkit-appearance:none">
+      <span style="font-size:22px">✨</span>Regístrate
+    </button>
+    <button onclick="showPage('reviews');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">⭐</span>Reseñas
+    </button>
+    <button onclick="showPage('terminos');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">⚖️</span>Términos
+    </button>
+    <button onclick="showPage('privacidad');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">🔒</span>Privacidad
+    </button>
+    <button onclick="showPage('cancelaciones');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">❌</span>Cancelaciones
+    </button>
+    <button onclick="showPage('reembolsos');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">💰</span>Reembolsos
+    </button>
+    <button onclick="showPage('delivery');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">🛵</span>Delivery
+    </button>
+  </div>
+
+  <!-- Selector de idioma -->
+  <div style="border-top:1px solid var(--border);padding-top:14px">
+    <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🌎 Idioma / Language</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="setLang('es');closeMobileMenu()" id="mobile-lang-es" style="background:var(--orange);color:white;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none">🇪🇸 Español</button>
+      <button onclick="setLang('en');closeMobileMenu()" id="mobile-lang-en" style="background:var(--warm);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;-webkit-appearance:none">🇺🇸 English</button>
+      <button onclick="setLang('pt');closeMobileMenu()" id="mobile-lang-pt" style="background:var(--warm);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;-webkit-appearance:none">🇧🇷 Português</button>
+    </div>
+  </div>
+  <button onclick="closeMobileMenu()" style="width:100%;margin-top:14px;background:none;border:none;font-size:13px;color:var(--text-muted);cursor:pointer;padding:8px;-webkit-appearance:none">✕ Cerrar</button>
+</div>
+
+<!-- COCINEROS SUBMENU -->
+<div id="cocina-submenu" style="display:none;position:fixed;bottom:70px;left:0;right:0;z-index:99;background:white;border-top:1px solid var(--border);box-shadow:0 -4px 24px rgba(0,0,0,0.12);border-radius:20px 20px 0 0;padding:20px 16px">
+  <div style="font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">🔍 Buscar Cocineros</div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <button onclick="activeFilter='todos';showPage('map');if(leafletMap)placeAllMarkers();closeCocinaMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;-webkit-appearance:none">
+      <span style="font-size:22px">👨‍🍳</span>
+      <div><div>Todos los Cocineros</div><div style="font-size:12px;color:var(--text-muted);font-weight:400">Ver todos disponibles cerca de ti</div></div>
+    </button>
+    <button onclick="showPage('map');closeCocinaMenu();setTimeout(()=>document.getElementById('filter-food').scrollIntoView(),300)" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;-webkit-appearance:none">
+      <span style="font-size:22px">🌮</span>
+      <div><div>Por Tipo de Comida</div><div style="font-size:12px;color:var(--text-muted);font-weight:400">Mexicana · Italiana · Asiática · Local</div></div>
+    </button>
+    <button onclick="showPage('map');closeCocinaMenu();setTimeout(()=>document.getElementById('filter-service').scrollIntoView(),300)" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;-webkit-appearance:none">
+      <span style="font-size:22px">🛵</span>
+      <div><div>Por Servicio</div><div style="font-size:12px;color:var(--text-muted);font-weight:400">Delivery · Recogida · Cenar en casa</div></div>
+    </button>
+  </div>
+  <button onclick="closeCocinaMenu()" style="width:100%;margin-top:14px;background:none;border:none;font-size:13px;color:var(--text-muted);cursor:pointer;padding:8px;-webkit-appearance:none">✕ Cerrar</button>
+</div>
+
+<!-- ── MODAL: Agregar / Editar platillo ── -->
+<div class="modal-overlay" id="dish-modal">
+  <div class="modal" style="max-width:460px">
+    <button class="modal-close" onclick="closeDishModal()">✕</button>
+    <h3 id="dish-modal-title">🍽️ Nuevo Platillo</h3>
+    <input type="hidden" id="dish-edit-id">
+
+    <div class="form-group">
+      <label class="form-label">Emoji del platillo</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px" id="emoji-picker">
+        <span>🍝</span><span>🌮</span><span>🍛</span><span>🍲</span><span>🍰</span>
+        <span>🥗</span><span>🍣</span><span>🥩</span><span>🫔</span><span>🥘</span>
+        <span>🍜</span><span>🥪</span><span>🍕</span><span>🥞</span><span>🍱</span>
+      </div>
+      <input class="form-input" id="dish-emoji" type="text" placeholder="Elige un emoji arriba o escribe uno" maxlength="2" style="margin-top:8px">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nombre del platillo</label>
+      <input class="form-input" id="dish-name" type="text" placeholder="Ej. Tacos al Pastor">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descripción</label>
+      <textarea class="form-input" id="dish-desc" placeholder="Ingredientes, preparación, alergenos..." style="min-height:80px;resize:vertical"></textarea>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group">
+        <label class="form-label">Precio ($)</label>
+        <input class="form-input" id="dish-price" type="number" placeholder="0.00" step="0.50" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Categoría</label>
+        <select class="form-input" id="dish-category" style="cursor:pointer">
+          <option>Plato principal</option>
+          <option>Entrada</option>
+          <option>Sopa / Caldo</option>
+          <option>Postre</option>
+          <option>Bebida</option>
+          <option>Desayuno</option>
+          <option>Vegano</option>
+          <option>Sin Gluten</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Disponibilidad</label>
+      <div style="display:flex;gap:10px">
+        <div class="role-btn selected" id="avail-yes" onclick="setDishAvail(true)">✅ Disponible</div>
+        <div class="role-btn" id="avail-no" onclick="setDishAvail(false)">❌ Agotado</div>
+      </div>
+    </div>
+
+    <button class="btn-submit" onclick="saveDish()">💾 Guardar Platillo</button>
+  </div>
+
+
+
+
+<!-- ══════════════════════════════════════════
+     TÉRMINOS DE SERVICIO — Internacional
+══════════════════════════════════════════ -->
+<div id="page-terminos" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Terms of Service / Términos de Servicio</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Last updated / Última actualización: May 2026</p>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Micasero LLC · Wyoming, United States</p>
+
+    <!-- Aviso destacado -->
+    <div style="background:#FFF8F0;border-left:4px solid var(--orange);border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:28px;font-size:14px;line-height:1.7">
+      <strong>⚠️ Please read carefully before using Micasero.</strong><br>
+      By creating an account or using this platform, you agree to these terms in full. If you do not agree, do not use Micasero.<br><br>
+      <strong>Al crear una cuenta o usar esta plataforma, aceptas estos términos en su totalidad.</strong>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:28px;font-size:14px;line-height:1.8;color:var(--text)">
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">1. About Micasero / Sobre Micasero</h3>
+        <p>Micasero LLC ("Micasero", "we", "us") is a technology company incorporated in Wyoming, United States. Micasero operates an online marketplace platform that connects independent home cooks ("Cooks") with local customers ("Clients") who seek home-cooked meals.</p>
+        <p style="margin-top:8px"><strong>Micasero is a platform — not a food provider, restaurant, delivery service, employer, or payment processor for food transactions.</strong> Micasero's role is limited to providing software tools for discovery, visibility, and communication between Cooks and Clients.</p>
+      </div>
+
+      <div style="background:#F0F7FF;border-radius:12px;padding:16px 20px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">2. 🛡️ Platform Shield — No Liability for Food Transactions</h3>
+        <p>This is the most important section. <strong>Micasero does not process, handle, or guarantee food payments.</strong> All payments for food occur directly between Clients and Cooks using external methods (bank transfer, Venmo, PayPal, Zelle, WhatsApp, cash, etc.).</p>
+        <p style="margin-top:8px">Micasero is not responsible for and expressly disclaims all liability related to:</p>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
+          <li>Food quality, safety, allergens, or health consequences</li>
+          <li>Foodborne illness or injury from consuming meals purchased through the platform</li>
+          <li>Disputes between Clients and Cooks regarding food, payment, or delivery</li>
+          <li>Non-delivery or late delivery of food orders</li>
+          <li>The accuracy of Cook profiles, descriptions, or pricing</li>
+          <li>Compliance by Cooks with local food safety, health, or business regulations</li>
+        </ul>
+        <p style="margin-top:10px">This limitation applies globally regardless of the country where the transaction occurs.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">3. Cook Responsibilities / Responsabilidades del Cocinero</h3>
+        <p>By registering as a Cook, you represent and warrant that:</p>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
+          <li>You are solely responsible for complying with all local, state, national, and international laws regarding home food preparation, food safety, business licenses, and tax obligations in your jurisdiction</li>
+          <li>You have obtained all required permits, licenses, and certifications required by your local government</li>
+          <li>You will accurately represent your food, ingredients, allergens, and pricing</li>
+          <li>You will honor agreements made directly with Clients</li>
+          <li>You are an independent contractor, not an employee, agent, or partner of Micasero</li>
+        </ul>
+        <p style="margin-top:8px">Micasero does not verify food safety certifications, business licenses, or regulatory compliance. <strong>The Cook assumes full legal and financial responsibility for food prepared and sold.</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">4. Membership / Membresía</h3>
+        <p>Cooks receive a <strong>free 30-day trial</strong>. After the trial, Micasero charges a monthly membership fee of <strong>$15 USD/month</strong> (or local equivalent) to maintain an active, visible profile on the platform.</p>
+        <p style="margin-top:8px">If payment fails or the membership is canceled, the Cook's profile will be deactivated until the membership is reinstated. The membership fee is the <strong>only</strong> payment Micasero charges. Micasero does not charge commissions on food sales.</p>
+        <p style="margin-top:8px">Membership fees are non-refundable except where required by applicable law.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">5. Client Acknowledgment / Reconocimiento del Cliente</h3>
+        <p>By using Micasero as a Client, you acknowledge and agree that:</p>
+        <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
+          <li>You are transacting directly with the Cook, not with Micasero</li>
+          <li>Micasero is not responsible for food quality, safety, or fulfillment</li>
+          <li>You assume all risk associated with purchasing and consuming food from independent home cooks</li>
+          <li>Any disputes must be resolved directly with the Cook</li>
+        </ul>
+      </div>
+
+      <div style="background:#FFF0F0;border-radius:12px;padding:16px 20px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">6. ⚖️ LIMITATION OF LIABILITY — CRITICAL</h3>
+        <p><strong>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, MICASERO LLC, ITS OFFICERS, DIRECTORS, EMPLOYEES, AND AGENTS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA, GOODWILL, OR OTHER INTANGIBLE LOSSES.</strong></p>
+        <p style="margin-top:8px">In no event shall Micasero's total liability to any party exceed the greater of: (a) the amount paid by that party to Micasero in the 12 months prior to the claim, or (b) $100 USD.</p>
+        <p style="margin-top:8px">This limitation applies regardless of the legal theory (contract, tort, negligence, strict liability, etc.) and even if Micasero has been advised of the possibility of such damages.</p>
+      </div>
+
+      <div style="background:#F0FFF4;border-radius:12px;padding:16px 20px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">7. ⚖️ Dispute Resolution — Mandatory Arbitration</h3>
+        <p><strong>PLEASE READ THIS SECTION CAREFULLY. IT AFFECTS YOUR LEGAL RIGHTS.</strong></p>
+        <p style="margin-top:8px">Any dispute, claim, or controversy arising from or relating to these Terms or your use of Micasero shall be resolved exclusively through <strong>binding individual arbitration</strong> administered by the American Arbitration Association (AAA) under its Consumer Arbitration Rules.</p>
+        <p style="margin-top:8px"><strong>Class Action Waiver:</strong> You agree to resolve disputes individually. <strong>You waive your right to participate in class action lawsuits or class-wide arbitration</strong> against Micasero.</p>
+        <p style="margin-top:8px">Exceptions: Either party may seek injunctive relief in a court of competent jurisdiction to prevent irreparable harm.</p>
+      </div>
+
+      <div style="background:#F0F4FF;border-radius:12px;padding:16px 20px">
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">8. 🌎 Governing Law & Jurisdiction</h3>
+        <p>These Terms are governed by the laws of the <strong>State of Wyoming, United States</strong>, without regard to conflict of law principles. Any legal proceedings not subject to arbitration shall be brought exclusively in the state or federal courts located in <strong>Wyoming, United States</strong>.</p>
+        <p style="margin-top:8px">By using Micasero from any country, you consent to this jurisdiction. This applies to users in Paraguay, Mexico, Spain, the United States, and all other countries where Micasero operates.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">9. International Use / Uso Internacional</h3>
+        <p>Micasero operates globally. Users are responsible for compliance with their local laws. Micasero makes no representation that the platform is appropriate or lawful in all jurisdictions. If use of Micasero is prohibited in your country, you must not use it.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">10. Indemnification / Indemnización</h3>
+        <p>You agree to defend, indemnify, and hold harmless Micasero LLC and its affiliates from any claims, liabilities, damages, losses, and expenses (including legal fees) arising from: (a) your use of the platform; (b) food you prepare or purchase; (c) your violation of these Terms; or (d) your violation of any applicable law.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">11. Modifications / Modificaciones</h3>
+        <p>Micasero reserves the right to modify these Terms at any time. We will provide at least 15 days' notice before material changes take effect. Continued use of the platform after changes constitutes acceptance.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:8px">12. Contact / Contacto</h3>
+        <p>Micasero LLC<br>
+        Wyoming, United States<br>
+        Email: <strong>legal@micasero.app</strong></p>
+      </div>
+
+      <div style="background:var(--warm);border-radius:12px;padding:16px 20px;font-size:13px;color:var(--text-muted)">
+        ⚠️ <strong>Note:</strong> These Terms are designed for international use but do not replace legal advice. Micasero recommends consulting a startup attorney before launching commercially in new markets.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     POLÍTICA DE PRIVACIDAD — Internacional
+══════════════════════════════════════════ -->
+<div id="page-privacidad" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:0">← Volver</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--brown);margin-bottom:4px">Privacy Policy / Política de Privacidad</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Last updated / Última actualización: Mayo 2026</p>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px">Micasero LLC · Wyoming, United States</p>
+
+    <div style="background:#F0F4FF;border-left:4px solid #4A90D9;border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:28px;font-size:14px;line-height:1.7">
+      <strong>📋 Resumen simple:</strong> Micasero recopila solo lo necesario para funcionar. <strong>No vendemos tus datos.</strong> No procesamos pagos de comida. Los pagos de membresía van por Stripe (seguro, PCI-DSS). Puedes eliminar tu cuenta en cualquier momento.
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:28px;font-size:14px;line-height:1.8;color:var(--text)">
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">1. Información que recopilamos</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>📧 Información de cuenta</strong><br>
+            Nombre completo, correo electrónico, tipo de usuario (cliente/cocinero), foto de perfil (opcional), ciudad o zona aproximada.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>🍽️ Información del cocinero</strong><br>
+            Nombre del negocio, descripción, platillos y precios, fotos de platillos, métodos de contacto y pago que el cocinero elija publicar públicamente, horarios de disponibilidad.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>💳 Información de pago (solo membresía)</strong><br>
+            Los pagos de membresía son procesados por <strong>Stripe</strong>. Micasero almacena únicamente el identificador de la transacción y el estado del pago. <strong>Nunca almacenamos números de tarjeta, CVV, ni credenciales bancarias.</strong>
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>📍 Ubicación</strong><br>
+            Solo con tu permiso explícito. Se usa para mostrar cocineros cercanos y para que el cocinero aparezca en el mapa. La ubicación exacta del cocinero nunca es pública — solo se muestra una zona aproximada.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>📱 Información del dispositivo</strong><br>
+            Modelo de dispositivo, versión del sistema operativo, versión de la app, token de notificaciones push (solo si las activas). No rastreamos tu actividad fuera de Micasero.
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px">
+            <strong>📸 Contenido generado por el usuario</strong><br>
+            Fotos de platillos, reseñas y calificaciones que publicas voluntariamente.
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">2. Cómo usamos tu información</h3>
+        <ul style="margin:0 0 0 20px;display:flex;flex-direction:column;gap:8px">
+          <li>Crear y gestionar tu cuenta</li>
+          <li>Mostrar el perfil del cocinero en el mapa para que los clientes lo encuentren</li>
+          <li>Procesar el pago de membresía mensual</li>
+          <li>Enviarte notificaciones importantes sobre tu cuenta</li>
+          <li>Mejorar la plataforma, detectar errores y prevenir fraude</li>
+          <li>Cumplir con obligaciones legales internacionales</li>
+        </ul>
+        <p style="margin-top:10px;background:#F0FFF4;padding:12px;border-radius:10px"><strong>Lo que NO hacemos:</strong> No vendemos tu información. No la usamos para publicidad de terceros. No compartimos datos de clientes con cocineros más allá de lo acordado en un pedido.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">3. Con quién compartimos tu información</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
+            <span style="font-size:20px">💳</span>
+            <div><strong>Stripe</strong> — procesamiento de pagos de membresía. <a href="https://stripe.com/privacy" target="_blank" style="color:var(--orange)">Ver su política de privacidad</a></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
+            <span style="font-size:20px">🗄️</span>
+            <div><strong>Supabase</strong> — base de datos y autenticación segura. Datos almacenados en servidores con cifrado.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
+            <span style="font-size:20px">🗺️</span>
+            <div><strong>OpenStreetMap / Leaflet</strong> — visualización del mapa. No comparten datos de usuario.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--warm);border-radius:10px">
+            <span style="font-size:20px">🔔</span>
+            <div><strong>FCM / APNs</strong> — notificaciones push de Apple y Google, solo si las activas.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#FFF0F0;border-radius:10px">
+            <span style="font-size:20px">⚖️</span>
+            <div><strong>Autoridades legales</strong> — solo cuando sea requerido por ley aplicable, con orden judicial.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">4. 📸 Acceso a cámara y fotos</h3>
+        <p>Micasero solicita acceso a tu cámara y galería <strong>únicamente para estos fines:</strong></p>
+        <ul style="margin:10px 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li><strong>Cocineros:</strong> subir foto de perfil y fotos de platillos para su menú</li>
+          <li><strong>Clientes:</strong> nunca se solicita acceso a cámara o galería</li>
+        </ul>
+        <p style="margin-top:10px">Las fotos se almacenan de forma segura y se muestran únicamente dentro de Micasero. <strong>No usamos tu cámara para ningún otro propósito y no compartimos tus fotos con anunciantes.</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">5. Retención de datos</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Cuenta activa:</strong> Conservamos tu información mientras tu cuenta esté activa.</div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Cuenta eliminada:</strong> Eliminamos tu perfil e información personal en 3 meses. Los registros de pago de membresía se conservan hasta 7 años por obligaciones fiscales y contables.</div>
+          <div style="background:var(--warm);border-radius:10px;padding:14px"><strong>Contenido público:</strong> Las reseñas que escribiste pueden permanecer anonimizadas después de eliminar tu cuenta.</div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">6. 🔒 Seguridad</h3>
+        <ul style="margin:0 0 0 20px;display:flex;flex-direction:column;gap:6px">
+          <li>Todo el tráfico entre tu dispositivo y nuestros servidores está cifrado con <strong>HTTPS / TLS</strong></li>
+          <li>Las contraseñas se almacenan con hash seguro (bcrypt), nunca en texto plano</li>
+          <li>Los pagos son manejados por Stripe bajo infraestructura <strong>PCI-DSS</strong> certificada</li>
+          <li>Acceso a datos internos restringido solo al personal autorizado de Micasero</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">7. 👶 Menores de edad</h3>
+        <p>Micasero <strong>no está dirigido a personas menores de 18 años.</strong> No recopilamos conscientemente información de menores. Si descubrimos que un menor ha creado una cuenta, la eliminaremos inmediatamente. Si eres padre/madre y crees que tu hijo tiene una cuenta, contáctanos en <strong>soporte@micasero.app</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">8. 🌎 Tus derechos (GDPR / CCPA)</h3>
+        <p>Dependiendo de tu país, tienes los siguientes derechos sobre tus datos:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>✅ Acceso</strong><br>Ver qué datos tenemos sobre ti</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>✏️ Corrección</strong><br>Corregir datos incorrectos</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>🗑️ Eliminación</strong><br>Borrar tu cuenta y datos</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>📦 Portabilidad</strong><br>Exportar tus datos</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>🚫 Oposición</strong><br>Oponerte al procesamiento</div>
+          <div style="background:var(--warm);border-radius:10px;padding:12px;font-size:13px"><strong>🔔 Notificaciones</strong><br>Desactivar desde ajustes</div>
+        </div>
+        <p style="margin-top:12px">Para ejercer cualquier derecho: <strong>privacidad@micasero.app</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">9. Cookies</h3>
+        <p>Usamos únicamente cookies técnicas necesarias para mantener tu sesión activa. <strong>No usamos cookies de publicidad ni de seguimiento de terceros.</strong></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">10. Cambios a esta política</h3>
+        <p>Podemos actualizar esta política. Te notificaremos por correo o dentro de la app con al menos <strong>15 días de anticipación</strong> antes de cambios importantes.</p>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--brown);margin-bottom:10px">11. Contacto</h3>
+        <p>Micasero LLC · Wyoming, United States<br>
+        📧 Privacidad: <strong>privacidad@micasero.app</strong><br>
+        📧 Soporte general: <strong>soporte@micasero.app</strong></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FOOTER con links legales
+══════════════════════════════════════════ -->
+<div style="background:var(--brown);color:rgba(255,255,255,0.6);text-align:center;padding:24px 20px 100px;font-size:13px">
+  <div style="font-family:'Playfair Display',serif;font-size:16px;color:white;margin-bottom:8px">Micasero</div>
+  <div style="margin-bottom:12px">Plataforma de comida casera local · Solo cobramos membresía al cocinero</div>
+  <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+    <button onclick="showPage('terminos')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">⚖️ Términos</button>
+    <button onclick="showPage('privacidad')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">🔒 Privacidad</button>
+    <button onclick="showPage('cancelaciones')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">❌ Cancelaciones</button>
+    <button onclick="showPage('reembolsos')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">💰 Reembolsos</button>
+    <button onclick="showPage('delivery')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">🛵 Delivery</button>
+    <button onclick="showPage('contenido')" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;text-decoration:underline">📸 Contenido</button>
+  </div>
+  <div style="margin-top:10px">soporte@micasero.app · legal@micasero.app</div>
+  <div style="margin-top:8px;font-size:11px">© 2026 Micasero LLC · Wyoming, United States · Todos los derechos reservados</div>
+</div>
+
+</div>
 
 </body>
 </html>

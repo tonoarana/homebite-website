@@ -679,7 +679,7 @@
 
   /* ── MOBILE BOTTOM NAV ── */
   .mobile-nav {
-    display: none;
+    display: grid;
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
     background: white; border-top: 1px solid var(--border);
     padding: 8px 0 20px;
@@ -694,11 +694,12 @@
   }
   .mobile-nav button .mn-icon { font-size: 22px; }
   .mobile-nav button.active { color: var(--orange); }
-  .mobile-nav { display: grid; }
-  .page { padding-bottom: 80px; }
   @media(min-width: 769px) {
     .mobile-nav { display: none; }
     .page { padding-bottom: 0; }
+  }
+  @media(max-width: 768px) {
+    .page { padding-bottom: 80px; }
   }
 </style>
 </head>

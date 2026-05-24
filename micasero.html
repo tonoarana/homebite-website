@@ -109,8 +109,8 @@
   }
 
   /* ── PAGES ── */
-  .page { display: none; padding-top: 64px; min-height: 100vh; }
-  .page.active { display: block; }
+  .page { display: none !important; padding-top: 64px; min-height: 100vh; }
+  .page.active { display: block !important; }
   body { overflow-x: hidden; }
 
   /* ── HOME PAGE ── */
@@ -3256,18 +3256,25 @@ function renderReviews() {
 // NAVIGATION
 // ════════════════════════════════════════
 function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
+  // Hide ALL pages explicitly
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+    p.style.display = 'none';
+  });
+  // Show only the target page
+  const target = document.getElementById('page-' + name);
+  if (target) {
+    target.classList.add('active');
+    target.style.display = 'block';
+  }
   document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
   const navBtn = document.getElementById('nav-' + name);
   if (navBtn) navBtn.classList.add('active');
-  // Mobile nav highlight
   document.querySelectorAll('.mobile-nav button').forEach(b => b.classList.remove('active'));
   const mnBtn = document.getElementById('mn-' + name);
   if (mnBtn) mnBtn.classList.add('active');
   window.scrollTo(0, 0);
   if (name === 'register-cocinero') { cookRegStep(1); }
-  if (name === 'register-cliente') { }
   if (name === 'map') { setTimeout(initLeafletMap, 100); }
   if (name === 'cocina') { renderDashboard(); }
   if (name === 'profile') { renderMenu(); }
@@ -4107,10 +4114,19 @@ function selectPlan(plan) {
 }
 
 // ════════════════════════════════════════
-// INIT
-// Hide all pages and show only home
-document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-document.getElementById('page-home').style.display = 'block';
+// INIT — Force hide all pages except home
+(function() {
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(p => {
+    p.classList.remove('active');
+    p.style.display = 'none';
+  });
+  const home = document.getElementById('page-home');
+  if (home) {
+    home.classList.add('active');
+    home.style.display = 'block';
+  }
+})();
 renderFeaturedCooks();
 renderMap();
 updateFounderUI();

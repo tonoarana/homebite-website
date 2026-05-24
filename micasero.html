@@ -109,8 +109,8 @@
   }
 
   /* ── PAGES ── */
-  .page { display: none !important; padding-top: 64px; min-height: 100vh; }
-  .page.active { display: block !important; }
+  .page { display: none; padding-top: 64px; min-height: 100vh; }
+  .page.active { display: block; }
   body { overflow-x: hidden; }
 
   /* ── HOME PAGE ── */
@@ -3256,12 +3256,12 @@ function renderReviews() {
 // NAVIGATION
 // ════════════════════════════════════════
 function showPage(name) {
-  // Hide ALL pages explicitly
+  // Hide ALL pages
   document.querySelectorAll('.page').forEach(p => {
     p.classList.remove('active');
     p.style.display = 'none';
   });
-  // Show only the target page
+  // Show target page
   const target = document.getElementById('page-' + name);
   if (target) {
     target.classList.add('active');
@@ -4114,23 +4114,22 @@ function selectPlan(plan) {
 }
 
 // ════════════════════════════════════════
-// INIT — Force hide all pages except home
-(function() {
-  const pages = document.querySelectorAll('.page');
-  pages.forEach(p => {
+// INIT
+document.addEventListener('DOMContentLoaded', function() {
+  // Force hide ALL pages
+  document.querySelectorAll('.page').forEach(p => {
     p.classList.remove('active');
-    p.style.display = 'none';
+    p.style.cssText += '; display: none !important';
   });
+  // Show only home
   const home = document.getElementById('page-home');
-  if (home) {
-    home.classList.add('active');
-    home.style.display = 'block';
-  }
-})();
-renderFeaturedCooks();
-renderMap();
-updateFounderUI();
-renderReviews();
+  home.style.cssText = home.style.cssText.replace('display: none !important', 'display: block');
+  home.classList.add('active');
+  renderFeaturedCooks();
+  renderMap();
+  updateFounderUI();
+  renderReviews();
+});
 </script>
 </body>
 </html>

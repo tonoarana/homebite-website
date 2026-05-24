@@ -679,12 +679,20 @@
 
   /* ── MOBILE BOTTOM NAV ── */
   .mobile-nav {
+    display: -webkit-grid;
     display: grid;
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-    background: white; border-top: 1px solid var(--border);
+    position: -webkit-sticky;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 9999;
+    background: white;
+    border-top: 2px solid var(--orange);
     padding: 8px 0 20px;
+    -webkit-grid-template-columns: repeat(5, 1fr);
     grid-template-columns: repeat(5, 1fr);
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
   }
   .mobile-nav button {
     background: none; border: none; cursor: pointer;
@@ -2907,7 +2915,7 @@
 </div>
 
 <!-- MOBILE BOTTOM NAV -->
-<div class="mobile-nav" id="mobile-nav" style="display:grid!important;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:white;border-top:2px solid var(--orange);padding:8px 0 20px;grid-template-columns:repeat(5,1fr);box-shadow:0 -4px 20px rgba(0,0,0,0.15)">
+<div class="mobile-nav" id="mobile-nav" style="display:grid!important;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:white;border-top:2px solid var(--orange);padding:8px 0 20px;grid-template-columns:repeat(5,1fr);box-shadow:0 -4px 20px rgba(0,0,0,0.15);-webkit-transform:translateZ(0);transform:translateZ(0)">
   <button onclick="showPage('home')" id="mn-home">
     <span class="mn-icon">🏠</span><span class="mn-label" data-i18n="nav-home">Inicio</span>
   </button>

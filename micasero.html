@@ -689,8 +689,8 @@
     background: white;
     border-top: 2px solid var(--orange);
     padding: 8px 0 20px;
-    -webkit-grid-template-columns: repeat(6, 1fr);
-    grid-template-columns: repeat(6, 1fr);
+    -webkit-grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
@@ -872,7 +872,7 @@
             <div><strong data-i18n="ck4-title">¡Cobra directo!</strong><br><span style="font-size:13px;color:var(--text-muted)" data-i18n="ck4-desc">0% comisión — el dinero es tuyo</span></div>
           </div>
           <div style="margin-top:8px">
-            <button onclick="showPage('pago-membresia')" style="width:100%;background:#4CAF50;color:white;border:none;border-radius:10px;padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer"><span data-i18n="btn-activate">Activar membresía →</span></button>
+            <button onclick="showPage('register-cocinero')" style="width:100%;background:#4CAF50;color:white;border:none;border-radius:10px;padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Regístrate como Cocinero →</button>
           </div>
         </div>
       </div>
@@ -1528,7 +1528,7 @@
         </div>
         <div style="display:flex;gap:10px">
           <button onclick="cookRegStep(5)" style="flex:1;background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">← Atrás</button>
-          <button class="btn-submit" style="flex:2;background:#4CAF50" onclick="finishCookReg()">¡Listo! Activar mi perfil 🚀</button>
+          <button class="btn-submit" style="flex:2;background:#4CAF50" onclick="finishCookReg()">Crear mi Perfil → Activar Plan 🚀</button>
         </div>
       </div>
 
@@ -1759,7 +1759,7 @@
       </div>
       <div style="display:flex;gap:12px;margin-top:8px">
         <button style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:#6C757D;color:white;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;-webkit-appearance:none" onclick="coStep(1)">← Atrás</button>
-        <button style="flex:2;background:#2563EB;color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="coStep(3)">Continuar → Forma de Pago</button>
+        <button style="flex:2;background:var(--orange);color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="coStep(3)">Continuar → Forma de Pago</button>
       </div>
     </div>
 
@@ -2045,8 +2045,8 @@
         <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-muted)">Próximo cobro</span><strong id="fecha-proxima">—</strong></div>
         <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Comisión por pedido</span><strong style="color:var(--green)">0%</strong></div>
       </div>
-      <button class="btn-order" style="padding:14px 32px;font-size:15px;width:100%" onclick="showPage('profile')">
-        Ir a mi Perfil de Cocinero →
+      <button class="btn-order" style="padding:14px 32px;font-size:15px;width:100%;background:#4CAF50" onclick="renderDashboard();showPage('cocina')">
+        ¡Ir a mi Panel de Cocinero! 🍳
       </button>
     </div>
 
@@ -2522,7 +2522,7 @@
 </div>
 
 <!-- MOBILE BOTTOM NAV -->
-<div class="mobile-nav" id="mobile-nav" style="display:grid!important;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:white;border-top:2px solid var(--orange);padding:8px 0 20px;grid-template-columns:repeat(6,1fr);box-shadow:0 -4px 20px rgba(0,0,0,0.15);-webkit-transform:translateZ(0);transform:translateZ(0)">
+<div class="mobile-nav" id="mobile-nav" style="display:grid!important;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:white;border-top:2px solid var(--orange);padding:8px 0 20px;grid-template-columns:repeat(5,1fr);box-shadow:0 -4px 20px rgba(0,0,0,0.15);-webkit-transform:translateZ(0);transform:translateZ(0)">
   <button onclick="showPage('home')" id="mn-home">
     <span class="mn-icon">🏠</span><span class="mn-label" data-i18n="nav-home">Inicio</span>
   </button>
@@ -2531,9 +2531,6 @@
   </button>
   <button onclick="showPage('profile')" id="mn-profile">
     <span class="mn-icon">👨‍🍳</span><span class="mn-label">Cocineros</span>
-  </button>
-  <button onclick="showPage('cocina')" id="mn-cocina">
-    <span class="mn-icon">🍳</span><span class="mn-label">Mi Menu</span>
   </button>
   <button onclick="toggleCart()" id="mn-cart">
     <span class="mn-icon">🛒</span><span class="mn-label" data-i18n="nav-cart">Carrito</span>
@@ -3136,6 +3133,12 @@ let cookMenu = [
 let dishAvailable = true;
 let cookAvailable = true;
 
+function showCookAccess() {
+  // In demo mode, go directly to cook dashboard
+  // In production, would check if user is logged in as cook
+  showPage('cocina');
+}
+
 function showCookTab(tab) {
   ['pedidos','menu','config'].forEach(t => {
     const content = document.getElementById('cook-tab-'+t);
@@ -3553,9 +3556,9 @@ function deleteDishPhoto(id) {
 }
 
 function finishCookReg() {
-  showToast('🎉 ¡Bienvenido a Micasero! Tu perfil está listo.');
-  renderDashboard();
-  showPage('cocina');
+  // Profile created - now go to payment to activate
+  showPage('pago-membresia');
+  showToast('✅ Perfil creado · Ahora activa tu plan para aparecer en el mapa');
 }
 
 function previewQR(input) {
@@ -3819,8 +3822,9 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- MOBILE MORE MENU -->
 <div id="mobile-more-menu" style="display:none;position:fixed;bottom:70px;left:0;right:0;z-index:9998;background:white;border-top:1px solid var(--border);box-shadow:0 -4px 24px rgba(0,0,0,0.12);border-radius:20px 20px 0 0;padding:20px 16px 8px;-webkit-transform:translateZ(0);transform:translateZ(0)">
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-    <button onclick="showPage('dashboard');closeMobileMenu()" style="background:#F0FFF4;border:1px solid #4CAF50;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:#2E7D52;-webkit-appearance:none">
-      <span style="font-size:22px">🍳</span><span data-i18n="nav-mymenu">Mi Menu</span>
+    <!-- Mi Menu - solo para cocineros registrados -->
+    <button onclick="showCookAccess();closeMobileMenu()" style="background:linear-gradient(135deg,#2D1507,#5C2810);border:1px solid #F4A020;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:#F4A020;-webkit-appearance:none">
+      <span style="font-size:22px">🍳</span><span>Mi Menu</span><span style="font-size:9px;color:rgba(255,200,80,0.7)">Solo cocineros</span>
     </button>
     <button onclick="showPage('pago-membresia');closeMobileMenu()" style="background:#FFF3EE;border:1px solid #F4C9A8;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);-webkit-appearance:none">
       <span style="font-size:22px">💳</span>Membresía

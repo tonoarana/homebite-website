@@ -583,6 +583,7 @@
     box-shadow: -8px 0 40px rgba(0,0,0,0.15);
     display: flex; flex-direction: column;
     animation: slideIn 0.3s ease;
+    padding-bottom: 80px;
   }
   @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
   .cart-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
@@ -707,7 +708,7 @@
     .page { padding-bottom: 0; }
   }
   @media(max-width: 768px) {
-    .page { padding-bottom: 80px; }
+    .page { padding-bottom: 100px; }
   }
 </style>
 </head>
@@ -1537,19 +1538,19 @@
      CHECKOUT PAGE — pago directo al cocinero
 ══════════════════════════════════════════ -->
 <div id="page-checkout" class="page">
-  <div class="checkout-container" style="max-width:700px">
+  <div class="checkout-container" style="max-width:700px;padding-bottom:120px">
 
     <!-- Pasos -->
-    <div style="display:flex;align-items:center;gap:0;margin-bottom:32px;overflow-x:auto">
-      <div class="co-step active" id="step-ind-1"><span>1</span> Resumen</div>
+    <div style="display:flex;align-items:center;gap:0;margin-bottom:24px;overflow-x:hidden;width:100%">
+      <div class="co-step active" id="step-ind-1"><span>1</span><span style="font-size:10px">Resumen</span></div>
       <div class="co-step-line"></div>
-      <div class="co-step" id="step-ind-2"><span>2</span> Entrega</div>
+      <div class="co-step" id="step-ind-2"><span>2</span><span style="font-size:10px">Entrega</span></div>
       <div class="co-step-line"></div>
-      <div class="co-step" id="step-ind-3"><span>3</span> Confirmar</div>
+      <div class="co-step" id="step-ind-3"><span>3</span><span style="font-size:10px">Confirmar</span></div>
       <div class="co-step-line"></div>
-      <div class="co-step" id="step-ind-4"><span>4</span> Pagar</div>
+      <div class="co-step" id="step-ind-4"><span>4</span><span style="font-size:10px">Pagar</span></div>
       <div class="co-step-line"></div>
-      <div class="co-step" id="step-ind-5"><span>5</span> ¡Listo!</div>
+      <div class="co-step" id="step-ind-5"><span>5</span><span style="font-size:10px">¡Listo!</span></div>
     </div>
 
     <!-- PASO 1: Resumen del pedido -->
@@ -1570,57 +1571,6 @@
     </div>
 
     <!-- PASO 2: Tipo de entrega -->
-    <div id="co-step-2" style="display:none">
-      <div class="checkout-title">🚚 ¿Cómo recibirás tu pedido?</div>
-      <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0">
-        <div class="delivery-opt selected" id="del-delivery" onclick="selectDelivery2('delivery')">
-          <div class="delivery-opt-icon">🛵</div>
-          <div class="delivery-opt-info">
-            <div class="delivery-opt-name">Delivery a domicilio</div>
-            <div class="delivery-opt-desc">El cocinero o un repartidor te lo lleva · ~30–45 min</div>
-          </div>
-          <div class="pm-check selected" id="del-check-delivery">✓</div>
-        </div>
-        <div class="delivery-opt" id="del-pickup" onclick="selectDelivery2('pickup')">
-          <div class="delivery-opt-icon">🏠</div>
-          <div class="delivery-opt-info">
-            <div class="delivery-opt-name">Recogida en domicilio del cocinero</div>
-            <div class="delivery-opt-desc">Tú pasas a recogerlo · Listo en ~20 min</div>
-          </div>
-          <div class="pm-check" id="del-check-pickup"></div>
-        </div>
-        <div class="delivery-opt" id="del-cena" onclick="selectDelivery2('cena')">
-          <div class="delivery-opt-icon">🕯️</div>
-          <div class="delivery-opt-info">
-            <div class="delivery-opt-name">Cena privada en casa del cocinero</div>
-            <div class="delivery-opt-desc">Experiencia única · Requiere reserva con anticipación</div>
-          </div>
-          <div class="pm-check" id="del-check-cena"></div>
-        </div>
-      </div>
-      <div id="cena-note" style="display:none;background:#F5EFF9;border:1px solid #C39BD3;border-radius:12px;padding:14px 16px;margin-top:-8px;margin-bottom:12px;font-size:13px;color:#6C3483;line-height:1.6">
-        🕯️ <strong>Cena privada:</strong> El cocinero te contactará para confirmar fecha, hora y número de personas.
-      </div>
-      <div id="cook-address-note" style="display:none;background:#F0FFF4;border:1.5px solid #4CAF50;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13px">
-        <div style="font-weight:700;color:var(--brown);margin-bottom:6px">📍 Dirección del cocinero:</div>
-        <div style="color:var(--brown-mid)">Chef María Rodríguez<br>123 Winslow Way, Bainbridge Island, WA 98110</div>
-        <button onclick="showToast('🗺️ Abriendo Maps...')" style="margin-top:10px;background:#4CAF50;color:white;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;-webkit-appearance:none">Ver en Mapa 🗺️</button>
-      </div>
-      <div id="del-address-block" style="display:block">
-        <div class="form-group">
-          <label class="form-label">Tu dirección de entrega</label>
-          <input class="form-input" id="del-address" type="text" placeholder="Calle, número, colonia">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Notas para el cocinero (opcional)</label>
-          <input class="form-input" id="del-notes" type="text" placeholder="Ej. Sin picante, tocar timbre 2B…">
-        </div>
-      </div>
-      <div style="display:flex;gap:12px;margin-top:8px">
-        <button style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:#6C757D;color:white;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;-webkit-appearance:none" onclick="coStep(1)">← Atrás</button>
-        <button style="flex:2;background:var(--orange);color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="coStep(3)">Continuar → Confirmar Pedido</button>
-      </div>
-    </div>
 
     <!-- PASO 3: Confirmar Pedido -->
     <div id="co-step-3" style="display:none">
@@ -1755,23 +1705,6 @@
     </div>
 
   </div>
-
-<!-- PASO 1: Resumen del pedido -->
-    <div id="co-step-1">
-      <div class="checkout-title">🛒 Resumen de tu Pedido</div>
-      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:20px;margin:16px 0">
-        <div id="checkout-items"></div>
-        <div style="display:flex;justify-content:space-between;padding-top:14px;margin-top:4px;border-top:2px dashed var(--border);font-size:18px;font-weight:700">
-          <span>Total</span>
-          <span style="color:var(--orange);font-family:'Playfair Display',serif" id="checkout-total">$0.00</span>
-        </div>
-      </div>
-      <div style="background:#FFF8F0;border:1.5px solid #F4C9A8;border-radius:12px;padding:14px 16px;font-size:13px;color:var(--brown-mid);display:flex;gap:10px;align-items:flex-start;margin-bottom:20px">
-        <span style="font-size:18px;flex-shrink:0">🤝</span>
-        <span>Este dinero va <strong>directo al cocinero</strong>. Micasero no cobra comisión sobre tus pedidos.</span>
-      </div>
-      <button style="width:100%;background:var(--orange);color:white;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="coStep(2)">Continuar → Elegir Entrega</button>
-    </div>
 
     <!-- PASO 2: Tipo de entrega -->
     <div id="co-step-2" style="display:none">
@@ -2144,10 +2077,10 @@
     </div>
     <div class="cart-footer" id="cart-footer" style="display:none">
       <div class="cart-total-row">
-        <span>Total</span>
-        <span id="cart-total">$0.00</span>
+        <span style="font-weight:700;font-size:16px">Total</span>
+        <span id="cart-total" style="font-size:20px;font-weight:800;color:var(--orange)">$0.00</span>
       </div>
-      <button class="btn-checkout" onclick="goToCheckout()">Continuar → Resumen del Pedido</button>
+      <button class="btn-checkout" onclick="goToCheckout()" id="cart-continue-btn">Ver tu Carrito 🛒 — $0.00</button>
     </div>
   </div>
 </div>
@@ -2636,6 +2569,8 @@ function updateCartUI() {
       </div>
     `).join('');
     document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+    const continueBtn = document.getElementById('cart-continue-btn');
+    if (continueBtn) continueBtn.textContent = `Continuar con mi pedido — $${total.toFixed(2)} →`;
     footer.style.display = 'block';
   }
 }
@@ -2654,6 +2589,34 @@ function goToCheckout() {
 // CHECKOUT MULTI-STEP
 // ════════════════════════════════════════
 let currentDelivery = 'delivery';
+
+function selectDelivery2(type) {
+  currentDelivery = type;
+  ['delivery','pickup','cena'].forEach(t => {
+    const el = document.getElementById('del-'+t);
+    if (el) {
+      el.classList.remove('selected');
+      el.style.borderColor = '';
+      el.style.background = '';
+    }
+    const c = document.getElementById('del-check-'+t);
+    if (c) { c.classList.remove('selected'); c.textContent = ''; }
+  });
+  const sel = document.getElementById('del-'+type);
+  if (sel) {
+    sel.classList.add('selected');
+    sel.style.borderColor = 'var(--orange)';
+    sel.style.background = '#FFF3EE';
+  }
+  const chk = document.getElementById('del-check-'+type);
+  if (chk) { chk.classList.add('selected'); chk.textContent = '✓'; }
+  const addrBlock = document.getElementById('del-address-block');
+  if (addrBlock) addrBlock.style.display = type === 'delivery' ? 'block' : 'none';
+  const cenaNote = document.getElementById('cena-note');
+  if (cenaNote) cenaNote.style.display = type === 'cena' ? 'block' : 'none';
+  const cookAddr = document.getElementById('cook-address-note');
+  if (cookAddr) cookAddr.style.display = (type === 'pickup' || type === 'cena') ? 'block' : 'none';
+}
 let currentPayMethod = 'whatsapp';
 
 function renderCheckout() {

@@ -2126,6 +2126,121 @@
   <div style="max-width:800px;margin:0 auto;padding:20px">
 
     <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--brown)">👨‍🍳 Mi Menu</div>
+        <div style="font-size:13px;color:var(--text-muted)">Panel del Cocinero</div>
+      </div>
+      <div onclick="toggleAvailable()" id="avail-toggle-card" style="background:#F0FFF4;border:2px solid #4CAF50;border-radius:12px;padding:10px 16px;text-align:center;cursor:pointer;min-width:90px">
+        <div style="font-size:20px" id="avail-icon">🟢</div>
+        <div style="font-size:11px;font-weight:700;color:#2E7D52" id="avail-label">En Línea</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div style="display:flex;gap:0;margin-bottom:20px;background:var(--warm);border-radius:12px;padding:4px">
+      <button onclick="showCookTab('pedidos')" id="tab-pedidos" style="flex:1;background:white;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;color:var(--orange);box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+        📬 Pedidos <span style="background:var(--orange);color:white;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px">2</span>
+      </button>
+      <button onclick="showCookTab('menu')" id="tab-menu" style="flex:1;background:none;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;color:var(--text-muted)">
+        🍽️ Mi Menú
+      </button>
+      <button onclick="showCookTab('config')" id="tab-config" style="flex:1;background:none;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;color:var(--text-muted)">
+        ⚙️ Config
+      </button>
+    </div>
+
+    <!-- TAB: PEDIDOS -->
+    <div id="cook-tab-pedidos">
+      <!-- Pedidos Nuevos -->
+      <div style="background:#FFF8F0;border:2px solid var(--orange);border-radius:16px;padding:16px;margin-bottom:16px">
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">
+          📬 Pedidos Nuevos
+        </div>
+        <div id="order-card-1" style="background:white;border:1.5px solid #F4C9A8;border-radius:12px;padding:14px;margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div style="font-weight:700;color:var(--brown)">Carlos Méndez</div>
+            <div style="background:#FFF3E0;color:var(--orange);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">⏳ Nuevo</div>
+          </div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">🛵 Delivery · Hace 5 min</div>
+          <div style="background:var(--warm);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px">
+            • Tacos de carnitas x2 — $18.00<br>
+            • Agua de Jamaica x1 — $3.00<br>
+            <strong style="color:var(--orange)">Total: $21.00</strong>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">💰 Pagará por: <strong>Venmo @carlos-mendez</strong></div>
+          <div style="display:flex;gap:8px">
+            <button onclick="acceptOrder('order-card-1')" style="flex:1;background:#4CAF50;color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✅ Aceptar</button>
+            <button onclick="rejectOrder('order-card-1')" style="flex:1;background:#FF5252;color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">❌ Rechazar</button>
+          </div>
+        </div>
+        <div id="order-card-2" style="background:white;border:1.5px solid #4CAF50;border-radius:12px;padding:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div style="font-weight:700;color:var(--brown)">Ana López</div>
+            <div style="background:#F0FFF4;color:#2E7D52;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">✅ Aceptado</div>
+          </div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">🏠 Recogida · Hace 15 min</div>
+          <div style="background:var(--warm);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px">
+            • Pozole rojo x1 — $14.00<br>
+            <strong style="color:var(--orange)">Total: $14.00</strong>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">💰 Pagará por: <strong>PayPal ana.lopez@gmail.com</strong></div>
+          <div style="background:#FFF8F0;border:1px solid #F4C9A8;border-radius:8px;padding:8px;margin-bottom:10px;font-size:12px;color:var(--brown-mid)">
+            ⏳ Esperando que el cliente confirme el pago...
+          </div>
+          <button onclick="confirmPayment(this)" style="width:100%;background:var(--orange);color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">💳 Ya recibí el pago · Confirmar</button>
+        </div>
+      </div>
+
+      <!-- En Preparación -->
+      <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px">
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:12px">👨‍🍳 En Preparación</div>
+        <div id="cooking-orders" style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">
+          🕐 Los pedidos confirmados aparecerán aquí
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: MI MENÚ -->
+    <div id="cook-tab-menu" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown)">
+          🍽️ Mis Platillos <span style="font-size:14px;font-weight:400;color:var(--text-muted)" id="dash-count-label"></span>
+        </div>
+        <button onclick="openDishModal()" style="background:var(--orange);color:white;border:none;border-radius:10px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ Agregar</button>
+      </div>
+      <div id="dash-menu-list"></div>
+      <div id="dash-empty" style="text-align:center;padding:32px;display:none">
+        <div style="font-size:40px;margin-bottom:8px">🍽️</div>
+        <div style="color:var(--text-muted);font-size:14px;margin-bottom:16px">Aún no tienes platillos</div>
+        <button onclick="openDishModal()" style="background:var(--orange);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ Agregar mi primer platillo</button>
+      </div>
+    </div>
+
+    <!-- TAB: CONFIGURACIÓN -->
+    <div id="cook-tab-config" style="display:none">
+      <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px">
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">⚙️ Configuración</div>
+        <div style="font-size:14px;font-weight:600;color:var(--brown);margin-bottom:8px">Servicios que ofrezco:</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
+            <input type="checkbox" checked style="accent-color:var(--orange);width:16px;height:16px"> 🛵 Delivery
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
+            <input type="checkbox" checked style="accent-color:var(--orange);width:16px;height:16px"> 🏠 Recogida en domicilio
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
+            <input type="checkbox" style="accent-color:#9B59B6;width:16px;height:16px"> 🕯️ Cena privada en mi casa
+          </label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+  <div style="max-width:800px;margin:0 auto;padding:20px">
+
+    <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <div>
         <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--brown)">👨‍🍳 Mi Menu</div>
@@ -3018,6 +3133,20 @@ let cookMenu = [
 ];
 let dishAvailable = true;
 let cookAvailable = true;
+
+function showCookTab(tab) {
+  ['pedidos','menu','config'].forEach(t => {
+    const content = document.getElementById('cook-tab-'+t);
+    const btn = document.getElementById('tab-'+t);
+    if (content) content.style.display = t === tab ? 'block' : 'none';
+    if (btn) {
+      btn.style.background = t === tab ? 'white' : 'none';
+      btn.style.color = t === tab ? 'var(--orange)' : 'var(--text-muted)';
+      btn.style.fontWeight = t === tab ? '700' : '600';
+      btn.style.boxShadow = t === tab ? '0 2px 8px rgba(0,0,0,0.08)' : 'none';
+    }
+  });
+}
 
 function renderDashboard() {
   const list = document.getElementById('dash-menu-list');

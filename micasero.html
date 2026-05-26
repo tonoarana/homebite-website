@@ -2040,19 +2040,21 @@
       <!-- Resumen del cobro -->
       <div style="background:var(--warm);border-radius:12px;padding:16px;margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px">
-          <span style="color:var(--text-muted)">Plan Pro Mensual</span><span>$10.00</span>
+          <span style="color:var(--text-muted)" id="pay-plan-name">Plan Básico</span>
+          <span id="pay-plan-price">$7.00</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:10px">
-          <span style="color:var(--text-muted)">Próximo cobro</span><span>en 3 meses</span>
+          <span style="color:var(--text-muted)">Próximo cobro</span>
+          <span id="pay-free-period">en 2 meses</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px;border-top:1px dashed var(--border);padding-top:10px">
           <span>Hoy pagas</span>
-          <span style="color:var(--orange)">$10.00</span>
+          <span style="color:var(--orange)" id="pay-today">$0.00 (gratis)</span>
         </div>
       </div>
 
-      <button class="btn-pay" onclick="confirmarMembresia()" style="font-size:16px">
-        🔒 Pagar $10.00 y Activar Plan Pro
+      <button class="btn-pay" onclick="confirmarMembresia()" style="font-size:16px" id="pay-btn">
+        🔒 Activar Plan →
       </button>
       <p style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.5">
         Cifrado SSL 256-bit · Cancela en cualquier momento desde tu perfil
@@ -2616,14 +2618,22 @@ let dbDishes = [];
 
 async function loadCooksFromDB() {
   try {
-    const data = await sbGet('cooks', 'is_online=eq.true&order=created_at.desc');
+    const res = await fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/cooks?is_online=eq.true&order=created_at.desc', {
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4'
+      }
+    });
+    const data = await res.json();
     if (data && data.length > 0) {
       dbCooks = data;
+      console.log(`✅ ${data.length} cocineros cargados`);
+      // Re-render everything
       renderFeaturedCooks();
-      console.log(`✅ ${data.length} cocineros de Supabase`);
+      renderMapList();
     }
   } catch(e) {
-    console.log('⚠️ Usando datos demo:', e.message);
+    console.log('⚠️ Error cargando cocineros:', e.message);
   }
 }
 
@@ -3079,29 +3089,52 @@ async function renderMenu() {
   const el = document.getElementById('menu-items');
   if (!el) return;
 
-  // Try loading from Supabase first
+  // Update profile header with selected cook data
   if (selectedCookId && dbCooks.length > 0) {
-    const dishes = await loadDishesFromDB(selectedCookId);
-    if (dishes.length > 0) {
-      el.innerHTML = dishes.map(d => `
-        <div class="menu-item">
-          <div class="menu-emoji">${d.emoji || '🍽️'}</div>
-          <div class="menu-details">
-            <h4>${d.name}</h4>
-            <p>${d.description || ''}</p>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-            <div class="menu-price">$${parseFloat(d.price).toFixed(2)}</div>
-            <button class="btn-add" onclick="addToCart('${d.id}','${d.name}',${d.price},'${d.emoji||'🍽️'}')">+</button>
-          </div>
-        </div>
-      `).join('');
-      updateProfileCTA();
-      return;
+    const cook = dbCooks.find(c => String(c.id) === String(selectedCookId));
+    if (cook) {
+      const n = document.getElementById('profile-name');
+      const l = document.getElementById('profile-location');
+      const d = document.getElementById('profile-desc');
+      if (n) n.textContent = cook.kitchen_name || cook.name;
+      if (l) l.textContent = '📍 ' + (cook.city || 'Bainbridge Island');
+      if (d) d.textContent = cook.description || 'Cocinero apasionado compartiendo sabores caseros.';
     }
   }
 
-  // Fallback to demo data
+  // Load dishes from Supabase
+  if (selectedCookId) {
+    try {
+      const res = await fetch(`https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/dishes?cook_id=eq.${selectedCookId}&is_available=eq.true`, {
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4'
+        }
+      });
+      const dishes = await res.json();
+      if (dishes && dishes.length > 0) {
+        el.innerHTML = dishes.map(d => `
+          <div class="menu-item">
+            <div class="menu-emoji">${d.emoji || '🍽️'}</div>
+            <div class="menu-details">
+              <h4>${d.name}</h4>
+              <p>${d.description || ''}</p>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+              <div class="menu-price">$${parseFloat(d.price).toFixed(2)}</div>
+              <button class="btn-add" onclick="addToCart('${d.id}','${d.name}',${d.price},'${d.emoji||'🍽️'}')">+</button>
+            </div>
+          </div>
+        `).join('');
+        updateProfileCTA();
+        return;
+      }
+    } catch(e) {
+      console.log('Error cargando platillos:', e.message);
+    }
+  }
+
+  // Fallback to demo menu
   el.innerHTML = menu.map(m => `
     <div class="menu-item">
       <div class="menu-emoji">${m.emoji}</div>
@@ -3204,6 +3237,7 @@ function showPage(name) {
   if (name === 'profile') { renderMenu(); }
   if (name === 'membresia') { updateFounderUI(); }
   if (name === 'cooks') { renderCooksList(); }
+  if (name === 'pago-membresia') { updatePaymentPage(); }
 }
 
 
@@ -3862,15 +3896,23 @@ function guardarCocinero() {
 
 function updatePaymentPage() {
   const prices = { fundador: '7.00', basico: '7.00', pro: '10.00' };
-  const names = { fundador: 'Plan Fundador — 3 meses gratis', basico: 'Plan Básico — 2 meses gratis', pro: 'Plan Pro — 2 meses gratis' };
+  const names = { fundador: 'Plan Fundador 🏅', basico: 'Plan Básico', pro: 'Plan Pro ⭐' };
+  const periods = { fundador: 'en 3 meses', basico: 'en 2 meses', pro: 'en 2 meses' };
   const price = prices[selectedPlan] || '7.00';
   const name = names[selectedPlan] || 'Plan Básico';
+  const period = periods[selectedPlan] || 'en 2 meses';
 
-  // Update payment page
-  const planNameEl = document.querySelector('#page-pago-membresia [style*="Plan Pro"]');
-  const priceEl = document.querySelector('#page-pago-membresia .btn-pay');
+  const planNameEl = document.getElementById('pay-plan-name');
+  const planPriceEl = document.getElementById('pay-plan-price');
+  const freePeriodEl = document.getElementById('pay-free-period');
+  const todayEl = document.getElementById('pay-today');
+  const btnEl = document.getElementById('pay-btn');
+
   if (planNameEl) planNameEl.textContent = name;
-  if (priceEl) priceEl.textContent = `🔒 Pagar $${price} y Activar ${name.split('—')[0]}`;
+  if (planPriceEl) planPriceEl.textContent = '$' + price + '/mes';
+  if (freePeriodEl) freePeriodEl.textContent = period;
+  if (todayEl) todayEl.textContent = '$0.00 (gratis hoy)';
+  if (btnEl) btnEl.textContent = `🚀 Activar ${name} — Gratis por ahora`;
 }
 
 async function finishCookReg() {

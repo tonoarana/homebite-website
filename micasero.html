@@ -3531,10 +3531,17 @@ function registrarCocineroYNavegar(btn) {
     }
     return Promise.resolve(data);
   }).then(data => {
-    if (!data || !data[0]) return;
+    if (!data || !data[0]) {
+      showToast('⚠️ No se pudo guardar el cocinero');
+      btn.disabled = false;
+      btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
+      return;
+    }
     const cookId = data[0].id;
     selectedCookId = cookId;
     showToast('✅ Cocinero guardado!');
+    btn.disabled = false;
+    btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
 
     // Save dishes
     dishesData.forEach(dish => {
@@ -3547,11 +3554,14 @@ function registrarCocineroYNavegar(btn) {
         is_available: true
       }).then(d => {
         if (d && d[0]) showToast('✅ Platillo: ' + d[0].name);
+        else showToast('⚠️ Error guardando platillo');
       });
     });
     refreshCooks();
   }).catch(e => {
     showToast('⚠️ Error: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
     console.log('Error:', e);
   });
 }

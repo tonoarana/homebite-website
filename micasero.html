@@ -2579,6 +2579,15 @@
 // ════════════════════════════════════════
 // SUPABASE CONFIG
 // ════════════════════════════════════════
+window.onerror = function(msg, src, line, col, err) {
+  console.error('JS Error:', msg, 'at line', line);
+  // Show visible error on screen for debugging
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;top:0;left:0;right:0;background:red;color:white;padding:10px;z-index:99999;font-size:12px;';
+  d.textContent = 'JS Error: ' + msg + ' (line ' + line + ')';
+  document.body.appendChild(d);
+  return false;
+};
 const SB_API = 'https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
 let dbCooks = [];
@@ -4001,6 +4010,27 @@ function processPayment() {
   setTimeout(()=>{
     showToast('👩‍🍳 Chef María recibió tu pago · Preparando tu pedido 🍽️');
   },2000);
+}
+
+function confirmarMembresia() {
+  const form = document.getElementById('pago-form');
+  const confirmed = document.getElementById('pago-confirmado');
+  if (form) form.style.display = 'none';
+  if (confirmed) confirmed.style.display = 'block';
+  showToast('🎉 ¡Plan activado! Bienvenido a Micasero');
+}
+
+function toggleQR() {
+  const qr = document.getElementById('qr-code-display');
+  const btn = document.getElementById('qr-toggle-btn');
+  if (!qr) return;
+  const visible = qr.style.display !== 'none';
+  qr.style.display = visible ? 'none' : 'block';
+  if (btn) btn.textContent = visible ? 'Ver QR' : 'Ocultar QR';
+}
+
+function openMembresiaModal() {
+  showPage('membresia');
 }
 
 // INIT

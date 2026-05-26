@@ -1558,7 +1558,7 @@
         </div>
         <div style="display:flex;gap:10px;margin-bottom:100px">
           <button onclick="cookRegStep(5)" style="flex:1;background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">← Atrás</button>
-          <button class="btn-submit" style="flex:2;background:#4CAF50;font-size:15px;padding:14px" onclick="finishCookReg()">Crear mi Perfil → Activar Plan 🚀</button>
+          <button style="flex:2;background:#4CAF50;color:white;border:none;border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="showPage('pago-membresia');guardarCocinero()">Crear mi Perfil → Activar Plan 🚀</button>
         </div>
       </div>
 
@@ -3798,6 +3798,46 @@ function deleteDishPhoto(id) {
   if (result) result.style.display = 'none';
   if (input) input.value = '';
   showToast('🗑️ Foto eliminada');
+}
+
+function guardarCocinero() {
+  const nombre = document.getElementById('creg-name')?.value || 'Cocinero';
+  const email = document.getElementById('creg-email')?.value || ('cook_' + Date.now() + '@micasero.app');
+  const cocina = document.getElementById('creg-kitchen')?.value || '';
+  const tipo = document.getElementById('creg-cuisine')?.value || 'Local';
+
+  const body = JSON.stringify({
+    name: nombre,
+    email: email,
+    kitchen_name: cocina,
+    cuisine_type: tipo,
+    plan: 'basico',
+    is_online: true,
+    city: 'Bainbridge Island',
+    lat: 47.6246,
+    lng: -122.5219
+  });
+
+  fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/cooks', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4',
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4',
+      'Prefer': 'return=representation'
+    },
+    body: body
+  })
+  .then(r => r.json())
+  .then(data => {
+    console.log('✅ Guardado:', data);
+    showToast('🎉 ¡Perfil guardado!');
+    loadCooksFromDB();
+  })
+  .catch(e => {
+    console.log('⚠️ Error:', e);
+    showToast('⚠️ Error guardando');
+  });
 }
 
 async function finishCookReg() {

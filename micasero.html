@@ -2676,72 +2676,36 @@ async function renderCooksList() {
   try {
     // Always fetch fresh from Supabase
     const data = await sbFetch('cooks', 'is_online=eq.true&order=created_at.desc');
-    if (loading) loading.style.display = 'none';
-
     if (!data || data.length === 0) {
-      if (empty) empty.style.display = 'block';
+      if (document.getElementById('cooks-loading')) document.getElementById('cooks-loading').style.display = 'none';
+      if (document.getElementById('cooks-empty')) document.getElementById('cooks-empty').style.display = 'block';
       return;
     }
-
     dbCooks = data;
-    if (grid) grid.style.display = 'grid';
-
-    grid.innerHTML = data.map(c => `
-      <div class="cook-card" onclick="selectCook('${c.id}');showPage('profile')" style="cursor:pointer">
-        <div class="cook-card-img" style="background:#FDE8D8">
-          <div class="cook-avatar">👨‍🍳</div>
-          ${c.services && c.services.includes('delivery') ? '<div class="cook-delivery-badge">🛵 Delivery</div>' : ''}
-        </div>
-        <div class="cook-card-body">
-          <h3>${c.kitchen_name || c.name}</h3>
-          <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">${c.cuisine_type || 'Comida Local'}</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">📍 ${c.city || 'Tu ciudad'}</div>
-          <div class="cook-tags">
-            <span class="tag">${c.cuisine_type || 'Local'}</span>
-            ${c.plan === 'fundador' ? '<span class="tag" style="background:#F4A020;color:white">🏅 Fundador</span>' : ''}
-            ${c.plan === 'pro' ? '<span class="tag" style="background:var(--orange);color:white">⭐ Pro</span>' : ''}
-          </div>
-          <button class="btn-order" style="margin-top:8px" onclick="event.stopPropagation();selectCook('${c.id}');showPage('profile')">Ver Menú →</button>
-        </div>
-      </div>
-    `).join('');
-  } catch(e) {
-    console.log('Error:', e);
+    const grid = document.getElementById('cooks-list-grid');
+    const loading = document.getElementById('cooks-loading');
     if (loading) loading.style.display = 'none';
-    if (empty) empty.style.display = 'block';
+    if (grid) {
+      grid.style.display = 'grid';
+      grid.innerHTML = data.map(c => `
+        <div class="cook-card" onclick="selectCook('${c.id}');showPage('profile')" style="cursor:pointer">
+          <div class="cook-card-img" style="background:#FDE8D8">
+            <div class="cook-avatar">👨‍🍳</div>
+            ${c.services && c.services.includes('delivery') ? '<div class="cook-delivery-badge">🛵 Delivery</div>' : ''}
+          </div>
+          <div class="cook-card-body">
+            <h3>${c.kitchen_name || c.name}</h3>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">${c.cuisine_type || 'Local'}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">📍 ${c.city || ''}</div>
+            <button class="btn-order" style="margin-top:8px" onclick="event.stopPropagation();selectCook('${c.id}');showPage('profile')">Ver Menú →</button>
+          </div>
+        </div>
+      `).join('');
+    }
+  } catch(e) {
+    console.log('renderCooksList error:', e);
   }
 }
-
-    if (loading) loading.style.display = 'none';
-
-    if (!data || data.length === 0) {
-      if (empty) empty.style.display = 'block';
-      return;
-    }
-
-    dbCooks = data;
-    if (grid) grid.style.display = 'grid';
-
-    grid.innerHTML = data.map(c => `
-      <div class="cook-card" onclick="selectCook('${c.id}');showPage('profile')" style="cursor:pointer">
-        <div class="cook-card-img" style="background:#FDE8D8">
-          <div class="cook-avatar" style="background:#FDE8D8">👨‍🍳</div>
-          ${c.services && c.services.includes('delivery') ? '<div class="cook-delivery-badge">🛵 Delivery</div>' : ''}
-        </div>
-        <div class="cook-card-body">
-          <h3>${c.kitchen_name || c.name}</h3>
-          <div style="font-size:13px;color:var(--text-muted);margin-bottom:6px">${c.cuisine_type || 'Comida Local'}</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">📍 ${c.city || 'Tu ciudad'}</div>
-          <div class="cook-tags">
-            <span class="tag">${c.cuisine_type || 'Local'}</span>
-            ${c.plan === 'fundador' ? '<span class="tag" style="background:#F4A020;color:white">🏅 Fundador</span>' : ''}
-            ${c.plan === 'pro' ? '<span class="tag" style="background:var(--orange);color:white">⭐ Pro</span>' : ''}
-          </div>
-          <button class="btn-order" onclick="event.stopPropagation();selectCook('${c.id}');showPage('profile')" style="margin-top:8px">Ver Menú →</button>
-        </div>
-      </div>
-    `).join('');
-
 
 function selectCook(cookId) {
   selectedCookId = cookId;

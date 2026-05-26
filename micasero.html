@@ -2874,23 +2874,11 @@ function renderReviews() {
 // NAVIGATION
 // ════════════════════════════════════════
 function showPage(name) {
-  // Hide ALL pages
   document.querySelectorAll('.page').forEach(p => {
-    p.classList.remove('active');
     p.style.display = 'none';
   });
-  // Show target page
   const target = document.getElementById('page-' + name);
-  if (target) {
-    target.classList.add('active');
-    target.style.display = 'block';
-  }
-  document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
-  const navBtn = document.getElementById('nav-' + name);
-  if (navBtn) navBtn.classList.add('active');
-  document.querySelectorAll('.mobile-nav button').forEach(b => b.classList.remove('active'));
-  const mnBtn = document.getElementById('mn-' + name);
-  if (mnBtn) mnBtn.classList.add('active');
+  if (target) target.style.display = 'block';
   window.scrollTo(0, 0);
   if (name === 'register-cocinero') { cookRegStep(1); }
   if (name === 'map') { setTimeout(initLeafletMap, 100); }
@@ -3842,15 +3830,12 @@ function selectPlan(plan) {
 // ════════════════════════════════════════
 // INIT
 document.addEventListener('DOMContentLoaded', function() {
-  // Force hide ALL pages
+  // Hide all pages, show only home
   document.querySelectorAll('.page').forEach(p => {
-    p.classList.remove('active');
-    p.style.cssText += '; display: none !important';
+    p.style.display = 'none';
   });
-  // Show only home
   const home = document.getElementById('page-home');
-  home.style.cssText = home.style.cssText.replace('display: none !important', 'display: block');
-  home.classList.add('active');
+  if (home) home.style.display = 'block';
   renderFeaturedCooks();
   renderMap();
   updateFounderUI();

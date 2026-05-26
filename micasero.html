@@ -718,7 +718,8 @@
   <script>
     const SUPABASE_URL = 'https://cuhfukhlpuqhqepuruya.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { createClient } = supabase;
+    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
     console.log('✅ Supabase conectado');
   </script>
 </head>
@@ -1563,9 +1564,9 @@
             <span>Acepto los <a onclick="showPage('terminos')" style="color:var(--orange);cursor:pointer;font-weight:600">Términos</a> y la <a onclick="showPage('privacidad')" style="color:var(--orange);cursor:pointer;font-weight:600">Privacidad</a></span>
           </label>
         </div>
-        <div style="display:flex;gap:10px">
+        <div style="display:flex;gap:10px;margin-bottom:100px">
           <button onclick="cookRegStep(5)" style="flex:1;background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">← Atrás</button>
-          <button class="btn-submit" style="flex:2;background:#4CAF50" onclick="finishCookReg()">Crear mi Perfil → Activar Plan 🚀</button>
+          <button class="btn-submit" style="flex:2;background:#4CAF50;font-size:15px;padding:14px" onclick="finishCookReg()">Crear mi Perfil → Activar Plan 🚀</button>
         </div>
       </div>
 
@@ -2591,7 +2592,7 @@ let dbDishes = [];
 
 async function loadCooksFromDB() {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('cooks')
       .select('*')
       .eq('is_online', true)
@@ -2610,7 +2611,7 @@ async function loadCooksFromDB() {
 
 async function loadDishesFromDB(cookId) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('dishes')
       .select('*')
       .eq('cook_id', cookId)
@@ -2630,7 +2631,7 @@ async function saveCookToDB(cookData) {
     if (!cookData.email) {
       cookData.email = `cook_${Date.now()}@micasero.app`;
     }
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('cooks')
       .insert([cookData])
       .select();
@@ -2650,7 +2651,7 @@ async function saveCookToDB(cookData) {
 
 async function saveDishToDB(dish) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('dishes')
       .insert([dish])
       .select();
@@ -2664,7 +2665,7 @@ async function saveDishToDB(dish) {
 
 async function saveOrderToDB(order) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('orders')
       .insert([order])
       .select();
@@ -2679,7 +2680,7 @@ async function saveOrderToDB(order) {
 
 async function updateOrderStatus(orderId, status) {
   try {
-    const { error } = await supabase
+    const { error } = await db
       .from('orders')
       .update({ status })
       .eq('id', orderId);
@@ -2692,7 +2693,7 @@ async function updateOrderStatus(orderId, status) {
 
 async function saveWaitlistEmail(email, city) {
   try {
-    const { error } = await supabase
+    const { error } = await db
       .from('founder_waitlist')
       .insert([{ email, city: city || 'unknown' }]);
     if (error) throw error;
@@ -3021,7 +3022,7 @@ async function renderCooksList() {
 
   // Load from Supabase
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('cooks')
       .select('*')
       .eq('is_online', true)
@@ -3824,48 +3825,53 @@ function deleteDishPhoto(id) {
 }
 
 async function finishCookReg() {
-  console.log('🔥 finishCookReg called');
-  // Navigate immediately
-  showPage('pago-membresia');
-  showToast('✅ Perfil creado · Elige tu plan');
+  // Collect ALL form data BEFORE navigating
+  const cookData = {
+    name: document.getElementById('creg-name')?.value || 'Cocinero',
+    email: (document.getElementById('creg-email')?.value || '') || `cook_${Date.now()}@micasero.app`,
+    phone: document.getElementById('creg-phone')?.value || '',
+    address: document.getElementById('creg-address')?.value || '',
+    kitchen_name: document.getElementById('creg-kitchen')?.value || '',
+    cuisine_type: document.getElementById('creg-cuisine')?.value || 'Local',
+    description: document.getElementById('creg-desc')?.value || '',
+    plan: 'basico',
+    is_online: true,
+    services: ['delivery', 'pickup'],
+    city: 'Bainbridge Island',
+    lat: 47.6246,
+    lng: -122.5219
+  };
 
-  // Save in background
-  setTimeout(async () => {
-    try {
-      const emailInput = document.getElementById('creg-email')?.value;
-      const cookData = {
-        name: document.getElementById('creg-name')?.value || 'Cocinero',
-        email: emailInput ? emailInput : `cook_${Date.now()}@micasero.app`,
-        phone: document.getElementById('creg-phone')?.value || '',
-        address: document.getElementById('creg-address')?.value || '',
-        kitchen_name: document.getElementById('creg-kitchen')?.value || '',
-        cuisine_type: document.getElementById('creg-cuisine')?.value || 'Local',
-        description: document.getElementById('creg-desc')?.value || '',
-        plan: 'basico',
-        is_online: true,
-        services: ['delivery','pickup'],
-        city: 'Bainbridge Island',
-        lat: 47.6246,
-        lng: -122.5219
-      };
+  console.log('Saving cook:', cookData);
+  showToast('💾 Guardando...');
 
-      const { data, error } = await supabase.from('cooks').insert([cookData]).select();
-      if (error) {
-        console.log('DB Error:', error.message);
-        showToast('⚠️ ' + error.message);
-        return;
+  const { data, error } = await db
+    .from('cooks')
+    .insert([cookData])
+    .select()
+    .single();
+
+  if (error) {
+    console.log('Error:', error);
+    // If email duplicate, use auto email
+    if (error.code === '23505') {
+      cookData.email = `cook_${Date.now()}@micasero.app`;
+      const retry = await db.from('cooks').insert([cookData]).select().single();
+      if (retry.data) {
+        selectedCookId = retry.data.id;
+        showToast('🎉 ¡Guardado!');
       }
-      if (data && data[0]) {
-        selectedCookId = data[0].id;
-        showToast('🎉 ¡Guardado en Supabase!');
-        console.log('✅ Saved:', data[0].id);
-        await loadCooksFromDB();
-      }
-    } catch(e) {
-      console.log('Error:', e.message);
-      showToast('⚠️ Error: ' + e.message);
+    } else {
+      showToast('⚠️ Error: ' + error.message);
     }
-  }, 500);
+  } else if (data) {
+    selectedCookId = data.id;
+    showToast('🎉 ¡Perfil guardado en Supabase!');
+    console.log('✅ Cook saved:', data.id);
+    loadCooksFromDB();
+  }
+
+  showPage('pago-membresia');
 }
 
 function previewQR(input) {

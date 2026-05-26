@@ -3485,11 +3485,10 @@ function deleteDishPhoto(id) {
 }
 
 function registrarCocineroYNavegar(btn) {
-  // Disable button to prevent double tap
   btn.disabled = true;
   btn.textContent = '💾 Guardando...';
 
-  // Collect ALL data right now before any navigation
+  // Collect dishes
   const dishesData = [];
   const menuList = document.getElementById('creg-menu-list');
   if (menuList) {
@@ -3502,14 +3501,12 @@ function registrarCocineroYNavegar(btn) {
     });
   }
 
-  showToast(`📋 ${dishesData.length} platillos encontrados`);
-  console.log('Dishes:', dishesData);
+  const email = document.getElementById('creg-email')?.value || ('cook_' + Date.now() + '@micasero.app');
 
-  const cookData = {
+  const body = JSON.stringify({
     name: document.getElementById('creg-name')?.value || 'Cocinero',
-    email: document.getElementById('creg-email')?.value || ('cook_' + Date.now() + '@micasero.app'),
+    email: email,
     phone: document.getElementById('creg-phone')?.value || '',
-    address: document.getElementById('creg-address')?.value || '',
     kitchen_name: document.getElementById('creg-kitchen')?.value || '',
     cuisine_type: document.getElementById('creg-cuisine')?.value || 'Local',
     description: document.getElementById('creg-desc')?.value || '',
@@ -3518,52 +3515,77 @@ function registrarCocineroYNavegar(btn) {
     city: 'Bainbridge Island',
     lat: 47.6246,
     lng: -122.5219
-  };
+  });
 
-  // Now navigate
-  showPage('pago-membresia');
+  const SBKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
 
-  // Save in background
-  sbPost('cooks', cookData).then(data => {
-    if (!data || !data[0]) {
-      cookData.email = 'cook_' + Date.now() + '@micasero.app';
-      return sbPost('cooks', cookData);
-    }
-    return Promise.resolve(data);
-  }).then(data => {
-    if (!data || !data[0]) {
-      showToast('⚠️ No se pudo guardar el cocinero');
+  // Timeout after 10 seconds
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+    showToast('⚠️ Timeout - verifica tu conexión');
+    btn.disabled = false;
+    btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
+  }, 10000);
+
+  fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/cooks', {
+    method: 'POST',
+    signal: controller.signal,
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SBKEY,
+      'Authorization': 'Bearer ' + SBKEY,
+      'Prefer': 'return=representation'
+    },
+    body: body
+  })
+  .then(r => { clearTimeout(timeout); return r.json(); })
+  .then(data => {
+    console.log('Cook response:', JSON.stringify(data));
+    const cook = Array.isArray(data) ? data[0] : data;
+    if (!cook || !cook.id) {
+      showToast('⚠️ Error: ' + JSON.stringify(data).substring(0,50));
       btn.disabled = false;
       btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
       return;
     }
-    const cookId = data[0].id;
-    selectedCookId = cookId;
-    showToast('✅ Cocinero guardado!');
-    btn.disabled = false;
-    btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
+    selectedCookId = cook.id;
+    showToast('✅ ¡Perfil guardado!');
 
-    // Save dishes
+    // Save dishes one by one
     dishesData.forEach(dish => {
-      sbPost('dishes', {
-        cook_id: cookId,
-        name: dish.name,
-        price: dish.price,
-        emoji: '🍽️',
-        category: 'Plato principal',
-        is_available: true
-      }).then(d => {
-        if (d && d[0]) showToast('✅ Platillo: ' + d[0].name);
-        else showToast('⚠️ Error guardando platillo');
-      });
+      fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/dishes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SB_KEY,
+          'Authorization': 'Bearer ' + SB_KEY,
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+          cook_id: cook.id,
+          name: dish.name,
+          price: dish.price,
+          emoji: '🍽️',
+          category: 'Plato principal',
+          is_available: true
+        })
+      })
+      .then(r => r.json())
+      .then(d => { showToast('🍽️ ' + dish.name + ' guardado'); })
+      .catch(e => { showToast('⚠️ Error platillo: ' + e.message); });
     });
+
     refreshCooks();
-  }).catch(e => {
+    // Navigate after successful save
+    setTimeout(() => showPage('pago-membresia'), 1000);
+  })
+  .catch(e => {
     showToast('⚠️ Error: ' + e.message);
     btn.disabled = false;
     btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
-    console.log('Error:', e);
   });
+}
 }
 
 function guardarCocinero() {

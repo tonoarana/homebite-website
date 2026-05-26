@@ -714,6 +714,7 @@
 </style>
 
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -2575,388 +2576,48 @@
 
 <script>
 // ════════════════════════════════════════
-// DATA
+// SUPABASE CONFIG
 // ════════════════════════════════════════
-// ════════════════════════════════════════
-// SUPABASE DATA FUNCTIONS (fetch directo)
-// ════════════════════════════════════════
-const SB_URL = 'https://cuhfukhlpuqhqepuruya.supabase.co';
+const SB_API = 'https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
-
-const sbHeaders = {
+let dbCooks = [];
+let dbDishes = [];
+const SB_HEADERS = {
   'Content-Type': 'application/json',
   'apikey': SB_KEY,
   'Authorization': 'Bearer ' + SB_KEY,
   'Prefer': 'return=representation'
 };
 
-async function sbGet(table, query='') {
-  const res = await fetch(`${SB_URL}/rest/v1/${table}?${query}`, { headers: sbHeaders });
-  return res.ok ? res.json() : [];
+async function sbFetch(table, query) {
+  const url = query ? `${SB_API}/${table}?${query}` : `${SB_API}/${table}`;
+  const r = await fetch(url, { headers: SB_HEADERS });
+  if (!r.ok) { console.log('sbFetch error:', r.status, r.statusText); return []; }
+  return r.json();
 }
 
-async function sbInsert(table, data) {
-  const res = await fetch(`${SB_URL}/rest/v1/${table}`, {
+async function sbPost(table, body) {
+  const r = await fetch(`${SB_API}/${table}`, {
     method: 'POST',
-    headers: sbHeaders,
-    body: JSON.stringify(data)
+    headers: SB_HEADERS,
+    body: JSON.stringify(body)
   });
-  return res.ok ? res.json() : null;
+  if (!r.ok) { console.log('sbPost error:', r.status, r.statusText); return null; }
+  return r.json();
 }
 
-async function sbUpdate(table, data, query) {
-  const res = await fetch(`${SB_URL}/rest/v1/${table}?${query}`, {
-    method: 'PATCH',
-    headers: sbHeaders,
-    body: JSON.stringify(data)
-  });
-  return res.ok;
-}
-
-let dbCooks = [];
-let dbDishes = [];
-
-async function loadCooksFromDB() {
+async function refreshCooks() {
   try {
     const data = await sbFetch('cooks', 'is_online=eq.true&order=created_at.desc');
     if (data && data.length > 0) {
       dbCooks = data;
-      console.log(`✅ ${data.length} cocineros cargados`);
+      console.log('✅ Cooks:', data.length);
       renderFeaturedCooks();
       renderMapList();
     }
-  } catch(e) {
-    console.log('⚠️ Error cargando cocineros:', e.message);
-  }
+  } catch(e) { console.log('refreshCooks error:', e.message); }
 }
 
-async function loadDishesFromDB(cookId) {
-  try {
-    const data = await sbGet('dishes', `cook_id=eq.${cookId}&is_available=eq.true`);
-    return data || [];
-  } catch(e) {
-    return [];
-  }
-}
-
-async function saveCookToDB(cookData) {
-  try {
-    const data = await sbInsert('cooks', cookData);
-    if (data && data[0]) {
-      console.log('✅ Cocinero guardado:', data[0].id);
-      return data[0];
-    }
-    return null;
-  } catch(e) {
-    console.log('⚠️ Error:', e.message);
-    return null;
-  }
-}
-
-async function saveDishToDB(dish) {
-  try {
-    const data = await sbInsert('dishes', dish);
-    return data && data[0] ? data[0] : null;
-  } catch(e) {
-    return null;
-  }
-}
-
-async function saveOrderToDB(order) {
-  try {
-    const data = await sbInsert('orders', order);
-    return data && data[0] ? data[0] : null;
-  } catch(e) {
-    return null;
-  }
-}
-
-async function updateOrderStatus(orderId, status) {
-  try {
-    await sbUpdate('orders', { status }, `id=eq.${orderId}`);
-  } catch(e) {
-    console.log('⚠️ Error:', e.message);
-  }
-}
-
-async function saveWaitlistEmail(email, city) {
-  try {
-    await sbInsert('founder_waitlist', { email, city: city || 'unknown' });
-  } catch(e) {
-    console.log('⚠️ Error:', e.message);
-  }
-}
-
-const cooks = [
-  { id:1, name:'Chef María R.', emoji:'👩‍🍳', cuisine:'Mexicana', rating:4.9, reviews:127, delivery:true, tags:['Mexicana','Vegana'], color:'#FDE8D8' },
-  { id:2, name:'Chef Carlos M.', emoji:'👨‍🍳', cuisine:'Local', rating:4.7, reviews:89, delivery:true, tags:['Local','Casera'], color:'#E8F0FE' },
-  { id:3, name:'Chef Ana G.', emoji:'👩‍🍳', cuisine:'Italiana', rating:4.8, reviews:45, delivery:false, tags:['Italiana','Pasta'], color:'#E8F8EE' },
-];
-
-const menu = [
-  { id:'m1', name:'Lasaña Casera', desc:'Pasta fresca, carne molida, bechamel y tres quesos.', price:12.50, emoji:'🍝' },
-  { id:'m2', name:'Tacos al Pastor', desc:'Tortillas de maíz, cerdo marinado, piña y cilantro.', price:10.00, emoji:'🌮' },
-  { id:'m3', name:'Curry de Pollo', desc:'Curry rojo cremoso con leche de coco y verduras frescas.', price:14.00, emoji:'🍛' },
-  { id:'m4', name:'Pozole Rojo', desc:'Caldo tradicional con maíz cacahuazintle y carne de res.', price:11.00, emoji:'🍲' },
-  { id:'m5', name:'Tarta de Queso', desc:'Tarta casera con base de galleta y frutos rojos.', price:8.50, emoji:'🍰' },
-];
-
-const mapMarkers = [
-  { name:'Chef María', emoji:'👩‍🍳', x:'22%', y:'38%', rating:'4.9' },
-  { name:'Chef Carlos', emoji:'👨‍🍳', x:'68%', y:'25%', rating:'4.7' },
-  { name:'Chef Ana', emoji:'👩‍🍳', x:'50%', y:'55%', rating:'4.5' },
-];
-
-const reviewsData = [
-  { name:'María P.', avatar:'👩', stars:5, dish:'Lasaña Casera · Chef María', text:'¡Simplemente delicioso! La lasaña casera es espectacular, se siente el sabor auténtico y la calidad de los ingredientes. ¡Muy recomendable!', date:'hace 2 días', bg:'#FDE8D8' },
-  { name:'Carlos G.', avatar:'👨', stars:4, dish:'Tacos al Pastor · Chef María', text:'El curry estuvo muy bueno, cremoso y bien condimentado. El servicio de recogida fue eficiente y puntual. Definitivamente volvería.', date:'hace 5 días', bg:'#E8F0FE' },
-  { name:'Laura S.', avatar:'🧑', stars:5, dish:'Pozole Rojo · Chef Carlos', text:'¡Una joya escondida! Las empanadas son las mejores que he probado. Se nota el cariño en cada bocado. ¡Volveré pronto por más!', date:'hace 1 semana', bg:'#E8F8EE' },
-  { name:'Roberto A.', avatar:'👦', stars:5, dish:'Tacos al Pastor · Chef María', text:'Los tacos tienen un sabor increíble. La carne perfectamente marinada y la piña le da un toque especial. Ya pedí 3 veces esta semana.', date:'hace 1 semana', bg:'#FEF3E8' },
-];
-
-// ════════════════════════════════════════
-// CART STATE
-// ════════════════════════════════════════
-let cart = {};
-
-function addToCart(id, name, price, emoji) {
-  if (cart[id]) {
-    cart[id].qty++;
-  } else {
-    cart[id] = { name, price, emoji, qty: 1 };
-  }
-  updateCartUI();
-  updateProfileCTA();
-  showToast(`🛒 ${name} agregado al carrito`);
-}
-
-function toggleQR() {
-  const qr = document.getElementById('qr-code-display');
-  const btn = document.getElementById('qr-toggle-btn');
-  if (!qr) return;
-  const visible = qr.style.display !== 'none';
-  qr.style.display = visible ? 'none' : 'block';
-  if (btn) btn.textContent = visible ? 'Ver QR' : 'Ocultar QR';
-}
-
-function updateProfileCTA() {
-  const cta = document.getElementById('profile-cart-cta');
-  const summary = document.getElementById('profile-cart-summary');
-  if (!cta) return;
-  const items = Object.values(cart);
-  const count = items.reduce((s, v) => s + v.qty, 0);
-  const total = items.reduce((s, v) => s + v.price * v.qty, 0);
-  if (count > 0) {
-    cta.style.display = 'block';
-    if (summary) summary.textContent = `${count} platillo${count>1?'s':''} · $${total.toFixed(2)}`;
-  } else {
-    cta.style.display = 'none';
-  }
-}
-
-function updateCartQty(id, delta) {
-  if (!cart[id]) return;
-  cart[id].qty += delta;
-  if (cart[id].qty <= 0) delete cart[id];
-  updateCartUI();
-}
-
-function updateCartUI() {
-  const items = Object.entries(cart);
-  const badge = document.getElementById('cart-badge');
-  const list = document.getElementById('cart-items-list');
-  const footer = document.getElementById('cart-footer');
-  const total = items.reduce((s,[,v]) => s + v.price * v.qty, 0);
-  const count = items.reduce((s,[,v]) => s + v.qty, 0);
-
-  if (count > 0) {
-    badge.style.display = 'flex';
-    badge.textContent = count;
-  } else {
-    badge.style.display = 'none';
-  }
-
-  if (items.length === 0) {
-    list.innerHTML = `<div class="empty-cart"><div class="empty-cart-icon">🍽️</div><p>Tu carrito está vacío</p><p style="font-size:13px;margin-top:4px">¡Agrega platillos del menú!</p><button onclick="toggleCart();showPage('profile')" style="margin-top:12px;background:var(--orange);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">← Ver el Menú</button></div>`;
-    footer.style.display = 'none';
-  } else {
-    list.innerHTML = items.map(([id,v]) => `
-      <div class="cart-item">
-        <div class="cart-item-emoji">${v.emoji}</div>
-        <div class="cart-item-info">
-          <div class="cart-item-name">${v.name}</div>
-          <div class="cart-item-price">$${(v.price * v.qty).toFixed(2)}</div>
-        </div>
-        <div class="qty-control">
-          <button class="qty-btn" onclick="updateCartQty('${id}',-1)">−</button>
-          <span class="qty-num">${v.qty}</span>
-          <button class="qty-btn" onclick="updateCartQty('${id}',1)">+</button>
-        </div>
-      </div>
-    `).join('');
-    document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
-    const continueBtn = document.getElementById('cart-continue-btn');
-    if (continueBtn) continueBtn.textContent = `Continuar con mi pedido — $${total.toFixed(2)} →`;
-    footer.style.display = 'block';
-  }
-}
-
-function toggleCart() {
-  document.getElementById('cart-overlay').classList.toggle('open');
-}
-
-function goToCheckout() {
-  toggleCart();
-  showPage('checkout');
-  renderCheckout();
-}
-
-// ════════════════════════════════════════
-// CHECKOUT MULTI-STEP
-// ════════════════════════════════════════
-let currentDelivery = 'delivery';
-
-function selectDelivery2(type) {
-  currentDelivery = type;
-  ['delivery','pickup','cena'].forEach(t => {
-    const el = document.getElementById('del-'+t);
-    if (el) {
-      el.classList.remove('selected');
-      el.style.borderColor = '';
-      el.style.background = '';
-    }
-    const c = document.getElementById('del-check-'+t);
-    if (c) { c.classList.remove('selected'); c.textContent = ''; }
-  });
-  const sel = document.getElementById('del-'+type);
-  if (sel) {
-    sel.classList.add('selected');
-    sel.style.borderColor = 'var(--orange)';
-    sel.style.background = '#FFF3EE';
-  }
-  const chk = document.getElementById('del-check-'+type);
-  if (chk) { chk.classList.add('selected'); chk.textContent = '✓'; }
-  const addrBlock = document.getElementById('del-address-block');
-  if (addrBlock) addrBlock.style.display = type === 'delivery' ? 'block' : 'none';
-  const cenaNote = document.getElementById('cena-note');
-  if (cenaNote) cenaNote.style.display = type === 'cena' ? 'block' : 'none';
-  const cookAddr = document.getElementById('cook-address-note');
-  if (cookAddr) cookAddr.style.display = (type === 'pickup' || type === 'cena') ? 'block' : 'none';
-}
-let currentPayMethod = 'whatsapp';
-
-function renderCheckout() {
-  const items = Object.entries(cart);
-  const container = document.getElementById('checkout-items');
-  const total = items.reduce((s,[,v]) => s + v.price * v.qty, 0);
-  if (items.length === 0) {
-    container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px">Carrito vacío. <a onclick="showPage(\'map\')" style="color:var(--orange);cursor:pointer">Agrega platillos</a></p>';
-  } else {
-    container.innerHTML = items.map(([,v]) => `
-      <div class="order-item">
-        <div class="order-item-info">
-          <div class="order-item-emoji">${v.emoji}</div>
-          <div><div class="order-item-name">${v.name}</div><div class="order-item-qty">×${v.qty}</div></div>
-        </div>
-        <div class="order-item-price">$${(v.price*v.qty).toFixed(2)}</div>
-      </div>`).join('');
-  }
-  const t = `$${total.toFixed(2)}`;
-  const ct = document.getElementById('checkout-total');
-  if (ct) ct.textContent = t;
-  const st = document.getElementById('summary-total');
-  if (st) st.textContent = t;
-}
-
-function coStep(n) {
-  [1,2,3,4,5].forEach(i => {
-    const s = document.getElementById('co-step-'+i);
-    if (s) s.style.display = i===n ? 'block' : 'none';
-    const ind = document.getElementById('step-ind-'+i);
-    if (ind) {
-      ind.classList.remove('active','done');
-      if (i===n) ind.classList.add('active');
-      else if (i<n) ind.classList.add('done');
-    }
-  });
-  if (n===3) {
-    const items = Object.values(cart);
-    const ci = document.getElementById('confirm-items');
-    const ct = document.getElementById('confirm-total');
-    const cd = document.getElementById('confirm-delivery');
-    if (ci) ci.innerHTML = items.map(v =>
-      `<div style="display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px solid var(--border)">
-        <span>${v.emoji||'🍽️'} ${v.name} × ${v.qty}</span>
-        <span style="color:var(--orange)">$${(v.price*v.qty).toFixed(2)}</span>
-      </div>`).join('');
-    const total = items.reduce((s,v)=>s+v.price*v.qty,0);
-    if (ct) ct.textContent = '$'+total.toFixed(2);
-    if (cd) cd.textContent = currentDelivery==='delivery'?'Delivery a domicilio 🛵':
-      currentDelivery==='pickup'?'Recogida en domicilio 🏠':'Cena privada 🕯️';
-  }
-  if (n===4) {
-    const sd = document.getElementById('summary-delivery');
-    if (sd) sd.textContent = currentDelivery==='delivery'?'Delivery 🛵':
-      currentDelivery==='cena'?'Cena privada 🕯️':'Recogida 🏠';
-    const ct2 = document.getElementById('checkout-total');
-    const st = document.getElementById('summary-total');
-    if (st && ct2) st.textContent = ct2.textContent;
-  }
-  window.scrollTo(0,0);
-}
-
-function processPayment() {
-  coStep(5);
-  cart = {}; updateCartUI();
-  setTimeout(()=>{
-    showToast('👩‍🍳 Chef María recibió tu pago · Preparando tu pedido 🍽️');
-  },2000);
-}
-
-
-// ════════════════════════════════════════
-// MEMBRESÍA — página completa de pago
-// ════════════════════════════════════════
-function openMembresiaModal() {
-  showPage('pago-membresia');
-  document.getElementById('pago-form').style.display = 'block';
-  document.getElementById('pago-confirmado').style.display = 'none';
-}
-function closeMembresiaModal() { showPage('membresia'); }
-
-function fmtCard(el) {
-  let v = el.value.replace(/\D/g,'').substring(0,16);
-  el.value = v.replace(/(.{4})/g,'$1 ').trim();
-  const dots = v.padEnd(16,'•').replace(/(.{4})/g,'$1 ').trim();
-  document.getElementById('pv-num').textContent = dots;
-  document.getElementById('pv-brand').textContent = v[0]==='4'?'💳':v[0]==='5'?'🟠':'💳';
-}
-function fmtExp(el) {
-  let v = el.value.replace(/\D/g,'');
-  if (v.length >= 2) v = v.substring(0,2)+'/'+v.substring(2,4);
-  el.value = v;
-  document.getElementById('pv-exp').textContent = v || 'MM/AA';
-}
-function confirmarMembresia() {
-  const titular = document.getElementById('pm-titular').value;
-  const numero  = document.getElementById('pm-numero').value;
-  const exp     = document.getElementById('pm-exp').value;
-  const cvv     = document.getElementById('pm-cvv').value;
-  const email   = document.getElementById('pm-email').value;
-  if (!titular || numero.length < 19 || exp.length < 5 || cvv.length < 3 || !email) {
-    showToast('⚠️ Por favor completa todos los campos'); return;
-  }
-  // Calcular próxima fecha
-  const next = new Date(); next.setDate(next.getDate()+30);
-  document.getElementById('fecha-proxima').textContent =
-    next.toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'});
-  document.getElementById('pago-form').style.display = 'none';
-  document.getElementById('pago-confirmado').style.display = 'block';
-  window.scrollTo(0,0);
-}
-
-// ════════════════════════════════════════
-// RENDER COMPONENTS
 // ════════════════════════════════════════
 function renderFeaturedCooks() {
   const el = document.getElementById('featured-cooks');
@@ -4194,6 +3855,8 @@ document.addEventListener('DOMContentLoaded', function() {
   renderMap();
   updateFounderUI();
   renderReviews();
+  // Load real data from Supabase
+  refreshCooks();
   // Restore saved language
   try {
     const savedLang = localStorage.getItem('micasero_lang');
@@ -4630,46 +4293,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-<!-- Supabase - loaded last to avoid conflicts -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SB_API = 'https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1';
-  const SB_KEY_HEADER = {
-    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4',
-    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4',
-    'Content-Type': 'application/json',
-    'Prefer': 'return=representation'
-  };
-
-  // Single reusable fetch function
-  async function sbFetch(table, query='') {
-    const r = await fetch(`${SB_API}/${table}?${query}`, { headers: SB_KEY_HEADER });
-    return r.ok ? r.json() : [];
-  }
-
-  async function sbPost(table, body) {
-    const r = await fetch(`${SB_API}/${table}`, { method:'POST', headers: SB_KEY_HEADER, body: JSON.stringify(body) });
-    return r.ok ? r.json() : null;
-  }
-
-  // Load cooks and refresh UI
-  async function refreshCooks() {
-    try {
-      const data = await sbFetch('cooks', 'is_online=eq.true&order=created_at.desc');
-      if (data && data.length > 0) {
-        dbCooks = data;
-        console.log('✅ Cooks loaded:', data.length);
-        renderFeaturedCooks();
-        renderMapList();
-        // If cooks page is visible, refresh it
-        if (document.getElementById('page-cooks')?.style.display !== 'none') {
-          renderCooksList();
-        }
-      }
-    } catch(e) { console.log('sbFetch error:', e); }
-  }
-
-  refreshCooks();
-</script>
 </body>
 </html>

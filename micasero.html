@@ -713,14 +713,7 @@
   }
 </style>
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = 'https://cuhfukhlpuqhqepuruya.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
-    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    console.log('✅ Supabase db conectado:', !!db);
-  </script>
+
 </head>
 <body>
 
@@ -2584,24 +2577,51 @@
 // DATA
 // ════════════════════════════════════════
 // ════════════════════════════════════════
-// SUPABASE DATA FUNCTIONS
+// SUPABASE DATA FUNCTIONS (fetch directo)
 // ════════════════════════════════════════
+const SB_URL = 'https://cuhfukhlpuqhqepuruya.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
+
+const sbHeaders = {
+  'Content-Type': 'application/json',
+  'apikey': SB_KEY,
+  'Authorization': 'Bearer ' + SB_KEY,
+  'Prefer': 'return=representation'
+};
+
+async function sbGet(table, query='') {
+  const res = await fetch(`${SB_URL}/rest/v1/${table}?${query}`, { headers: sbHeaders });
+  return res.ok ? res.json() : [];
+}
+
+async function sbInsert(table, data) {
+  const res = await fetch(`${SB_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: sbHeaders,
+    body: JSON.stringify(data)
+  });
+  return res.ok ? res.json() : null;
+}
+
+async function sbUpdate(table, data, query) {
+  const res = await fetch(`${SB_URL}/rest/v1/${table}?${query}`, {
+    method: 'PATCH',
+    headers: sbHeaders,
+    body: JSON.stringify(data)
+  });
+  return res.ok;
+}
+
 let dbCooks = [];
 let dbDishes = [];
 
 async function loadCooksFromDB() {
   try {
-    const { data, error } = await db
-      .from('cooks')
-      .select('*')
-      .eq('is_online', true)
-      .order('created_at', { ascending: false });
-    if (error) throw error;
+    const data = await sbGet('cooks', 'is_online=eq.true&order=created_at.desc');
     if (data && data.length > 0) {
       dbCooks = data;
       renderFeaturedCooks();
-      renderMapList();
-      console.log(`✅ ${data.length} cocineros cargados de Supabase`);
+      console.log(`✅ ${data.length} cocineros de Supabase`);
     }
   } catch(e) {
     console.log('⚠️ Usando datos demo:', e.message);
@@ -2610,95 +2630,58 @@ async function loadCooksFromDB() {
 
 async function loadDishesFromDB(cookId) {
   try {
-    const { data, error } = await db
-      .from('dishes')
-      .select('*')
-      .eq('cook_id', cookId)
-      .eq('is_available', true)
-      .order('created_at', { ascending: true });
-    if (error) throw error;
+    const data = await sbGet('dishes', `cook_id=eq.${cookId}&is_available=eq.true`);
     return data || [];
   } catch(e) {
-    console.log('⚠️ Usando menú demo:', e.message);
     return [];
   }
 }
 
 async function saveCookToDB(cookData) {
   try {
-    // Make email unique if empty
-    if (!cookData.email) {
-      cookData.email = `cook_${Date.now()}@micasero.app`;
+    const data = await sbInsert('cooks', cookData);
+    if (data && data[0]) {
+      console.log('✅ Cocinero guardado:', data[0].id);
+      return data[0];
     }
-    const { data, error } = await db
-      .from('cooks')
-      .insert([cookData])
-      .select();
-    if (error) {
-      console.log('Supabase error:', error.message);
-      showToast('⚠️ Error: ' + error.message);
-      return null;
-    }
-    console.log('✅ Cocinero guardado:', data);
-    return data[0];
+    return null;
   } catch(e) {
-    console.log('⚠️ Error guardando cocinero:', e.message);
-    showToast('⚠️ Error guardando: ' + e.message);
+    console.log('⚠️ Error:', e.message);
     return null;
   }
 }
 
 async function saveDishToDB(dish) {
   try {
-    const { data, error } = await db
-      .from('dishes')
-      .insert([dish])
-      .select();
-    if (error) throw error;
-    return data[0];
+    const data = await sbInsert('dishes', dish);
+    return data && data[0] ? data[0] : null;
   } catch(e) {
-    console.log('⚠️ Error guardando platillo:', e.message);
     return null;
   }
 }
 
 async function saveOrderToDB(order) {
   try {
-    const { data, error } = await db
-      .from('orders')
-      .insert([order])
-      .select();
-    if (error) throw error;
-    console.log('✅ Pedido guardado:', data[0].id);
-    return data[0];
+    const data = await sbInsert('orders', order);
+    return data && data[0] ? data[0] : null;
   } catch(e) {
-    console.log('⚠️ Error guardando pedido:', e.message);
     return null;
   }
 }
 
 async function updateOrderStatus(orderId, status) {
   try {
-    const { error } = await db
-      .from('orders')
-      .update({ status })
-      .eq('id', orderId);
-    if (error) throw error;
-    console.log(`✅ Pedido ${orderId} → ${status}`);
+    await sbUpdate('orders', { status }, `id=eq.${orderId}`);
   } catch(e) {
-    console.log('⚠️ Error actualizando pedido:', e.message);
+    console.log('⚠️ Error:', e.message);
   }
 }
 
 async function saveWaitlistEmail(email, city) {
   try {
-    const { error } = await db
-      .from('founder_waitlist')
-      .insert([{ email, city: city || 'unknown' }]);
-    if (error) throw error;
-    console.log('✅ Email en waitlist:', email);
+    await sbInsert('founder_waitlist', { email, city: city || 'unknown' });
   } catch(e) {
-    console.log('⚠️ Error guardando waitlist:', e.message);
+    console.log('⚠️ Error:', e.message);
   }
 }
 
@@ -3021,13 +3004,7 @@ async function renderCooksList() {
 
   // Load from Supabase
   try {
-    const { data, error } = await db
-      .from('cooks')
-      .select('*')
-      .eq('is_online', true)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
+    const data = await sbGet('cooks', 'is_online=eq.true&order=created_at.desc');
 
     if (loading) loading.style.display = 'none';
 
@@ -3824,10 +3801,11 @@ function deleteDishPhoto(id) {
 }
 
 async function finishCookReg() {
-  // Collect ALL form data BEFORE navigating
+  showToast('💾 Guardando...');
+
   const cookData = {
     name: document.getElementById('creg-name')?.value || 'Cocinero',
-    email: (document.getElementById('creg-email')?.value || '') || `cook_${Date.now()}@micasero.app`,
+    email: document.getElementById('creg-email')?.value || `cook_${Date.now()}@micasero.app`,
     phone: document.getElementById('creg-phone')?.value || '',
     address: document.getElementById('creg-address')?.value || '',
     kitchen_name: document.getElementById('creg-kitchen')?.value || '',
@@ -3835,39 +3813,30 @@ async function finishCookReg() {
     description: document.getElementById('creg-desc')?.value || '',
     plan: 'basico',
     is_online: true,
-    services: ['delivery', 'pickup'],
+    services: ['delivery','pickup'],
     city: 'Bainbridge Island',
     lat: 47.6246,
     lng: -122.5219
   };
 
-  console.log('Saving cook:', cookData);
-  showToast('💾 Guardando...');
-
-  const { data, error } = await db
-    .from('cooks')
-    .insert([cookData])
-    .select()
-    .single();
-
-  if (error) {
-    console.log('Error:', error);
-    // If email duplicate, use auto email
-    if (error.code === '23505') {
-      cookData.email = `cook_${Date.now()}@micasero.app`;
-      const retry = await db.from('cooks').insert([cookData]).select().single();
-      if (retry.data) {
-        selectedCookId = retry.data.id;
-        showToast('🎉 ¡Guardado!');
-      }
+  try {
+    const saved = await saveCookToDB(cookData);
+    if (saved) {
+      selectedCookId = saved.id;
+      showToast('🎉 ¡Perfil guardado!');
+      await loadCooksFromDB();
     } else {
-      showToast('⚠️ Error: ' + error.message);
+      // Try with unique email
+      cookData.email = `cook_${Date.now()}@micasero.app`;
+      const retry = await saveCookToDB(cookData);
+      if (retry) {
+        selectedCookId = retry.id;
+        showToast('🎉 ¡Perfil guardado!');
+        await loadCooksFromDB();
+      }
     }
-  } else if (data) {
-    selectedCookId = data.id;
-    showToast('🎉 ¡Perfil guardado en Supabase!');
-    console.log('✅ Cook saved:', data.id);
-    loadCooksFromDB();
+  } catch(e) {
+    showToast('⚠️ Error: ' + e.message);
   }
 
   showPage('pago-membresia');
@@ -4124,8 +4093,6 @@ document.addEventListener('DOMContentLoaded', function() {
   renderMap();
   updateFounderUI();
   renderReviews();
-  // Load real data from Supabase
-  loadCooksFromDB();
 });
 </script>
 
@@ -4556,5 +4523,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+
+<!-- Supabase - loaded last to avoid conflicts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://cuhfukhlpuqhqepuruya.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  console.log('✅ Supabase listo:', !!db.from);
+  // Load cooks now that db is ready
+  loadCooksFromDB();
+</script>
 </body>
 </html>

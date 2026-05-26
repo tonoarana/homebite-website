@@ -3815,11 +3815,9 @@ function deleteDishPhoto(id) {
 }
 
 async function finishCookReg() {
-  // Navigate immediately — don't wait for Supabase
   showPage('pago-membresia');
   showToast('✅ Perfil creado · Ahora elige tu plan');
 
-  // Save to Supabase in background
   try {
     const cookData = {
       name: document.getElementById('creg-name')?.value || 'Cocinero',
@@ -3830,19 +3828,39 @@ async function finishCookReg() {
       cuisine_type: document.getElementById('creg-cuisine')?.value || 'Local',
       description: document.getElementById('creg-desc')?.value || '',
       plan: 'basico',
-      is_online: false,
+      is_online: true,  // ← activo desde el inicio
       services: ['delivery','pickup'],
       city: 'Bainbridge Island',
       lat: 47.6246,
       lng: -122.5219
     };
+
     const saved = await saveCookToDB(cookData);
     if (saved) {
       selectedCookId = saved.id;
-      console.log('✅ Cocinero guardado en Supabase:', saved.id);
+      console.log('✅ Cocinero guardado:', saved.id);
+
+      // Save dishes from step 4
+      const dishItems = document.querySelectorAll('#creg-menu-list > div');
+      for (const item of dishItems) {
+        const inputs = item.querySelectorAll('input[type="text"]');
+        if (inputs.length >= 2 && inputs[0].value) {
+          const price = parseFloat(inputs[1].value.replace('$','')) || 0;
+          await saveDishToDB({
+            cook_id: saved.id,
+            name: inputs[0].value,
+            price: price,
+            emoji: '🍽️',
+            is_available: true
+          });
+        }
+      }
+      console.log('✅ Platillos guardados');
+      // Reload cooks list
+      await loadCooksFromDB();
     }
   } catch(e) {
-    console.log('⚠️ Error guardando:', e.message);
+    console.log('⚠️ Error:', e.message);
   }
 }
 

@@ -718,9 +718,8 @@
   <script>
     const SUPABASE_URL = 'https://cuhfukhlpuqhqepuruya.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
-    const { createClient } = supabase;
-    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
-    console.log('✅ Supabase conectado');
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    console.log('✅ Supabase db conectado:', !!db);
   </script>
 </head>
 <body>

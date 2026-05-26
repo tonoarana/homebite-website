@@ -110,6 +110,7 @@
 
   /* ── PAGES ── */
   .page { display: none; padding-top: 64px; min-height: 100vh; }
+  .page.show { display: block !important; }
   .page.active { display: block; }
   body { overflow-x: hidden; }
 
@@ -2876,9 +2877,13 @@ function renderReviews() {
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => {
     p.style.display = 'none';
+    p.classList.remove('show');
   });
   const target = document.getElementById('page-' + name);
-  if (target) target.style.display = 'block';
+  if (target) {
+    target.style.display = 'block';
+    target.classList.add('show');
+  }
   window.scrollTo(0, 0);
   if (name === 'register-cocinero') { cookRegStep(1); }
   if (name === 'map') { setTimeout(initLeafletMap, 100); }
@@ -3830,19 +3835,17 @@ function selectPlan(plan) {
 // ════════════════════════════════════════
 // INIT
 document.addEventListener('DOMContentLoaded', function() {
-  // Hide all pages, show only home
   document.querySelectorAll('.page').forEach(p => {
     p.style.display = 'none';
+    p.classList.remove('show');
   });
   const home = document.getElementById('page-home');
-  if (home) home.style.display = 'block';
+  if (home) { home.style.display = 'block'; home.classList.add('show'); }
   renderFeaturedCooks();
   renderMap();
   updateFounderUI();
   renderReviews();
-  // Load real data from Supabase
   refreshCooks();
-  // Restore saved language
   try {
     const savedLang = localStorage.getItem('micasero_lang');
     if (savedLang && savedLang !== 'es') setLang(savedLang);

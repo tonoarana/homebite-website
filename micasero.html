@@ -1015,18 +1015,17 @@
      PROFILE PAGE
 ══════════════════════════════════════════ -->
 <div id="page-profile" class="page">
-  <!-- Back button — always visible at top -->
-  <button onclick="showPage('map')" style="background:rgba(0,0,0,0.3);border:none;color:white;font-size:14px;font-weight:600;cursor:pointer;padding:10px 16px;display:flex;align-items:center;gap:6px;-webkit-appearance:none;width:100%">← Regresar al Mapa · Ver otros cocineros</button>
+  <!-- Back button -->
+  <button onclick="showPage('cooks')" style="background:rgba(0,0,0,0.3);border:none;color:white;font-size:14px;font-weight:600;cursor:pointer;padding:10px 16px;display:flex;align-items:center;gap:6px;-webkit-appearance:none;width:100%">← Regresar · Ver otros cocineros</button>
   <div class="profile-hero">
-    <div class="profile-avatar">👩‍🍳</div>
+    <div class="profile-avatar" id="profile-avatar">👨‍🍳</div>
     <div class="profile-info">
-      <h2>Chef María Rodríguez</h2>
-      <p>📍 Colonia Roma, Ciudad de México</p>
+      <h2 id="profile-name">Chef</h2>
+      <p id="profile-location">📍 Bainbridge Island</p>
       <div class="profile-badges">
-        <span class="profile-badge">⭐ 4.9 (127 reseñas)</span>
+        <span class="profile-badge">⭐ <span id="profile-rating">4.9</span></span>
         <span class="profile-badge green">✓ Verificado</span>
-        <span class="profile-badge">🛵 Delivery</span>
-        <span class="profile-badge">🏠 Recogida</span>
+        <span class="profile-badge" id="profile-delivery-badge">🛵 Delivery</span>
         <span class="profile-badge">🕐 Hoy disponible</span>
       </div>
     </div>
@@ -1036,8 +1035,8 @@
     <div class="profile-grid">
       <div>
         <h3 class="section-title" style="margin-bottom:8px">Sobre Mí</h3>
-        <p style="color:var(--text-muted);line-height:1.7;margin-bottom:28px;font-size:15px">
-          Soy María, apasionada de la cocina casera con 12 años de experiencia. Mi especialidad es la comida tradicional mexicana con un toque moderno, siempre con ingredientes frescos y de temporada. ¡Me encanta compartir mi amor por la comida con mi comunidad!
+        <p id="profile-desc" style="color:var(--text-muted);line-height:1.7;margin-bottom:28px;font-size:15px">
+          Cocinero apasionado compartiendo sabores caseros con la comunidad.
         </p>
 
         <h3 class="section-title" style="margin-bottom:16px">🍽️ Menú</h3>
@@ -3059,6 +3058,21 @@ async function renderCooksList() {
 
 function selectCook(cookId) {
   selectedCookId = cookId;
+  // Find cook data
+  const cook = dbCooks.find(c => c.id === cookId) || dbCooks.find(c => String(c.id) === String(cookId));
+  if (cook) {
+    // Update profile page with real data
+    const name = document.getElementById('profile-name');
+    const loc = document.getElementById('profile-location');
+    const desc = document.getElementById('profile-desc');
+    const avatar = document.getElementById('profile-avatar');
+    const rating = document.getElementById('profile-rating');
+    if (name) name.textContent = cook.kitchen_name || cook.name;
+    if (loc) loc.textContent = '📍 ' + (cook.city || 'Bainbridge Island');
+    if (desc) desc.textContent = cook.description || 'Cocinero apasionado compartiendo sabores caseros.';
+    if (avatar) avatar.textContent = '👨‍🍳';
+    if (rating) rating.textContent = '4.9';
+  }
 }
 
 async function renderMenu() {
@@ -3109,13 +3123,24 @@ function renderMap() {
 }
 
 function renderMapList() {
-  const filtered = (typeof activeFilter !== 'undefined' && activeFilter !== 'todos')
-    ? cookLocations.filter(c => c.tags.includes(activeFilter))
-    : cookLocations;
   const el = document.getElementById('map-cook-list');
   if (!el) return;
-  el.innerHTML = filtered.map(c => `
-    <div class="cook-card" onclick="showPage('profile')" style="cursor:pointer">
+
+  // Use Supabase data if available, otherwise use demo locations
+  const data = dbCooks.length > 0 ? dbCooks.map(c => ({
+    id: c.id,
+    name: c.kitchen_name || c.name,
+    emoji: '👨‍🍳',
+    cuisine: c.cuisine_type || 'Local',
+    rating: 4.9,
+    delivery: c.services && c.services.includes('delivery'),
+    lat: c.lat || 47.6246,
+    lng: c.lng || -122.5219,
+    tags: [c.cuisine_type || 'local']
+  })) : cookLocations;
+
+  el.innerHTML = data.map(c => `
+    <div class="cook-card" onclick="selectCook('${c.id}');showPage('profile')" style="cursor:pointer">
       <div class="cook-card-img" style="background:${c.delivery?'#FDE8D8':'#E8F8EE'};height:90px">
         <div class="cook-avatar">${c.emoji}</div>
         ${c.delivery ? '<div class="cook-delivery-badge">🛵</div>' : ''}
@@ -3123,10 +3148,8 @@ function renderMapList() {
       <div class="cook-card-body">
         <h3>${c.name}</h3>
         <div class="cook-meta"><span class="stars">★</span>${c.rating} · ${c.cuisine}</div>
-        <button class="btn-order" onclick="event.stopPropagation();
-          if(leafletMap){leafletMap.setView([${c.lat},${c.lng}],17);}
-          showToast('📍 ${c.name}')">
-          Ver en mapa 📍
+        <button class="btn-order" onclick="event.stopPropagation();selectCook('${c.id}');showPage('profile')">
+          Ver Menú →
         </button>
       </div>
     </div>
@@ -3345,25 +3368,6 @@ function locateUser() {
 
 function renderMap() { renderMapList(); }
 
-function renderMapList() {
-  const filtered = activeFilter === 'todos' ? cookLocations : cookLocations.filter(c => c.tags.includes(activeFilter));
-  const el = document.getElementById('map-cook-list');
-  if (!el) return;
-  el.innerHTML = filtered.map(c => `
-    <div class="cook-card" onclick="showPage('profile')" style="cursor:pointer">
-      <div class="cook-card-img" style="background:${c.delivery?'#FDE8D8':'#E8F8EE'};height:90px">
-        <div class="cook-avatar">${c.emoji}</div>
-        ${c.delivery?'<div class="cook-delivery-badge">🛵</div>':''}
-      </div>
-      <div class="cook-card-body">
-        <h3>${c.name}</h3>
-        <div class="cook-meta"><span class="stars">★</span>${c.rating} · ${c.cuisine}</div>
-        <button class="btn-order" onclick="event.stopPropagation();if(leafletMap)leafletMap.setView([${c.lat},${c.lng}],16);showToast('📍 ${c.name}')">
-          Ver en mapa 📍
-        </button>
-      </div>
-    </div>`).join('');
-}
 
 // ════════════════════════════════════════
 // DASHBOARD — gestión de menú del cocinero
@@ -3737,13 +3741,16 @@ function setLang(lang) {
     mbtn.style.border = l===lang ? 'none' : '1px solid var(--border)';
   });
 
-  // Translate EVERY data-i18n element in the entire document
+  // Translate EVERY data-i18n element in the entire document (including hidden pages)
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (t[key] !== undefined) {
       el.textContent = t[key];
     }
   });
+
+  // Save language preference
+  try { localStorage.setItem('micasero_lang', lang); } catch(e) {}
 
   showToast(lang==='es'?'🇪🇸 Español':lang==='en'?'🇺🇸 English':'🇧🇷 Português');
 }
@@ -3805,13 +3812,19 @@ function guardarCocinero() {
   const email = document.getElementById('creg-email')?.value || ('cook_' + Date.now() + '@micasero.app');
   const cocina = document.getElementById('creg-kitchen')?.value || '';
   const tipo = document.getElementById('creg-cuisine')?.value || 'Local';
+  const telefono = document.getElementById('creg-phone')?.value || '';
+  const direccion = document.getElementById('creg-address')?.value || '';
+  const desc = document.getElementById('creg-desc')?.value || '';
 
   const body = JSON.stringify({
     name: nombre,
     email: email,
+    phone: telefono,
+    address: direccion,
     kitchen_name: cocina,
     cuisine_type: tipo,
-    plan: 'basico',
+    description: desc,
+    plan: selectedPlan,
     is_online: true,
     city: 'Bainbridge Island',
     lat: 47.6246,
@@ -3830,14 +3843,34 @@ function guardarCocinero() {
   })
   .then(r => r.json())
   .then(data => {
-    console.log('✅ Guardado:', data);
-    showToast('🎉 ¡Perfil guardado!');
-    loadCooksFromDB();
+    if (data && data[0]) {
+      selectedCookId = data[0].id;
+      console.log('✅ Guardado:', data[0].id, 'Plan:', selectedPlan);
+      showToast('🎉 ¡Perfil guardado!');
+      // Update payment page with correct plan/price
+      updatePaymentPage();
+      loadCooksFromDB();
+    } else {
+      console.log('⚠️ Response:', data);
+      showToast('⚠️ Error al guardar');
+    }
   })
   .catch(e => {
     console.log('⚠️ Error:', e);
-    showToast('⚠️ Error guardando');
   });
+}
+
+function updatePaymentPage() {
+  const prices = { fundador: '7.00', basico: '7.00', pro: '10.00' };
+  const names = { fundador: 'Plan Fundador — 3 meses gratis', basico: 'Plan Básico — 2 meses gratis', pro: 'Plan Pro — 2 meses gratis' };
+  const price = prices[selectedPlan] || '7.00';
+  const name = names[selectedPlan] || 'Plan Básico';
+
+  // Update payment page
+  const planNameEl = document.querySelector('#page-pago-membresia [style*="Plan Pro"]');
+  const priceEl = document.querySelector('#page-pago-membresia .btn-pay');
+  if (planNameEl) planNameEl.textContent = name;
+  if (priceEl) priceEl.textContent = `🔒 Pagar $${price} y Activar ${name.split('—')[0]}`;
 }
 
 async function finishCookReg() {
@@ -4093,7 +4126,10 @@ function showRegForm(type) {
   const rfco = document.getElementById('reg-form-cocinero'); if(rfco) rfco.style.display = type === 'cocinero' ? 'block' : 'none';
 }
 
+let selectedPlan = 'basico';
+
 function selectPlan(plan) {
+  selectedPlan = plan;
   ['fundador','basico','pro'].forEach(p => {
     const btn = document.getElementById('plan-'+p);
     if (!btn) return;
@@ -4133,6 +4169,11 @@ document.addEventListener('DOMContentLoaded', function() {
   renderMap();
   updateFounderUI();
   renderReviews();
+  // Restore saved language
+  try {
+    const savedLang = localStorage.getItem('micasero_lang');
+    if (savedLang && savedLang !== 'es') setLang(savedLang);
+  } catch(e) {}
 });
 </script>
 

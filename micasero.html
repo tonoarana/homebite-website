@@ -2592,6 +2592,13 @@ const SB_API = 'https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
 let dbCooks = [];
 let dbDishes = [];
+
+// Demo cooks fallback
+const cooks = [
+  { id:'demo1', name:'Chef María R.', emoji:'👩‍🍳', cuisine:'Mexicana', rating:4.9, reviews:127, delivery:true, tags:['Mexicana','Casera'], color:'#FDE8D8' },
+  { id:'demo2', name:'Chef Carlos M.', emoji:'👨‍🍳', cuisine:'Local', rating:4.7, reviews:89, delivery:true, tags:['Local','Casera'], color:'#E8F0FE' },
+  { id:'demo3', name:'Chef Ana G.', emoji:'👩‍🍳', cuisine:'Italiana', rating:4.8, reviews:45, delivery:false, tags:['Italiana','Pasta'], color:'#E8F8EE' },
+];
 const SB_HEADERS = {
   'Content-Type': 'application/json',
   'apikey': SB_KEY,

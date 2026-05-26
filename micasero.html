@@ -3485,18 +3485,23 @@ function deleteDishPhoto(id) {
 }
 
 function guardarCocinero() {
-  // Collect dish data NOW before navigating away
+  // Collect dish data directly from DOM
   const dishesData = [];
-  regDishes.forEach(id => {
-    const div = document.getElementById('reg-dish-' + id);
-    if (!div) return;
-    const inputs = div.querySelectorAll('input[type="text"]');
-    if (inputs.length >= 2 && inputs[0].value.trim()) {
-      const price = parseFloat(inputs[1].value.replace('$','').replace(',','.')) || 0;
-      dishesData.push({ name: inputs[0].value.trim(), price: price });
+  const menuList = document.getElementById('creg-menu-list');
+  if (menuList) {
+    const dishDivs = menuList.children;
+    console.log('Dish divs found:', dishDivs.length);
+    for (let i = 0; i < dishDivs.length; i++) {
+      const inputs = dishDivs[i].querySelectorAll('input[type="text"]');
+      console.log('Inputs in div', i, ':', inputs.length);
+      if (inputs.length >= 2 && inputs[0].value.trim()) {
+        const price = parseFloat(inputs[1].value.replace('$','').replace(',','.')) || 0;
+        dishesData.push({ name: inputs[0].value.trim(), price: price });
+        console.log('Dish added:', inputs[0].value.trim(), price);
+      }
     }
-  });
-  console.log('Dishes to save:', dishesData.length, dishesData);
+  }
+  console.log('Total dishes:', dishesData.length);
 
   const cookData = {
     name: document.getElementById('creg-name')?.value || 'Cocinero',

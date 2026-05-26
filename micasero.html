@@ -110,7 +110,7 @@
 
   /* ── PAGES ── */
   .page { display: none; padding-top: 64px; min-height: 100vh; }
-  .page.show { display: block !important; }
+  .page.active { display: block; }
   .page.active { display: block; }
   body { overflow-x: hidden; }
 
@@ -2876,13 +2876,13 @@ function renderReviews() {
 // ════════════════════════════════════════
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
     p.style.display = 'none';
-    p.classList.remove('show');
   });
   const target = document.getElementById('page-' + name);
   if (target) {
+    target.classList.add('active');
     target.style.display = 'block';
-    target.classList.add('show');
   }
   window.scrollTo(0, 0);
   if (name === 'register-cocinero') { cookRegStep(1); }
@@ -3833,14 +3833,184 @@ function selectPlan(plan) {
 }
 
 // ════════════════════════════════════════
+
+// ════════════════════════════════════════
+// CART FUNCTIONS (restored)
+// ════════════════════════════════════════
+let cart = {};
+let currentDelivery = 'delivery';
+let currentPayMethod = 'whatsapp';
+
+function toggleCart() {
+  const overlay = document.getElementById('cart-overlay');
+  if (overlay) overlay.classList.toggle('open');
+}
+
+function addToCart(id, name, price, emoji) {
+  if (cart[id]) {
+    cart[id].qty++;
+  } else {
+    cart[id] = { name, price, emoji, qty: 1 };
+  }
+  updateCartUI();
+  updateProfileCTA();
+  showToast(`🛒 ${name} agregado al carrito`);
+}
+
+function updateCartQty(id, delta) {
+  if (!cart[id]) return;
+  cart[id].qty += delta;
+  if (cart[id].qty <= 0) delete cart[id];
+  updateCartUI();
+  updateProfileCTA();
+}
+
+function updateCartUI() {
+  const items = Object.entries(cart);
+  const badge = document.getElementById('cart-badge');
+  const list = document.getElementById('cart-items-list');
+  const footer = document.getElementById('cart-footer');
+  const total = items.reduce((s,[,v]) => s + v.price * v.qty, 0);
+  const count = items.reduce((s,[,v]) => s + v.qty, 0);
+  if (badge) badge.textContent = count > 0 ? count : '';
+  if (!list) return;
+  if (items.length === 0) {
+    list.innerHTML = `<div class="empty-cart"><div class="empty-cart-icon">🍽️</div><p>Tu carrito está vacío</p><p style="font-size:13px;margin-top:4px">¡Agrega platillos del menú!</p><button onclick="toggleCart();showPage('profile')" style="margin-top:12px;background:var(--orange);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">← Ver el Menú</button></div>`;
+    if (footer) footer.style.display = 'none';
+    return;
+  }
+  list.innerHTML = items.map(([id, v]) => `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:28px">${v.emoji}</span>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:14px">${v.name}</div>
+        <div style="color:var(--orange);font-weight:700">$${(v.price*v.qty).toFixed(2)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button onclick="updateCartQty('${id}',-1)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--warm);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">−</button>
+        <span style="font-weight:700;min-width:20px;text-align:center">${v.qty}</span>
+        <button onclick="updateCartQty('${id}',1)" style="width:28px;height:28px;border-radius:50%;background:var(--orange);color:white;border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">+</button>
+      </div>
+    </div>
+  `).join('');
+  if (footer) {
+    footer.style.display = 'block';
+    const ct = document.getElementById('cart-total');
+    if (ct) ct.textContent = '$' + total.toFixed(2);
+    const continueBtn = document.getElementById('cart-continue-btn');
+    if (continueBtn) continueBtn.textContent = `Continuar con mi pedido — $${total.toFixed(2)} →`;
+  }
+}
+
+function updateProfileCTA() {
+  const cta = document.getElementById('profile-cart-cta');
+  const summary = document.getElementById('profile-cart-summary');
+  if (!cta) return;
+  const items = Object.values(cart);
+  const count = items.reduce((s, v) => s + v.qty, 0);
+  const total = items.reduce((s, v) => s + v.price * v.qty, 0);
+  if (count > 0) {
+    cta.style.display = 'block';
+    if (summary) summary.textContent = `${count} platillo${count>1?'s':''} · $${total.toFixed(2)}`;
+  } else {
+    cta.style.display = 'none';
+  }
+}
+
+function goToCheckout() {
+  toggleCart();
+  showPage('checkout');
+  renderCheckout();
+}
+
+function renderCheckout() {
+  const items = Object.values(cart);
+  const el = document.getElementById('checkout-items');
+  const ct = document.getElementById('checkout-total');
+  if (!el) return;
+  el.innerHTML = items.map(v => `
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px">
+      <span>${v.emoji} ${v.name} × ${v.qty}</span>
+      <span style="color:var(--orange);font-weight:600">$${(v.price*v.qty).toFixed(2)}</span>
+    </div>
+  `).join('');
+  const total = items.reduce((s,v) => s + v.price*v.qty, 0);
+  if (ct) ct.textContent = '$' + total.toFixed(2);
+}
+
+function selectDelivery2(type) {
+  currentDelivery = type;
+  ['delivery','pickup','cena'].forEach(t => {
+    const el = document.getElementById('del-'+t);
+    if (el) { el.classList.remove('selected'); el.style.borderColor=''; el.style.background=''; }
+    const c = document.getElementById('del-check-'+t);
+    if (c) { c.classList.remove('selected'); c.textContent=''; }
+  });
+  const sel = document.getElementById('del-'+type);
+  if (sel) { sel.classList.add('selected'); sel.style.borderColor='var(--orange)'; sel.style.background='#FFF3EE'; }
+  const chk = document.getElementById('del-check-'+type);
+  if (chk) { chk.classList.add('selected'); chk.textContent='✓'; }
+  const addrBlock = document.getElementById('del-address-block');
+  if (addrBlock) addrBlock.style.display = type==='delivery' ? 'block' : 'none';
+  const cenaNote = document.getElementById('cena-note');
+  if (cenaNote) cenaNote.style.display = type==='cena' ? 'block' : 'none';
+  const cookAddr = document.getElementById('cook-address-note');
+  if (cookAddr) cookAddr.style.display = (type==='pickup'||type==='cena') ? 'block' : 'none';
+}
+
+function coStep(n) {
+  [1,2,3,4,5].forEach(i => {
+    const s = document.getElementById('co-step-'+i);
+    if (s) s.style.display = i===n ? 'block' : 'none';
+    const ind = document.getElementById('step-ind-'+i);
+    if (ind) {
+      ind.classList.remove('active','done');
+      if (i===n) ind.classList.add('active');
+      else if (i<n) ind.classList.add('done');
+    }
+  });
+  if (n===3) {
+    const items = Object.values(cart);
+    const ci = document.getElementById('confirm-items');
+    const ct = document.getElementById('confirm-total');
+    const cd = document.getElementById('confirm-delivery');
+    if (ci) ci.innerHTML = items.map(v =>
+      `<div style="display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span>${v.emoji||'🍽️'} ${v.name} × ${v.qty}</span>
+        <span style="color:var(--orange)">$${(v.price*v.qty).toFixed(2)}</span>
+      </div>`).join('');
+    const total = items.reduce((s,v)=>s+v.price*v.qty,0);
+    if (ct) ct.textContent = '$'+total.toFixed(2);
+    if (cd) cd.textContent = currentDelivery==='delivery'?'Delivery a domicilio 🛵':
+      currentDelivery==='pickup'?'Recogida en domicilio 🏠':'Cena privada 🕯️';
+  }
+  if (n===4) {
+    const sd = document.getElementById('summary-delivery');
+    if (sd) sd.textContent = currentDelivery==='delivery'?'Delivery 🛵':
+      currentDelivery==='cena'?'Cena privada 🕯️':'Recogida 🏠';
+    const ct2 = document.getElementById('checkout-total');
+    const st = document.getElementById('summary-total');
+    if (st && ct2) st.textContent = ct2.textContent;
+  }
+  window.scrollTo(0,0);
+}
+
+function processPayment() {
+  coStep(5);
+  cart = {}; updateCartUI();
+  setTimeout(()=>{
+    showToast('👩‍🍳 Chef María recibió tu pago · Preparando tu pedido 🍽️');
+  },2000);
+}
+
 // INIT
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
     p.style.display = 'none';
-    p.classList.remove('show');
   });
   const home = document.getElementById('page-home');
-  if (home) { home.style.display = 'block'; home.classList.add('show'); }
+  if (home) { home.classList.add('active'); home.style.display = 'block'; }
   renderFeaturedCooks();
   renderMap();
   updateFounderUI();

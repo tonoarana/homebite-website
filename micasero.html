@@ -2579,15 +2579,6 @@
 // ════════════════════════════════════════
 // SUPABASE CONFIG
 // ════════════════════════════════════════
-window.onerror = function(msg, src, line, col, err) {
-  console.error('JS Error:', msg, 'at line', line);
-  // Show visible error on screen for debugging
-  const d = document.createElement('div');
-  d.style.cssText = 'position:fixed;top:0;left:0;right:0;background:red;color:white;padding:10px;z-index:99999;font-size:12px;';
-  d.textContent = 'JS Error: ' + msg + ' (line ' + line + ')';
-  document.body.appendChild(d);
-  return false;
-};
 const SB_API = 'https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
 let dbCooks = [];
@@ -3511,9 +3502,31 @@ function guardarCocinero() {
 
   sbPost('cooks', cookData).then(data => {
     if (data && data[0]) {
-      selectedCookId = data[0].id;
+      const cookId = data[0].id;
+      selectedCookId = cookId;
       showToast('🎉 ¡Perfil guardado!');
-      console.log('✅ Cook saved:', data[0].id);
+      console.log('✅ Cook saved:', cookId);
+
+      // Save dishes from step 4
+      regDishes.forEach(id => {
+        const div = document.getElementById('reg-dish-' + id);
+        if (!div) return;
+        const inputs = div.querySelectorAll('input[type="text"]');
+        if (inputs.length >= 2 && inputs[0].value.trim()) {
+          const price = parseFloat(inputs[1].value.replace('$','').replace(',','.')) || 0;
+          sbPost('dishes', {
+            cook_id: cookId,
+            name: inputs[0].value.trim(),
+            price: price,
+            emoji: '🍽️',
+            category: 'Plato principal',
+            is_available: true
+          }).then(d => {
+            if (d && d[0]) console.log('✅ Dish saved:', d[0].name);
+          });
+        }
+      });
+
       refreshCooks();
     } else {
       // Try with unique email
@@ -3533,21 +3546,21 @@ function updatePaymentPage() {
   const prices = { fundador: '7.00', basico: '7.00', pro: '10.00' };
   const names = { fundador: 'Plan Fundador 🏅', basico: 'Plan Básico', pro: 'Plan Pro ⭐' };
   const periods = { fundador: 'en 3 meses', basico: 'en 2 meses', pro: 'en 2 meses' };
-  const price = prices[selectedPlan] || '7.00';
-  const name = names[selectedPlan] || 'Plan Básico';
-  const period = periods[selectedPlan] || 'en 2 meses';
-
-  const planNameEl = document.getElementById('pay-plan-name');
-  const planPriceEl = document.getElementById('pay-plan-price');
-  const freePeriodEl = document.getElementById('pay-free-period');
-  const todayEl = document.getElementById('pay-today');
-  const btnEl = document.getElementById('pay-btn');
-
-  if (planNameEl) planNameEl.textContent = name;
-  if (planPriceEl) planPriceEl.textContent = '$' + price + '/mes';
-  if (freePeriodEl) freePeriodEl.textContent = period;
-  if (todayEl) todayEl.textContent = '$0.00 (gratis hoy)';
-  if (btnEl) btnEl.textContent = `🚀 Activar ${name} — Gratis por ahora`;
+  const plan = selectedPlan || 'basico';
+  const price = prices[plan];
+  const name = names[plan];
+  const period = periods[plan];
+  const els = {
+    'pay-plan-name': name,
+    'pay-plan-price': '$' + price + '/mes',
+    'pay-free-period': period,
+    'pay-today': '$0.00 (gratis hoy)',
+    'pay-btn': `🚀 Activar ${name} — Gratis por ahora`
+  };
+  Object.entries(els).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  });
 }
 
 async function finishCookReg() {

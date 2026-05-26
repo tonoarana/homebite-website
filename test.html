@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test</title>
+</head>
+<body>
+<h1 id="msg">Página Inicio</h1>
+<button onclick="showPage('dos')">Ir a Página 2</button>
+<button onclick="alert('funciona!')">Test Alert</button>
+
+<div id="p1" style="display:block">Página 1</div>
+<div id="p2" style="display:none">Página 2 <button onclick="showPage('uno')">Volver</button></div>
+
+<script>
+function showPage(name) {
+  document.getElementById('p1').style.display = name === 'uno' ? 'block' : 'none';
+  document.getElementById('p2').style.display = name === 'dos' ? 'block' : 'none';
+  document.getElementById('msg').textContent = 'Página: ' + name;
+}
+</script>
+</body>
+</html>

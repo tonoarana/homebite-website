@@ -752,7 +752,7 @@
     <button onclick="showPage('home')" id="nav-home" class="active">Inicio</button>
     <button onclick="showPage('map')" id="nav-map">Mapa</button>
     <button onclick="showPage('reviews')" id="nav-reviews">Reseñas</button>
-    <button onclick="showPage('profile')" id="nav-profile">Cocineros</button>
+    <button onclick="showPage('cooks')" id="nav-cooks">Cocineros</button>
     <button onclick="showPage('membresia')" id="nav-membresia" style="color:var(--orange);font-weight:600">👨‍🍳 Para Cocineros</button>
     <button onclick="showPage('dashboard')" id="nav-cocina" style="color:var(--green);font-weight:600">📋 Mi Menu</button>
     <button onclick="showPage('login')" id="nav-login">Iniciar Sesión</button>
@@ -1105,6 +1105,34 @@
     </div>
   </div>
 </div>
+<!-- ══════════════════════════════════════════
+     COOKS LIST PAGE
+══════════════════════════════════════════ -->
+<div id="page-cooks" class="page">
+  <div style="max-width:900px;margin:0 auto;padding:20px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;padding:0;display:flex;align-items:center;gap:4px">← Inicio</button>
+    <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--brown);margin-bottom:4px">👨‍🍳 Cocineros Disponibles</div>
+    <div style="font-size:14px;color:var(--text-muted);margin-bottom:20px">Todos los cocineros en tu área</div>
+
+    <!-- Loading state -->
+    <div id="cooks-loading" style="text-align:center;padding:40px;color:var(--text-muted)">
+      <div style="font-size:40px;margin-bottom:12px">🍽️</div>
+      <div>Cargando cocineros...</div>
+    </div>
+
+    <!-- Cooks grid -->
+    <div id="cooks-list-grid" class="featured-grid" style="display:none"></div>
+
+    <!-- Empty state -->
+    <div id="cooks-empty" style="display:none;text-align:center;padding:40px">
+      <div style="font-size:48px;margin-bottom:12px">😔</div>
+      <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--brown);margin-bottom:8px">No hay cocineros disponibles</div>
+      <div style="color:var(--text-muted);font-size:14px">Sé el primero en registrarte en tu ciudad</div>
+      <button onclick="showPage('register-cocinero')" style="margin-top:16px;background:#4CAF50;color:white;border:none;border-radius:12px;padding:12px 24px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Registrarme como Cocinero →</button>
+    </div>
+  </div>
+</div>
+
 <div id="page-reviews" class="page">
   <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin:16px 20px 0;padding:0;display:flex;align-items:center;gap:4px;-webkit-appearance:none">← Volver</button>
   <div class="reviews-container">
@@ -2538,7 +2566,7 @@
   <button onclick="showPage('map')" id="mn-map">
     <span class="mn-icon">🗺️</span><span class="mn-label" data-i18n="nav-map">Mapa</span>
   </button>
-  <button onclick="showPage('profile')" id="mn-profile">
+  <button onclick="showPage('cooks')" id="mn-cooks">
     <span class="mn-icon">👨‍🍳</span><span class="mn-label">Cocineros</span>
   </button>
   <button onclick="toggleCart()" id="mn-cart">
@@ -2666,10 +2694,9 @@ async function saveWaitlistEmail(email, city) {
 }
 
 const cooks = [
-  { id:1, name:'Chef María R.', emoji:'👩‍🍳', cuisine:'Mexicana', rating:4.9, reviews:127, delivery:true, tags:['Mexicana','Vegana'], color:'#FDE8D8', dishes:['Lasaña Casera','Tacos al Pastor'] },
-  { id:2, name:'Chef Carlos M.', emoji:'👨‍🍳', cuisine:'Italiana', rating:4.7, reviews:89, delivery:true, tags:['Italiana','Postres'], color:'#E8F0FE', dishes:['Pasta Carbonara','Tiramisú'] },
-  { id:3, name:'Chef Sofía V.', emoji:'🧑‍🍳', cuisine:'Asiática', rating:4.8, reviews:203, delivery:false, tags:['Tailandesa','Sin Gluten'], color:'#E8F8EE', dishes:['Curry Tailandés','Ramen'] },
-  { id:4, name:'Chef Juan P.', emoji:'👨‍🍳', cuisine:'Argentina', rating:4.6, reviews:55, delivery:true, tags:['Argentina','Parrilla'], color:'#FEF3E8', dishes:['Empanadas','Asado'] },
+  { id:1, name:'Chef María R.', emoji:'👩‍🍳', cuisine:'Mexicana', rating:4.9, reviews:127, delivery:true, tags:['Mexicana','Vegana'], color:'#FDE8D8' },
+  { id:2, name:'Chef Carlos M.', emoji:'👨‍🍳', cuisine:'Local', rating:4.7, reviews:89, delivery:true, tags:['Local','Casera'], color:'#E8F0FE' },
+  { id:3, name:'Chef Ana G.', emoji:'👩‍🍳', cuisine:'Italiana', rating:4.8, reviews:45, delivery:false, tags:['Italiana','Pasta'], color:'#E8F8EE' },
 ];
 
 const menu = [
@@ -2683,15 +2710,13 @@ const menu = [
 const mapMarkers = [
   { name:'Chef María', emoji:'👩‍🍳', x:'22%', y:'38%', rating:'4.9' },
   { name:'Chef Carlos', emoji:'👨‍🍳', x:'68%', y:'25%', rating:'4.7' },
-  { name:'Chef Sofía', emoji:'🧑‍🍳', x:'75%', y:'62%', rating:'4.8' },
-  { name:'Chef Juan', emoji:'👨‍🍳', x:'18%', y:'72%', rating:'4.6' },
   { name:'Chef Ana', emoji:'👩‍🍳', x:'50%', y:'55%', rating:'4.5' },
 ];
 
 const reviewsData = [
   { name:'María P.', avatar:'👩', stars:5, dish:'Lasaña Casera · Chef María', text:'¡Simplemente delicioso! La lasaña casera es espectacular, se siente el sabor auténtico y la calidad de los ingredientes. ¡Muy recomendable!', date:'hace 2 días', bg:'#FDE8D8' },
-  { name:'Carlos G.', avatar:'👨', stars:4, dish:'Curry de Pollo · Chef Sofía', text:'El curry estuvo muy bueno, cremoso y bien condimentado. El servicio de recogida fue eficiente y puntual. Definitivamente volvería.', date:'hace 5 días', bg:'#E8F0FE' },
-  { name:'Laura S.', avatar:'🧑', stars:5, dish:'Empanadas · Chef Juan', text:'¡Una joya escondida! Las empanadas son las mejores que he probado. Se nota el cariño en cada bocado. ¡Volveré pronto por más!', date:'hace 1 semana', bg:'#E8F8EE' },
+  { name:'Carlos G.', avatar:'👨', stars:4, dish:'Tacos al Pastor · Chef María', text:'El curry estuvo muy bueno, cremoso y bien condimentado. El servicio de recogida fue eficiente y puntual. Definitivamente volvería.', date:'hace 5 días', bg:'#E8F0FE' },
+  { name:'Laura S.', avatar:'🧑', stars:5, dish:'Pozole Rojo · Chef Carlos', text:'¡Una joya escondida! Las empanadas son las mejores que he probado. Se nota el cariño en cada bocado. ¡Volveré pronto por más!', date:'hace 1 semana', bg:'#E8F8EE' },
   { name:'Roberto A.', avatar:'👦', stars:5, dish:'Tacos al Pastor · Chef María', text:'Los tacos tienen un sabor increíble. La carne perfectamente marinada y la piña le da un toque especial. Ya pedí 3 veces esta semana.', date:'hace 1 semana', bg:'#FEF3E8' },
 ];
 
@@ -2974,7 +2999,77 @@ function renderFeaturedCooks() {
   `).join('');
 }
 
-let selectedCookId = null;
+async function renderCooksList() {
+  const loading = document.getElementById('cooks-loading');
+  const grid = document.getElementById('cooks-list-grid');
+  const empty = document.getElementById('cooks-empty');
+  if (!grid) return;
+
+  // Show loading
+  if (loading) loading.style.display = 'block';
+  if (grid) grid.style.display = 'none';
+  if (empty) empty.style.display = 'none';
+
+  // Load from Supabase
+  try {
+    const { data, error } = await supabase
+      .from('cooks')
+      .select('*')
+      .eq('is_online', true)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    if (loading) loading.style.display = 'none';
+
+    if (!data || data.length === 0) {
+      if (empty) empty.style.display = 'block';
+      return;
+    }
+
+    dbCooks = data;
+    if (grid) grid.style.display = 'grid';
+
+    grid.innerHTML = data.map(c => `
+      <div class="cook-card" onclick="selectCook('${c.id}');showPage('profile')" style="cursor:pointer">
+        <div class="cook-card-img" style="background:#FDE8D8">
+          <div class="cook-avatar" style="background:#FDE8D8">👨‍🍳</div>
+          ${c.services && c.services.includes('delivery') ? '<div class="cook-delivery-badge">🛵 Delivery</div>' : ''}
+        </div>
+        <div class="cook-card-body">
+          <h3>${c.kitchen_name || c.name}</h3>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:6px">${c.cuisine_type || 'Comida Local'}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">📍 ${c.city || 'Tu ciudad'}</div>
+          <div class="cook-tags">
+            <span class="tag">${c.cuisine_type || 'Local'}</span>
+            ${c.plan === 'fundador' ? '<span class="tag" style="background:#F4A020;color:white">🏅 Fundador</span>' : ''}
+            ${c.plan === 'pro' ? '<span class="tag" style="background:var(--orange);color:white">⭐ Pro</span>' : ''}
+          </div>
+          <button class="btn-order" onclick="event.stopPropagation();selectCook('${c.id}');showPage('profile')" style="margin-top:8px">Ver Menú →</button>
+        </div>
+      </div>
+    `).join('');
+
+  } catch(e) {
+    console.log('Error cargando cocineros:', e.message);
+    if (loading) loading.style.display = 'none';
+    // Show demo cooks as fallback
+    if (grid) grid.style.display = 'grid';
+    if (grid) grid.innerHTML = cooks.map(c => `
+      <div class="cook-card" onclick="showPage('profile')" style="cursor:pointer">
+        <div class="cook-card-img" style="background:${c.color}">
+          <div class="cook-avatar">${c.emoji}</div>
+          ${c.delivery ? '<div class="cook-delivery-badge">🛵 Delivery</div>' : ''}
+        </div>
+        <div class="cook-card-body">
+          <h3>${c.name}</h3>
+          <div class="cook-tags">${c.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+          <button class="btn-order" onclick="event.stopPropagation();showPage('profile')">Ver Menú →</button>
+        </div>
+      </div>
+    `).join('');
+  }
+}
 
 function selectCook(cookId) {
   selectedCookId = cookId;
@@ -3099,6 +3194,7 @@ function showPage(name) {
   if (name === 'cocina') { renderDashboard(); }
   if (name === 'profile') { renderMenu(); }
   if (name === 'membresia') { updateFounderUI(); }
+  if (name === 'cooks') { renderCooksList(); }
 }
 
 
@@ -3160,8 +3256,6 @@ let activeFilter = 'todos';
 const cookLocations = [
   { id:1, name:'Chef María R.',  emoji:'👩‍🍳', lat:47.6262, lng:-122.5210, cuisine:'Mexicana',  rating:4.9, delivery:true,  cena:true,  tags:['mexicana','delivery','cena'] },
   { id:2, name:'Chef Carlos M.', emoji:'👨‍🍳', lat:47.6318, lng:-122.5378, cuisine:'Italiana',  rating:4.7, delivery:true,  cena:false, tags:['italiana','delivery'] },
-  { id:3, name:'Chef Sofía V.',  emoji:'🧑‍🍳', lat:47.6198, lng:-122.5290, cuisine:'Asiática',  rating:4.8, delivery:false, cena:true,  tags:['asiatica','recogida','cena'] },
-  { id:4, name:'Chef Juan P.',   emoji:'👨‍🍳', lat:47.6350, lng:-122.5150, cuisine:'Argentina', rating:4.6, delivery:true,  cena:false, tags:['delivery'] },
   { id:5, name:'Chef Ana L.',    emoji:'👩‍🍳', lat:47.6230, lng:-122.5440, cuisine:'Mexicana',  rating:4.5, delivery:false, cena:false, tags:['mexicana','recogida'] },
 ];
 
@@ -3721,37 +3815,35 @@ function deleteDishPhoto(id) {
 }
 
 async function finishCookReg() {
-  // Collect form data
-  const cookData = {
-    name: document.getElementById('creg-name')?.value || 'Cocinero Demo',
-    email: document.getElementById('creg-email')?.value || '',
-    phone: document.getElementById('creg-phone')?.value || '',
-    address: document.getElementById('creg-address')?.value || '',
-    kitchen_name: document.getElementById('creg-kitchen')?.value || '',
-    cuisine_type: document.getElementById('creg-cuisine')?.value || 'Local',
-    description: document.getElementById('creg-desc')?.value || '',
-    plan: document.getElementById('plan-fundador')?.style.borderColor.includes('F4A020') ? 'fundador' :
-          document.getElementById('plan-pro')?.style.borderColor.includes('orange') ? 'pro' : 'basico',
-    is_online: false,
-    services: ['delivery','pickup'],
-    payment_venmo: '',
-    payment_paypal: '',
-    city: 'Bainbridge Island',
-    lat: 47.6246,
-    lng: -122.5219
-  };
-
-  showToast('💾 Guardando tu perfil...');
-  const saved = await saveCookToDB(cookData);
-
-  if (saved) {
-    showToast('✅ Perfil creado exitosamente');
-    selectedCookId = saved.id;
-  } else {
-    showToast('⚠️ Perfil creado en modo demo');
-  }
-
+  // Navigate immediately — don't wait for Supabase
   showPage('pago-membresia');
+  showToast('✅ Perfil creado · Ahora elige tu plan');
+
+  // Save to Supabase in background
+  try {
+    const cookData = {
+      name: document.getElementById('creg-name')?.value || 'Cocinero',
+      email: document.getElementById('creg-email')?.value || `cook${Date.now()}@micasero.app`,
+      phone: document.getElementById('creg-phone')?.value || '',
+      address: document.getElementById('creg-address')?.value || '',
+      kitchen_name: document.getElementById('creg-kitchen')?.value || '',
+      cuisine_type: document.getElementById('creg-cuisine')?.value || 'Local',
+      description: document.getElementById('creg-desc')?.value || '',
+      plan: 'basico',
+      is_online: false,
+      services: ['delivery','pickup'],
+      city: 'Bainbridge Island',
+      lat: 47.6246,
+      lng: -122.5219
+    };
+    const saved = await saveCookToDB(cookData);
+    if (saved) {
+      selectedCookId = saved.id;
+      console.log('✅ Cocinero guardado en Supabase:', saved.id);
+    }
+  } catch(e) {
+    console.log('⚠️ Error guardando:', e.message);
+  }
 }
 
 function previewQR(input) {

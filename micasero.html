@@ -2941,27 +2941,72 @@ function confirmarMembresia() {
 // ════════════════════════════════════════
 function renderFeaturedCooks() {
   const el = document.getElementById('featured-cooks');
-  el.innerHTML = cooks.map(c => `
-    <div class="cook-card" onclick="showPage('profile')">
-      <div class="cook-card-img" style="background:${c.color}">
-        <div class="cook-avatar" style="background:${c.color}">${c.emoji}</div>
+  if (!el) return;
+  // Use Supabase data if available, otherwise use demo data
+  const data = dbCooks.length > 0 ? dbCooks.map(c => ({
+    id: c.id,
+    name: c.kitchen_name || c.name,
+    emoji: '👨‍🍳',
+    cuisine: c.cuisine_type,
+    rating: 4.9,
+    reviews: 0,
+    delivery: c.services && c.services.includes('delivery'),
+    tags: [c.cuisine_type || 'Local'],
+    color: '#FDE8D8',
+  })) : cooks;
+
+  el.innerHTML = data.map(c => `
+    <div class="cook-card" onclick="selectCook('${c.id}');showPage('profile')">
+      <div class="cook-card-img" style="background:${c.color||'#FDE8D8'}">
+        <div class="cook-avatar" style="background:${c.color||'#FDE8D8'}">${c.emoji}</div>
         ${c.delivery ? '<div class="cook-delivery-badge">🛵 Delivery</div>' : ''}
       </div>
       <div class="cook-card-body">
         <h3>${c.name}</h3>
         <div class="cook-meta">
           <span class="stars">★★★★★</span>
-          <span>${c.rating} (${c.reviews})</span>
+          <span>${c.rating} (${c.reviews} reseñas)</span>
         </div>
         <div class="cook-tags">${c.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-        <button class="btn-order" onclick="event.stopPropagation();showPage('profile')">Ver Menú →</button>
+        <button class="btn-order" onclick="event.stopPropagation();selectCook('${c.id}');showPage('profile')">Ver Menú →</button>
       </div>
     </div>
   `).join('');
 }
 
-function renderMenu() {
+let selectedCookId = null;
+
+function selectCook(cookId) {
+  selectedCookId = cookId;
+}
+
+async function renderMenu() {
   const el = document.getElementById('menu-items');
+  if (!el) return;
+
+  // Try loading from Supabase first
+  if (selectedCookId && dbCooks.length > 0) {
+    const dishes = await loadDishesFromDB(selectedCookId);
+    if (dishes.length > 0) {
+      el.innerHTML = dishes.map(d => `
+        <div class="menu-item">
+          <div class="menu-emoji">${d.emoji || '🍽️'}</div>
+          <div class="menu-details">
+            <h4>${d.name}</h4>
+            <p>${d.description || ''}</p>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+            <div class="menu-price">$${parseFloat(d.price).toFixed(2)}</div>
+            <button class="btn-add" onclick="addToCart('${d.id}','${d.name}',${d.price},'${d.emoji||'🍽️'}')">+</button>
+          </div>
+        </div>
+      `).join('');
+      updateProfileCTA();
+      return;
+    }
+  }
+
+  // Fallback to demo data
   el.innerHTML = menu.map(m => `
     <div class="menu-item">
       <div class="menu-emoji">${m.emoji}</div>
@@ -2975,6 +3020,7 @@ function renderMenu() {
       </div>
     </div>
   `).join('');
+  updateProfileCTA();
 }
 
 function renderMap() {
@@ -3674,10 +3720,38 @@ function deleteDishPhoto(id) {
   showToast('🗑️ Foto eliminada');
 }
 
-function finishCookReg() {
-  // Profile created - now go to payment to activate
+async function finishCookReg() {
+  // Collect form data
+  const cookData = {
+    name: document.getElementById('creg-name')?.value || 'Cocinero Demo',
+    email: document.getElementById('creg-email')?.value || '',
+    phone: document.getElementById('creg-phone')?.value || '',
+    address: document.getElementById('creg-address')?.value || '',
+    kitchen_name: document.getElementById('creg-kitchen')?.value || '',
+    cuisine_type: document.getElementById('creg-cuisine')?.value || 'Local',
+    description: document.getElementById('creg-desc')?.value || '',
+    plan: document.getElementById('plan-fundador')?.style.borderColor.includes('F4A020') ? 'fundador' :
+          document.getElementById('plan-pro')?.style.borderColor.includes('orange') ? 'pro' : 'basico',
+    is_online: false,
+    services: ['delivery','pickup'],
+    payment_venmo: '',
+    payment_paypal: '',
+    city: 'Bainbridge Island',
+    lat: 47.6246,
+    lng: -122.5219
+  };
+
+  showToast('💾 Guardando tu perfil...');
+  const saved = await saveCookToDB(cookData);
+
+  if (saved) {
+    showToast('✅ Perfil creado exitosamente');
+    selectedCookId = saved.id;
+  } else {
+    showToast('⚠️ Perfil creado en modo demo');
+  }
+
   showPage('pago-membresia');
-  showToast('✅ Perfil creado · Ahora activa tu plan para aparecer en el mapa');
 }
 
 function previewQR(input) {

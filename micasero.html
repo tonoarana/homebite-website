@@ -712,6 +712,15 @@
     #page-home { padding-bottom: 0; }
   }
 </style>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://cuhfukhlpuqhqepuruya.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_rGM4_QQxoZl_u--Od_6BCw_lSMMK4Yy';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    console.log('✅ Supabase conectado');
+  </script>
 </head>
 <body>
 
@@ -2546,6 +2555,116 @@
 // ════════════════════════════════════════
 // DATA
 // ════════════════════════════════════════
+// ════════════════════════════════════════
+// SUPABASE DATA FUNCTIONS
+// ════════════════════════════════════════
+let dbCooks = [];
+let dbDishes = [];
+
+async function loadCooksFromDB() {
+  try {
+    const { data, error } = await supabase
+      .from('cooks')
+      .select('*')
+      .eq('is_online', true)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    if (data && data.length > 0) {
+      dbCooks = data;
+      renderFeaturedCooks();
+      renderMapList();
+      console.log(`✅ ${data.length} cocineros cargados de Supabase`);
+    }
+  } catch(e) {
+    console.log('⚠️ Usando datos demo:', e.message);
+  }
+}
+
+async function loadDishesFromDB(cookId) {
+  try {
+    const { data, error } = await supabase
+      .from('dishes')
+      .select('*')
+      .eq('cook_id', cookId)
+      .eq('is_available', true)
+      .order('created_at', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  } catch(e) {
+    console.log('⚠️ Usando menú demo:', e.message);
+    return [];
+  }
+}
+
+async function saveCookToDB(cookData) {
+  try {
+    const { data, error } = await supabase
+      .from('cooks')
+      .insert([cookData])
+      .select();
+    if (error) throw error;
+    console.log('✅ Cocinero guardado:', data);
+    return data[0];
+  } catch(e) {
+    console.log('⚠️ Error guardando cocinero:', e.message);
+    return null;
+  }
+}
+
+async function saveDishToDB(dish) {
+  try {
+    const { data, error } = await supabase
+      .from('dishes')
+      .insert([dish])
+      .select();
+    if (error) throw error;
+    return data[0];
+  } catch(e) {
+    console.log('⚠️ Error guardando platillo:', e.message);
+    return null;
+  }
+}
+
+async function saveOrderToDB(order) {
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .insert([order])
+      .select();
+    if (error) throw error;
+    console.log('✅ Pedido guardado:', data[0].id);
+    return data[0];
+  } catch(e) {
+    console.log('⚠️ Error guardando pedido:', e.message);
+    return null;
+  }
+}
+
+async function updateOrderStatus(orderId, status) {
+  try {
+    const { error } = await supabase
+      .from('orders')
+      .update({ status })
+      .eq('id', orderId);
+    if (error) throw error;
+    console.log(`✅ Pedido ${orderId} → ${status}`);
+  } catch(e) {
+    console.log('⚠️ Error actualizando pedido:', e.message);
+  }
+}
+
+async function saveWaitlistEmail(email, city) {
+  try {
+    const { error } = await supabase
+      .from('founder_waitlist')
+      .insert([{ email, city: city || 'unknown' }]);
+    if (error) throw error;
+    console.log('✅ Email en waitlist:', email);
+  } catch(e) {
+    console.log('⚠️ Error guardando waitlist:', e.message);
+  }
+}
+
 const cooks = [
   { id:1, name:'Chef María R.', emoji:'👩‍🍳', cuisine:'Mexicana', rating:4.9, reviews:127, delivery:true, tags:['Mexicana','Vegana'], color:'#FDE8D8', dishes:['Lasaña Casera','Tacos al Pastor'] },
   { id:2, name:'Chef Carlos M.', emoji:'👨‍🍳', cuisine:'Italiana', rating:4.7, reviews:89, delivery:true, tags:['Italiana','Postres'], color:'#E8F0FE', dishes:['Pasta Carbonara','Tiramisú'] },
@@ -3762,7 +3881,8 @@ function claimFounderSpot() {
 function joinWaitlist() {
   const email = document.getElementById('waitlist-email');
   if (!email || !email.value) { showToast('Por favor ingresa tu email'); return; }
-  showToast(`📋 ¡Listo! Te avisamos cuando haya un lugar disponible · ${email.value}`);
+  saveWaitlistEmail(email.value, 'unknown');
+  showToast(`📋 ¡Listo! Te avisamos cuando haya un lugar disponible`);
   email.value = '';
 }
 
@@ -3811,6 +3931,8 @@ document.addEventListener('DOMContentLoaded', function() {
   renderMap();
   updateFounderUI();
   renderReviews();
+  // Load real data from Supabase
+  loadCooksFromDB();
 });
 </script>
 

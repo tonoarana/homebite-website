@@ -717,7 +717,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://cuhfukhlpuqhqepuruya.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_rGM4_QQxoZl_u--Od_6BCw_lSMMK4Yy';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     console.log('✅ Supabase conectado');
   </script>
@@ -2626,15 +2626,24 @@ async function loadDishesFromDB(cookId) {
 
 async function saveCookToDB(cookData) {
   try {
+    // Make email unique if empty
+    if (!cookData.email) {
+      cookData.email = `cook_${Date.now()}@micasero.app`;
+    }
     const { data, error } = await supabase
       .from('cooks')
       .insert([cookData])
       .select();
-    if (error) throw error;
+    if (error) {
+      console.log('Supabase error:', error.message);
+      showToast('⚠️ Error: ' + error.message);
+      return null;
+    }
     console.log('✅ Cocinero guardado:', data);
     return data[0];
   } catch(e) {
     console.log('⚠️ Error guardando cocinero:', e.message);
+    showToast('⚠️ Error guardando: ' + e.message);
     return null;
   }
 }
@@ -3815,20 +3824,24 @@ function deleteDishPhoto(id) {
 }
 
 async function finishCookReg() {
-  showPage('pago-membresia');
-  showToast('✅ Perfil creado · Ahora elige tu plan');
+  console.log('🔥 finishCookReg called');
+  showToast('💾 Guardando tu perfil...');
 
   try {
+    // Generate unique email if empty
+    const emailInput = document.getElementById('creg-email')?.value;
+    const uniqueEmail = emailInput || `cook_${Date.now()}@micasero.app`;
+
     const cookData = {
       name: document.getElementById('creg-name')?.value || 'Cocinero',
-      email: document.getElementById('creg-email')?.value || `cook${Date.now()}@micasero.app`,
+      email: uniqueEmail,
       phone: document.getElementById('creg-phone')?.value || '',
       address: document.getElementById('creg-address')?.value || '',
       kitchen_name: document.getElementById('creg-kitchen')?.value || '',
       cuisine_type: document.getElementById('creg-cuisine')?.value || 'Local',
       description: document.getElementById('creg-desc')?.value || '',
       plan: 'basico',
-      is_online: true,  // ← activo desde el inicio
+      is_online: true,
       services: ['delivery','pickup'],
       city: 'Bainbridge Island',
       lat: 47.6246,
@@ -3836,16 +3849,16 @@ async function finishCookReg() {
     };
 
     const saved = await saveCookToDB(cookData);
+
     if (saved) {
       selectedCookId = saved.id;
-      console.log('✅ Cocinero guardado:', saved.id);
 
-      // Save dishes from step 4
+      // Save dishes
       const dishItems = document.querySelectorAll('#creg-menu-list > div');
       for (const item of dishItems) {
         const inputs = item.querySelectorAll('input[type="text"]');
         if (inputs.length >= 2 && inputs[0].value) {
-          const price = parseFloat(inputs[1].value.replace('$','')) || 0;
+          const price = parseFloat(inputs[1].value.replace('$','').replace(',','.')) || 0;
           await saveDishToDB({
             cook_id: saved.id,
             name: inputs[0].value,
@@ -3855,12 +3868,16 @@ async function finishCookReg() {
           });
         }
       }
-      console.log('✅ Platillos guardados');
-      // Reload cooks list
+
       await loadCooksFromDB();
+      showToast('🎉 ¡Perfil guardado! Ahora activa tu plan');
+      showPage('pago-membresia');
+    } else {
+      showToast('⚠️ No se pudo guardar. Intenta con otro email.');
     }
   } catch(e) {
-    console.log('⚠️ Error:', e.message);
+    console.log('Error:', e);
+    showToast('⚠️ Error: ' + e.message);
   }
 }
 

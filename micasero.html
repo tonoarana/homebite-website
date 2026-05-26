@@ -1559,7 +1559,7 @@
         </div>
         <!-- Botón también arriba para iOS -->
         <div style="margin-bottom:16px">
-          <button style="width:100%;background:#4CAF50;color:white;border:none;border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation" onclick="guardarCocinero();showPage('pago-membresia')">Crear mi Perfil → Activar Plan 🚀</button>
+          <button style="width:100%;background:#4CAF50;color:white;border:none;border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation" onclick="registrarCocineroYNavegar(this)">Crear mi Perfil → Activar Plan 🚀</button>
         </div>
       </div>
 
@@ -3484,6 +3484,78 @@ function deleteDishPhoto(id) {
   showToast('🗑️ Foto eliminada');
 }
 
+function registrarCocineroYNavegar(btn) {
+  // Disable button to prevent double tap
+  btn.disabled = true;
+  btn.textContent = '💾 Guardando...';
+
+  // Collect ALL data right now before any navigation
+  const dishesData = [];
+  const menuList = document.getElementById('creg-menu-list');
+  if (menuList) {
+    Array.from(menuList.children).forEach(div => {
+      const inputs = div.querySelectorAll('input[type="text"]');
+      if (inputs.length >= 2 && inputs[0].value.trim()) {
+        const price = parseFloat(inputs[1].value.replace('$','').replace(',','.')) || 0;
+        dishesData.push({ name: inputs[0].value.trim(), price: price });
+      }
+    });
+  }
+
+  showToast(`📋 ${dishesData.length} platillos encontrados`);
+  console.log('Dishes:', dishesData);
+
+  const cookData = {
+    name: document.getElementById('creg-name')?.value || 'Cocinero',
+    email: document.getElementById('creg-email')?.value || ('cook_' + Date.now() + '@micasero.app'),
+    phone: document.getElementById('creg-phone')?.value || '',
+    address: document.getElementById('creg-address')?.value || '',
+    kitchen_name: document.getElementById('creg-kitchen')?.value || '',
+    cuisine_type: document.getElementById('creg-cuisine')?.value || 'Local',
+    description: document.getElementById('creg-desc')?.value || '',
+    plan: selectedPlan || 'basico',
+    is_online: true,
+    city: 'Bainbridge Island',
+    lat: 47.6246,
+    lng: -122.5219
+  };
+
+  // Now navigate
+  showPage('pago-membresia');
+
+  // Save in background
+  sbPost('cooks', cookData).then(data => {
+    if (!data || !data[0]) {
+      cookData.email = 'cook_' + Date.now() + '@micasero.app';
+      return sbPost('cooks', cookData);
+    }
+    return Promise.resolve(data);
+  }).then(data => {
+    if (!data || !data[0]) return;
+    const cookId = data[0].id;
+    selectedCookId = cookId;
+    showToast('✅ Cocinero guardado!');
+
+    // Save dishes
+    dishesData.forEach(dish => {
+      sbPost('dishes', {
+        cook_id: cookId,
+        name: dish.name,
+        price: dish.price,
+        emoji: '🍽️',
+        category: 'Plato principal',
+        is_available: true
+      }).then(d => {
+        if (d && d[0]) showToast('✅ Platillo: ' + d[0].name);
+      });
+    });
+    refreshCooks();
+  }).catch(e => {
+    showToast('⚠️ Error: ' + e.message);
+    console.log('Error:', e);
+  });
+}
+
 function guardarCocinero() {
   // Collect dish data directly from DOM
   const dishesData = [];
@@ -3502,6 +3574,7 @@ function guardarCocinero() {
     }
   }
   console.log('Total dishes:', dishesData.length);
+  showToast(`📋 Encontré ${dishesData.length} platillos para guardar`);
 
   const cookData = {
     name: document.getElementById('creg-name')?.value || 'Cocinero',

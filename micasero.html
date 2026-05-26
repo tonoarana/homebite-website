@@ -2618,17 +2618,10 @@ let dbDishes = [];
 
 async function loadCooksFromDB() {
   try {
-    const res = await fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/cooks?is_online=eq.true&order=created_at.desc', {
-      headers: {
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4'
-      }
-    });
-    const data = await res.json();
+    const data = await sbFetch('cooks', 'is_online=eq.true&order=created_at.desc');
     if (data && data.length > 0) {
       dbCooks = data;
       console.log(`✅ ${data.length} cocineros cargados`);
-      // Re-render everything
       renderFeaturedCooks();
       renderMapList();
     }
@@ -3006,14 +2999,47 @@ async function renderCooksList() {
   const empty = document.getElementById('cooks-empty');
   if (!grid) return;
 
-  // Show loading
   if (loading) loading.style.display = 'block';
   if (grid) grid.style.display = 'none';
-  if (empty) empty.style.display = 'none';
 
-  // Load from Supabase
   try {
-    const data = await sbGet('cooks', 'is_online=eq.true&order=created_at.desc');
+    // Always fetch fresh from Supabase
+    const data = await sbFetch('cooks', 'is_online=eq.true&order=created_at.desc');
+    if (loading) loading.style.display = 'none';
+
+    if (!data || data.length === 0) {
+      if (empty) empty.style.display = 'block';
+      return;
+    }
+
+    dbCooks = data;
+    if (grid) grid.style.display = 'grid';
+
+    grid.innerHTML = data.map(c => `
+      <div class="cook-card" onclick="selectCook('${c.id}');showPage('profile')" style="cursor:pointer">
+        <div class="cook-card-img" style="background:#FDE8D8">
+          <div class="cook-avatar">👨‍🍳</div>
+          ${c.services && c.services.includes('delivery') ? '<div class="cook-delivery-badge">🛵 Delivery</div>' : ''}
+        </div>
+        <div class="cook-card-body">
+          <h3>${c.kitchen_name || c.name}</h3>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">${c.cuisine_type || 'Comida Local'}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">📍 ${c.city || 'Tu ciudad'}</div>
+          <div class="cook-tags">
+            <span class="tag">${c.cuisine_type || 'Local'}</span>
+            ${c.plan === 'fundador' ? '<span class="tag" style="background:#F4A020;color:white">🏅 Fundador</span>' : ''}
+            ${c.plan === 'pro' ? '<span class="tag" style="background:var(--orange);color:white">⭐ Pro</span>' : ''}
+          </div>
+          <button class="btn-order" style="margin-top:8px" onclick="event.stopPropagation();selectCook('${c.id}');showPage('profile')">Ver Menú →</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) {
+    console.log('Error:', e);
+    if (loading) loading.style.display = 'none';
+    if (empty) empty.style.display = 'block';
+  }
+}
 
     if (loading) loading.style.display = 'none';
 
@@ -3045,26 +3071,6 @@ async function renderCooksList() {
       </div>
     `).join('');
 
-  } catch(e) {
-    console.log('Error cargando cocineros:', e.message);
-    if (loading) loading.style.display = 'none';
-    // Show demo cooks as fallback
-    if (grid) grid.style.display = 'grid';
-    if (grid) grid.innerHTML = cooks.map(c => `
-      <div class="cook-card" onclick="showPage('profile')" style="cursor:pointer">
-        <div class="cook-card-img" style="background:${c.color}">
-          <div class="cook-avatar">${c.emoji}</div>
-          ${c.delivery ? '<div class="cook-delivery-badge">🛵 Delivery</div>' : ''}
-        </div>
-        <div class="cook-card-body">
-          <h3>${c.name}</h3>
-          <div class="cook-tags">${c.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-          <button class="btn-order" onclick="event.stopPropagation();showPage('profile')">Ver Menú →</button>
-        </div>
-      </div>
-    `).join('');
-  }
-}
 
 function selectCook(cookId) {
   selectedCookId = cookId;
@@ -3105,13 +3111,7 @@ async function renderMenu() {
   // Load dishes from Supabase
   if (selectedCookId) {
     try {
-      const res = await fetch(`https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/dishes?cook_id=eq.${selectedCookId}&is_available=eq.true`, {
-        headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4'
-        }
-      });
-      const dishes = await res.json();
+      const dishes = await sbFetch('dishes', `cook_id=eq.${selectedCookId}&is_available=eq.true`);
       if (dishes && dishes.length > 0) {
         el.innerHTML = dishes.map(d => `
           <div class="menu-item">
@@ -3842,56 +3842,39 @@ function deleteDishPhoto(id) {
 }
 
 function guardarCocinero() {
-  const nombre = document.getElementById('creg-name')?.value || 'Cocinero';
-  const email = document.getElementById('creg-email')?.value || ('cook_' + Date.now() + '@micasero.app');
-  const cocina = document.getElementById('creg-kitchen')?.value || '';
-  const tipo = document.getElementById('creg-cuisine')?.value || 'Local';
-  const telefono = document.getElementById('creg-phone')?.value || '';
-  const direccion = document.getElementById('creg-address')?.value || '';
-  const desc = document.getElementById('creg-desc')?.value || '';
-
-  const body = JSON.stringify({
-    name: nombre,
-    email: email,
-    phone: telefono,
-    address: direccion,
-    kitchen_name: cocina,
-    cuisine_type: tipo,
-    description: desc,
-    plan: selectedPlan,
+  const cookData = {
+    name: document.getElementById('creg-name')?.value || 'Cocinero',
+    email: document.getElementById('creg-email')?.value || ('cook_' + Date.now() + '@micasero.app'),
+    phone: document.getElementById('creg-phone')?.value || '',
+    address: document.getElementById('creg-address')?.value || '',
+    kitchen_name: document.getElementById('creg-kitchen')?.value || '',
+    cuisine_type: document.getElementById('creg-cuisine')?.value || 'Local',
+    description: document.getElementById('creg-desc')?.value || '',
+    plan: selectedPlan || 'basico',
     is_online: true,
     city: 'Bainbridge Island',
     lat: 47.6246,
     lng: -122.5219
-  });
+  };
 
-  fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/cooks', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4',
-      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4',
-      'Prefer': 'return=representation'
-    },
-    body: body
-  })
-  .then(r => r.json())
-  .then(data => {
+  sbPost('cooks', cookData).then(data => {
     if (data && data[0]) {
       selectedCookId = data[0].id;
-      console.log('✅ Guardado:', data[0].id, 'Plan:', selectedPlan);
       showToast('🎉 ¡Perfil guardado!');
-      // Update payment page with correct plan/price
-      updatePaymentPage();
-      loadCooksFromDB();
+      console.log('✅ Cook saved:', data[0].id);
+      refreshCooks();
     } else {
-      console.log('⚠️ Response:', data);
-      showToast('⚠️ Error al guardar');
+      // Try with unique email
+      cookData.email = 'cook_' + Date.now() + '@micasero.app';
+      sbPost('cooks', cookData).then(d2 => {
+        if (d2 && d2[0]) {
+          selectedCookId = d2[0].id;
+          showToast('🎉 ¡Perfil guardado!');
+          refreshCooks();
+        }
+      });
     }
-  })
-  .catch(e => {
-    console.log('⚠️ Error:', e);
-  });
+  }).catch(e => console.log('Error:', e));
 }
 
 function updatePaymentPage() {
@@ -4650,12 +4633,43 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Supabase - loaded last to avoid conflicts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://cuhfukhlpuqhqepuruya.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
-  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  console.log('✅ Supabase listo:', !!db.from);
-  // Load cooks now that db is ready
-  loadCooksFromDB();
+  const SB_API = 'https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1';
+  const SB_KEY_HEADER = {
+    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4',
+    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4',
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+
+  // Single reusable fetch function
+  async function sbFetch(table, query='') {
+    const r = await fetch(`${SB_API}/${table}?${query}`, { headers: SB_KEY_HEADER });
+    return r.ok ? r.json() : [];
+  }
+
+  async function sbPost(table, body) {
+    const r = await fetch(`${SB_API}/${table}`, { method:'POST', headers: SB_KEY_HEADER, body: JSON.stringify(body) });
+    return r.ok ? r.json() : null;
+  }
+
+  // Load cooks and refresh UI
+  async function refreshCooks() {
+    try {
+      const data = await sbFetch('cooks', 'is_online=eq.true&order=created_at.desc');
+      if (data && data.length > 0) {
+        dbCooks = data;
+        console.log('✅ Cooks loaded:', data.length);
+        renderFeaturedCooks();
+        renderMapList();
+        // If cooks page is visible, refresh it
+        if (document.getElementById('page-cooks')?.style.display !== 'none') {
+          renderCooksList();
+        }
+      }
+    } catch(e) { console.log('sbFetch error:', e); }
+  }
+
+  refreshCooks();
 </script>
 </body>
 </html>

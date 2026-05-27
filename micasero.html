@@ -2628,8 +2628,13 @@ async function sbPost(table, body) {
     headers: SB_HEADERS,
     body: JSON.stringify(body)
   });
-  if (!r.ok) { console.log('sbPost error:', r.status, r.statusText); return null; }
-  return r.json();
+  const data = await r.json();
+  if (!r.ok) {
+    console.log('sbPost error:', r.status, JSON.stringify(data));
+    showToast('Error ' + r.status + ': ' + (data.message || data.hint || 'DB error'));
+    return null;
+  }
+  return data;
 }
 
 async function refreshCooks() {
@@ -3539,7 +3544,13 @@ function registrarCocineroYNavegar(btn) {
         category: 'Plato principal',
         is_available: true
       }).then(function(d) {
-        if (d && d[0]) showToast('🍽️ ' + d[0].name);
+        if (d && d[0]) {
+          showToast('🍽️ ' + d[0].name);
+        } else {
+          showToast('⚠️ Dish error: ' + JSON.stringify(d).substring(0,40));
+        }
+      }).catch(function(e) {
+        showToast('⚠️ Dish catch: ' + e.message);
       });
     });
 

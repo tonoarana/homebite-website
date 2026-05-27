@@ -807,7 +807,7 @@
         <div style="font-size:11px;color:rgba(255,255,255,0.85);line-height:1.7;margin-bottom:12px;text-align:left">
           1️⃣ <span data-i18n="ck-step1">Elige tu plan</span><br>
           2️⃣ <span data-i18n="ck-step2">Arma tu perfil</span><br>
-          3️⃣ <span data-i18n="ck-step3">Publica tu menú</span><br>
+          3️⃣ <span data-i18n="ck-step3">Agrega tu menú en Mi Menu</span><br>
           4️⃣ <span data-i18n="ck-step4">¡Cobra directo!</span>
         </div>
         <button onclick="showPage('register-cocinero')" style="width:100%;background:var(--orange);color:white;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none" data-i18n="cook-btn">Regístrate →</button>
@@ -949,8 +949,8 @@
       </div>
       <div class="how-card">
         <div class="how-icon">💵</div>
-        <h3 data-i18n="howc4-title">Cobras el 100%</h3>
-        <p data-i18n="howc4-desc">El cliente te paga directo. Micasero cobra solo la membresía — 0% comisión.</p>
+        <h3 data-i18n="howc4-title">Recibes Pedidos y Cobras</h3>
+        <p data-i18n="howc4-desc">Clientes te encuentran, hacen pedidos y te pagan directo. 0% comisión.</p>
       </div>
     </div>
     <div style="text-align:center;margin-top:20px">
@@ -2068,19 +2068,29 @@
     <!-- Confirmación -->
     <div id="pago-confirmado" style="display:none;text-align:center;padding:20px 0">
       <div style="font-size:64px;margin-bottom:16px">🎊</div>
-      <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--brown);margin-bottom:8px">¡Plan Pro Activado!</div>
-      <p style="color:var(--text-muted);font-size:15px;line-height:1.7;margin-bottom:24px">
-        Tu perfil ya aparece destacado en el mapa. Los clientes cerca de ti pueden encontrarte ahora mismo.
+      <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--brown);margin-bottom:8px">¡Plan Activado!</div>
+      <p style="color:var(--text-muted);font-size:15px;line-height:1.7;margin-bottom:16px">
+        ¡Bienvenido a Micasero! Tu perfil está listo.
       </p>
-      <div style="background:var(--warm);border-radius:16px;padding:20px;text-align:left;font-size:14px;margin-bottom:24px">
-        <div style="font-weight:700;color:var(--brown);margin-bottom:12px">📋 Resumen de membresía</div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-muted)">Plan</span><strong>Pro Mensual</strong></div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-muted)">Cobrado hoy</span><strong>$10.00</strong></div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-muted)">Próximo cobro</span><strong id="fecha-proxima">—</strong></div>
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Comisión por pedido</span><strong style="color:var(--green)">0%</strong></div>
+
+      <!-- Guía para agregar platillos -->
+      <div style="background:#FFF8F0;border:2px solid var(--orange);border-radius:16px;padding:20px;text-align:left;margin-bottom:16px">
+        <div style="font-weight:700;color:var(--brown);font-size:16px;margin-bottom:10px">🍽️ Próximo paso — Agrega tu menú</div>
+        <p style="font-size:13px;color:var(--brown-mid);line-height:1.7;margin-bottom:12px">
+          Sin platillos los clientes no pueden hacer pedidos. Agrega tu menú ahora:
+        </p>
+        <div style="font-size:13px;display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+          <div>1️⃣ Toca <strong>"Mi Menu"</strong> en el menú inferior</div>
+          <div>2️⃣ Ve a la pestaña <strong>🍽️ Mi Menú</strong></div>
+          <div>3️⃣ Toca <strong>"+ Agregar"</strong> para cada platillo</div>
+        </div>
+        <button class="btn-order" style="width:100%;background:var(--orange)" onclick="renderDashboard();showPage('cocina');showCookTab('menu')">
+          🍽️ Agregar mis platillos ahora →
+        </button>
       </div>
-      <button class="btn-order" style="padding:14px 32px;font-size:15px;width:100%;background:#4CAF50" onclick="renderDashboard();showPage('cocina')">
-        ¡Ir a mi Panel de Cocinero! 🍳
+
+      <button style="width:100%;background:none;border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;color:var(--text-muted)" onclick="renderDashboard();showPage('cocina')">
+        Ir a mi Panel primero
       </button>
     </div>
 

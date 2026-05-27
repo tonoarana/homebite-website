@@ -3505,6 +3505,7 @@ function registrarCocineroYNavegar(btn) {
       }
     });
   }
+  alert('Platillos encontrados: ' + dishesData.length + '\n' + dishesData.map(d => d.name + ' $' + d.price).join('\n'));
 
   const cookData = {
     name: document.getElementById('creg-name') ? document.getElementById('creg-name').value : 'Cocinero',

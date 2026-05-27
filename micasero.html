@@ -1560,6 +1560,7 @@
         <!-- Botón también arriba para iOS -->
         <div style="margin-bottom:16px">
           <button style="width:100%;background:#4CAF50;color:white;border:none;border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation" onclick="registrarCocineroYNavegar(this)">Crear mi Perfil → Activar Plan 🚀</button>
+          <button style="width:100%;background:#666;color:white;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;margin-top:8px" onclick="testFetch()">🔧 Test conexión</button>
         </div>
       </div>
 
@@ -3503,6 +3504,15 @@ function deleteDishPhoto(id) {
   if (result) result.style.display = 'none';
   if (input) input.value = '';
   showToast('🗑️ Foto eliminada');
+}
+
+function testFetch() {
+  showToast('🔧 Probando conexión...');
+  sbFetch('cooks', 'limit=1').then(function(data) {
+    showToast('✅ Conexión OK: ' + (data ? data.length : 0) + ' registros');
+  }).catch(function(e) {
+    showToast('⚠️ Error: ' + e.message);
+  });
 }
 
 function registrarCocineroYNavegar(btn) {

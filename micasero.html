@@ -3190,10 +3190,9 @@ function saveDish() {
   const desc  = document.getElementById('dish-desc').value.trim();
   const price = parseFloat(document.getElementById('dish-price').value);
   const cat   = document.getElementById('dish-category').value;
-  const editId= document.getElementById('dish-edit-id').value;
+  const editId = document.getElementById('dish-edit-id').value;
 
-  if (!name)        { showToast('⚠️ Escribe el nombre del platillo'); return; }
-  if (!desc)        { showToast('⚠️ Agrega una descripción'); return; }
+  if (!name) { showToast('⚠️ Escribe el nombre del platillo'); return; }
   if (!price || price <= 0) { showToast('⚠️ Agrega un precio válido'); return; }
 
   if (editId) {
@@ -3201,8 +3200,28 @@ function saveDish() {
     if (i > -1) cookMenu[i] = { ...cookMenu[i], emoji, name, desc, price, category:cat, available:dishAvailable };
     showToast('✅ Platillo actualizado');
   } else {
-    cookMenu.push({ id:'m'+Date.now(), emoji, name, desc, price, category:cat, available:dishAvailable });
-    showToast('🎉 Platillo agregado al menú');
+    const newDish = { id:'m'+Date.now(), emoji, name, desc, price, category:cat, available:dishAvailable };
+    cookMenu.push(newDish);
+    showToast('🎉 ' + name + ' agregado!');
+
+    // Save to Supabase if cook is logged in
+    if (selectedCookId) {
+      sbPost('dishes', {
+        cook_id: selectedCookId,
+        name: name,
+        description: desc,
+        price: price,
+        emoji: emoji,
+        category: cat,
+        is_available: dishAvailable !== false
+      }).then(function(d) {
+        if (d && d[0]) {
+          showToast('✅ ' + name + ' guardado en Supabase');
+        }
+      }).catch(function(e) {
+        console.log('Error saving dish:', e);
+      });
+    }
   }
   closeDishModal();
   renderDashboard();
@@ -4333,15 +4352,73 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- ── MODAL: Agregar / Editar platillo ── -->
 <div class="modal-overlay" id="dish-modal">
-  <div class="modal" style="max-width:460px;overflow-y:auto;max-height:85vh;padding-bottom:100px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <h3 id="dish-modal-title" style="margin:0">🍽️ Nuevo Platillo</h3>
+  <div class="modal" style="max-width:460px;-webkit-overflow-scrolling:touch;overflow-y:scroll;max-height:80vh">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;position:sticky;top:0;background:white;padding-bottom:8px;border-bottom:1px solid var(--border)">
+      <h3 id="dish-modal-title" style="margin:0;font-size:16px">🍽️ Nuevo Platillo</h3>
       <div style="display:flex;gap:8px">
         <button onclick="saveDish()" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">💾 Guardar</button>
-        <button class="modal-close" onclick="closeDishModal()">✕</button>
+        <button onclick="closeDishModal()" style="background:var(--warm);border:none;border-radius:8px;padding:8px 12px;font-size:16px;cursor:pointer">✕</button>
       </div>
     </div>
     <input type="hidden" id="dish-edit-id">
+
+    <div class="form-group">
+      <label class="form-label">Emoji</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px" id="emoji-picker">
+        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍝</span>
+        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🌮</span>
+        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍛</span>
+        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍲</span>
+        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍰</span>
+        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥗</span>
+        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥩</span>
+        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍕</span>
+        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥤</span>
+        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍮</span>
+      </div>
+      <input class="form-input" id="dish-emoji" type="text" placeholder="🍽️" maxlength="2">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Nombre del platillo *</label>
+      <input class="form-input" id="dish-name" type="text" placeholder="Ej. Tacos al Pastor">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Descripción</label>
+      <input class="form-input" id="dish-desc" type="text" placeholder="Ingredientes principales...">
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Precio ($) *</label>
+        <input class="form-input" id="dish-price" type="number" placeholder="0.00" step="0.50" min="0">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Categoría</label>
+        <select class="form-input" id="dish-category">
+          <option>Plato principal</option>
+          <option>Entrada</option>
+          <option>Sopa</option>
+          <option>Postre</option>
+          <option>Bebida</option>
+          <option>Desayuno</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Disponibilidad</label>
+      <div style="display:flex;gap:10px">
+        <div class="role-btn selected" id="avail-yes" onclick="setDishAvail(true)">✅ Disponible</div>
+        <div class="role-btn" id="avail-no" onclick="setDishAvail(false)">❌ Agotado</div>
+      </div>
+    </div>
+
+    <button class="btn-submit" onclick="saveDish()" style="margin-top:16px">💾 Guardar Platillo</button>
+    <div style="height:80px"></div>
+  </div>
+</div>
 
     <div class="form-group">
       <label class="form-label">Emoji del platillo</label>

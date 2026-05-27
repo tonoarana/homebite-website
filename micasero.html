@@ -1400,7 +1400,7 @@
         <button onclick="addRegDish()" style="width:100%;background:var(--warm);border:2px dashed var(--border);border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;color:var(--text-muted)">+ Agregar Platillo</button>
         <div style="display:flex;gap:10px;margin-top:16px">
           <button onclick="cookRegStep(3)" style="flex:1;background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">← Atrás</button>
-          <button onclick="cookRegStep(5)" class="btn-submit" style="flex:2">Continuar →</button>
+          <button onclick="guardarDatosMenu();cookRegStep(5)" class="btn-submit" style="flex:2">Continuar →</button>
         </div>
       </div>
 
@@ -3441,6 +3441,22 @@ function setLang(lang) {
 // COOK REGISTRATION WIZARD
 // ════════════════════════════════════════
 let regDishes = [];
+let savedDishesData = []; // Stores dish data collected in step 4
+
+function guardarDatosMenu() {
+  savedDishesData = [];
+  const menuList = document.getElementById('creg-menu-list');
+  if (menuList) {
+    Array.from(menuList.children).forEach(function(div) {
+      const inputs = div.querySelectorAll('input[type="text"]');
+      if (inputs.length >= 2 && inputs[0].value.trim()) {
+        const price = parseFloat(inputs[1].value.replace('$','').replace(',','.')) || 0;
+        savedDishesData.push({ name: inputs[0].value.trim(), price: price });
+      }
+    });
+  }
+  console.log('Dishes saved in memory:', savedDishesData.length);
+}
 
 function previewProfilePhoto(input) {
   if (!input.files || !input.files[0]) return;
@@ -3494,17 +3510,8 @@ function registrarCocineroYNavegar(btn) {
   btn.textContent = '💾 Guardando...';
 
   // Collect dishes first
-  const dishesData = [];
-  const menuList = document.getElementById('creg-menu-list');
-  if (menuList) {
-    Array.from(menuList.children).forEach(function(div) {
-      const inputs = div.querySelectorAll('input[type="text"]');
-      if (inputs.length >= 2 && inputs[0].value.trim()) {
-        const price = parseFloat(inputs[1].value.replace('$','').replace(',','.')) || 0;
-        dishesData.push({ name: inputs[0].value.trim(), price: price });
-      }
-    });
-  }
+  // Use pre-saved dish data from step 4
+  const dishesData = savedDishesData.slice();
 
   const cookData = {
     name: document.getElementById('creg-name') ? document.getElementById('creg-name').value : 'Cocinero',
@@ -3530,10 +3537,9 @@ function registrarCocineroYNavegar(btn) {
       return;
     }
     selectedCookId = cook.id;
-    showToast('✅ ¡Perfil guardado! ID: ' + cook.id.substring(0,8));
+    showToast('✅ ¡Perfil guardado!');
     btn.disabled = false;
     btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
-    alert('Cook ID: ' + cook.id + '\nDishes: ' + dishesData.length);
 
     // Save dishes using direct fetch (not sbPost)
     var SBKEY2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';

@@ -3488,11 +3488,10 @@ function registrarCocineroYNavegar(btn) {
   btn.disabled = true;
   btn.textContent = '💾 Guardando...';
 
-  // Collect dishes
   const dishesData = [];
   const menuList = document.getElementById('creg-menu-list');
   if (menuList) {
-    Array.from(menuList.children).forEach(div => {
+    Array.from(menuList.children).forEach(function(div) {
       const inputs = div.querySelectorAll('input[type="text"]');
       if (inputs.length >= 2 && inputs[0].value.trim()) {
         const price = parseFloat(inputs[1].value.replace('$','').replace(',','.')) || 0;
@@ -3501,90 +3500,75 @@ function registrarCocineroYNavegar(btn) {
     });
   }
 
-  const email = document.getElementById('creg-email')?.value || ('cook_' + Date.now() + '@micasero.app');
+  const SBKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
 
-  const body = JSON.stringify({
-    name: document.getElementById('creg-name')?.value || 'Cocinero',
-    email: email,
-    phone: document.getElementById('creg-phone')?.value || '',
-    kitchen_name: document.getElementById('creg-kitchen')?.value || '',
-    cuisine_type: document.getElementById('creg-cuisine')?.value || 'Local',
-    description: document.getElementById('creg-desc')?.value || '',
+  const cookData = {
+    name: document.getElementById('creg-name') ? document.getElementById('creg-name').value : 'Cocinero',
+    email: (document.getElementById('creg-email') && document.getElementById('creg-email').value) ? document.getElementById('creg-email').value : ('cook_' + Date.now() + '@micasero.app'),
+    phone: document.getElementById('creg-phone') ? document.getElementById('creg-phone').value : '',
+    kitchen_name: document.getElementById('creg-kitchen') ? document.getElementById('creg-kitchen').value : '',
+    cuisine_type: document.getElementById('creg-cuisine') ? document.getElementById('creg-cuisine').value : 'Local',
+    description: document.getElementById('creg-desc') ? document.getElementById('creg-desc').value : '',
     plan: selectedPlan || 'basico',
     is_online: true,
     city: 'Bainbridge Island',
     lat: 47.6246,
     lng: -122.5219
-  });
+  };
 
-  const SBKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', 'https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/cooks', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader('apikey', SBKEY);
+  xhr.setRequestHeader('Authorization', 'Bearer ' + SBKEY);
+  xhr.setRequestHeader('Prefer', 'return=representation');
+  xhr.timeout = 15000;
 
-  // Timeout after 10 seconds
-  const controller = new AbortController();
-  const timeout = setTimeout(() => {
-    controller.abort();
-    showToast('⚠️ Timeout - verifica tu conexión');
-    btn.disabled = false;
-    btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
-  }, 10000);
+  xhr.onload = function() {
+    try {
+      const data = JSON.parse(xhr.responseText);
+      const cook = Array.isArray(data) ? data[0] : data;
+      if (!cook || !cook.id) {
+        showToast('Error: ' + xhr.status + ' ' + JSON.stringify(data).substring(0,40));
+        btn.disabled = false;
+        btn.textContent = 'Crear mi Perfil → Activar Plan';
+        return;
+      }
+      selectedCookId = cook.id;
+      showToast('Perfil guardado!');
 
-  fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/cooks', {
-    method: 'POST',
-    signal: controller.signal,
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SBKEY,
-      'Authorization': 'Bearer ' + SBKEY,
-      'Prefer': 'return=representation'
-    },
-    body: body
-  })
-  .then(r => { clearTimeout(timeout); return r.json(); })
-  .then(data => {
-    console.log('Cook response:', JSON.stringify(data));
-    const cook = Array.isArray(data) ? data[0] : data;
-    if (!cook || !cook.id) {
-      showToast('⚠️ Error: ' + JSON.stringify(data).substring(0,50));
+      dishesData.forEach(function(dish) {
+        const xd = new XMLHttpRequest();
+        xd.open('POST', 'https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/dishes', true);
+        xd.setRequestHeader('Content-Type', 'application/json');
+        xd.setRequestHeader('apikey', SBKEY);
+        xd.setRequestHeader('Authorization', 'Bearer ' + SBKEY);
+        xd.setRequestHeader('Prefer', 'return=representation');
+        xd.send(JSON.stringify({ cook_id: cook.id, name: dish.name, price: dish.price, emoji: '🍽️', category: 'Plato principal', is_available: true }));
+      });
+
+      refreshCooks();
+      setTimeout(function() { showPage('pago-membresia'); }, 500);
+    } catch(e) {
+      showToast('Parse error: ' + e.message);
       btn.disabled = false;
-      btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
-      return;
+      btn.textContent = 'Crear mi Perfil → Activar Plan';
     }
-    selectedCookId = cook.id;
-    showToast('✅ ¡Perfil guardado!');
+  };
 
-    // Save dishes one by one
-    dishesData.forEach(dish => {
-      fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/dishes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SB_KEY,
-          'Authorization': 'Bearer ' + SB_KEY,
-          'Prefer': 'return=representation'
-        },
-        body: JSON.stringify({
-          cook_id: cook.id,
-          name: dish.name,
-          price: dish.price,
-          emoji: '🍽️',
-          category: 'Plato principal',
-          is_available: true
-        })
-      })
-      .then(r => r.json())
-      .then(d => { showToast('🍽️ ' + dish.name + ' guardado'); })
-      .catch(e => { showToast('⚠️ Error platillo: ' + e.message); });
-    });
-
-    refreshCooks();
-    // Navigate after successful save
-    setTimeout(() => showPage('pago-membresia'), 1000);
-  })
-  .catch(e => {
-    showToast('⚠️ Error: ' + e.message);
+  xhr.onerror = function() {
+    showToast('Error de red - verifica conexion');
     btn.disabled = false;
-    btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
-  });
+    btn.textContent = 'Crear mi Perfil → Activar Plan';
+  };
+
+  xhr.ontimeout = function() {
+    showToast('Timeout - sin respuesta de Supabase');
+    btn.disabled = false;
+    btn.textContent = 'Crear mi Perfil → Activar Plan';
+  };
+
+  xhr.send(JSON.stringify(cookData));
 }
 
 function guardarCocinero() {

@@ -3530,9 +3530,10 @@ function registrarCocineroYNavegar(btn) {
       return;
     }
     selectedCookId = cook.id;
-    showToast('✅ ¡Perfil guardado!');
+    showToast('✅ ¡Perfil guardado! ID: ' + cook.id.substring(0,8));
     btn.disabled = false;
     btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
+    alert('Cook ID: ' + cook.id + '\nDishes: ' + dishesData.length);
 
     // Save dishes using direct fetch (not sbPost)
     var SBKEY2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';

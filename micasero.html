@@ -1559,7 +1559,7 @@
         </div>
         <!-- Botón también arriba para iOS -->
         <div style="margin-bottom:16px">
-          <button style="width:100%;background:#4CAF50;color:white;border:none;border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation" onclick="registrarCocineroYNavegar(this)">Crear mi Perfil → Activar Plan 🚀</button>
+          <button style="width:100%;background:#4CAF50;color:white;border:none;border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation" onclick="prepararRegistro();showPage('pago-membresia')">Crear mi Perfil → Activar Plan 🚀</button>
           <button style="width:100%;background:#666;color:white;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;margin-top:8px" onclick="testFetch()">🔧 Test conexión</button>
         </div>
       </div>
@@ -4168,12 +4168,61 @@ function processPayment() {
   }, 2000);
 }
 
+let pendingCookData = null;
+
+function prepararRegistro() {
+  // Collect all data from registration form
+  pendingCookData = {
+    name: document.getElementById('creg-name') ? document.getElementById('creg-name').value : 'Cocinero',
+    email: (document.getElementById('creg-email') && document.getElementById('creg-email').value) ? document.getElementById('creg-email').value : ('cook_' + Date.now() + '@micasero.app'),
+    phone: document.getElementById('creg-phone') ? document.getElementById('creg-phone').value : '',
+    kitchen_name: document.getElementById('creg-kitchen') ? document.getElementById('creg-kitchen').value : '',
+    cuisine_type: document.getElementById('creg-cuisine') ? document.getElementById('creg-cuisine').value : 'Local',
+    description: document.getElementById('creg-desc') ? document.getElementById('creg-desc').value : '',
+    plan: selectedPlan || 'basico',
+    is_online: true,
+    city: 'Bainbridge Island',
+    lat: 47.6246,
+    lng: -122.5219
+  };
+  // Dishes already saved in savedDishesData from step 4
+  console.log('Ready to register:', pendingCookData.name, 'dishes:', savedDishesData.length);
+}
+
 function confirmarMembresia() {
   const form = document.getElementById('pago-form');
   const confirmed = document.getElementById('pago-confirmado');
   if (form) form.style.display = 'none';
   if (confirmed) confirmed.style.display = 'block';
-  showToast('🎉 ¡Plan activado! Bienvenido a Micasero');
+
+  // Now save cook from payment page (this page works with Supabase!)
+  if (pendingCookData) {
+    sbPost('cooks', pendingCookData).then(function(data) {
+      const cook = data && data[0] ? data[0] : null;
+      if (cook && cook.id) {
+        selectedCookId = cook.id;
+        showToast('✅ ¡Perfil guardado en Supabase!');
+        // Save dishes
+        savedDishesData.forEach(function(dish) {
+          sbPost('dishes', {
+            cook_id: cook.id,
+            name: dish.name,
+            price: dish.price,
+            emoji: '🍽️',
+            category: 'Plato principal',
+            is_available: true
+          }).then(function(d) {
+            if (d && d[0]) showToast('🍽️ ' + d[0].name);
+          });
+        });
+        refreshCooks();
+        pendingCookData = null;
+      }
+    }).catch(function(e) {
+      console.log('Error saving cook:', e);
+    });
+  }
+  showToast('🎉 ¡Plan activado! Ahora agrega tus platillos');
 }
 
 function toggleQR() {

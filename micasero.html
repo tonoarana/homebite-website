@@ -2084,7 +2084,7 @@
           <div>2️⃣ Ve a la pestaña <strong>🍽️ Mi Menú</strong></div>
           <div>3️⃣ Toca <strong>"+ Agregar"</strong> para cada platillo</div>
         </div>
-        <button class="btn-order" style="width:100%;background:var(--orange)" onclick="renderDashboard();showPage('cocina');showCookTab('menu')">
+        <button class="btn-order" style="width:100%;background:var(--orange)" onclick="showPage('cocina');setTimeout(function(){showCookTab('menu')},200)">
           🍽️ Agregar mis platillos ahora →
         </button>
       </div>
@@ -2892,7 +2892,7 @@ function showPage(name) {
   window.scrollTo(0, 0);
   if (name === 'register-cocinero') { cookRegStep(1); }
   if (name === 'map') { setTimeout(initLeafletMap, 100); refreshCooks().then(renderMapList); }
-  if (name === 'cocina') { renderDashboard(); }
+  if (name === 'cocina') { renderDashboard(); showCookTab('pedidos'); }
   if (name === 'profile') { renderMenu(); }
   if (name === 'membresia') { updateFounderUI(); }
   if (name === 'cooks') { renderCooksList(); }

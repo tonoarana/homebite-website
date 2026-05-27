@@ -4333,9 +4333,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- ── MODAL: Agregar / Editar platillo ── -->
 <div class="modal-overlay" id="dish-modal">
-  <div class="modal" style="max-width:460px">
-    <button class="modal-close" onclick="closeDishModal()">✕</button>
-    <h3 id="dish-modal-title">🍽️ Nuevo Platillo</h3>
+  <div class="modal" style="max-width:460px;overflow-y:auto;max-height:85vh;padding-bottom:100px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 id="dish-modal-title" style="margin:0">🍽️ Nuevo Platillo</h3>
+      <div style="display:flex;gap:8px">
+        <button onclick="saveDish()" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">💾 Guardar</button>
+        <button class="modal-close" onclick="closeDishModal()">✕</button>
+      </div>
+    </div>
     <input type="hidden" id="dish-edit-id">
 
     <div class="form-group">

@@ -3505,7 +3505,6 @@ function registrarCocineroYNavegar(btn) {
       }
     });
   }
-  alert('Platillos encontrados: ' + dishesData.length + '\n' + dishesData.map(d => d.name + ' $' + d.price).join('\n'));
 
   const cookData = {
     name: document.getElementById('creg-name') ? document.getElementById('creg-name').value : 'Cocinero',
@@ -3535,27 +3534,38 @@ function registrarCocineroYNavegar(btn) {
     btn.disabled = false;
     btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
 
-    // Save dishes
+    // Save dishes using direct fetch (not sbPost)
+    var SBKEY2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1aGZ1a2hscHVxaHFlcHVydXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ5MTUsImV4cCI6MjA5NTMyMDkxNX0.BH3Ys3kjBPAiiOFmekLkhTzl4wmkdoo_BWV-KQFkbI4';
+    var saved = 0;
     dishesData.forEach(function(dish) {
-      sbPost('dishes', {
-        cook_id: cook.id,
-        name: dish.name,
-        price: dish.price,
-        emoji: '🍽️',
-        category: 'Plato principal',
-        is_available: true
+      fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/dishes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SBKEY2,
+          'Authorization': 'Bearer ' + SBKEY2,
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+          cook_id: cook.id,
+          name: dish.name,
+          price: dish.price,
+          emoji: '🍽️',
+          category: 'Plato principal',
+          is_available: true
+        })
+      }).then(function(r) {
+        return r.json();
       }).then(function(d) {
-        if (d && d[0]) {
-          showToast('🍽️ ' + d[0].name);
-        } else {
-          showToast('⚠️ Dish error: ' + JSON.stringify(d).substring(0,40));
-        }
+        saved++;
+        showToast('🍽️ ' + dish.name + ' guardado');
+        if (saved === dishesData.length) refreshCooks();
       }).catch(function(e) {
-        showToast('⚠️ Dish catch: ' + e.message);
+        showToast('⚠️ Dish error: ' + e.message);
       });
     });
 
-    refreshCooks();
+    if (dishesData.length === 0) refreshCooks();
     setTimeout(function() { showPage('pago-membresia'); }, 800);
   }).catch(function(e) {
     showToast('⚠️ Error: ' + e.message);

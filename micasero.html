@@ -3148,9 +3148,9 @@ function syncMenuToProfile() {
   `).join('');
 }
 
-function openDishModal(id) {
+function openDishModal() {
   const modal = document.getElementById('dish-modal');
-  if (modal) { modal.style.display = ''; modal.classList.add('open'); }
+  if (modal) modal.style.display = 'block';
   document.getElementById('dish-edit-id').value = '';
   document.getElementById('dish-modal-title').textContent = '🍽️ Nuevo Platillo';
   document.getElementById('dish-emoji').value = '';
@@ -3159,11 +3159,13 @@ function openDishModal(id) {
   document.getElementById('dish-price').value = '';
   document.getElementById('dish-category').value = 'Plato principal';
   setDishAvail(true);
+  window.scrollTo(0,0);
 }
 
 function closeDishModal() {
   const modal = document.getElementById('dish-modal');
-  if (modal) { modal.classList.remove('open'); modal.style.display = 'none'; }
+  if (modal) modal.style.display = 'none';
+  renderDashboard();
 }
 
 function setDishAvail(val) {
@@ -4339,30 +4341,29 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- ── MODAL: Agregar / Editar platillo ── -->
-<div class="modal-overlay" id="dish-modal">
-  <div class="modal" style="max-width:460px;-webkit-overflow-scrolling:touch;overflow-y:scroll;max-height:80vh">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;position:sticky;top:0;background:white;padding-bottom:8px;border-bottom:1px solid var(--border)">
-      <h3 id="dish-modal-title" style="margin:0;font-size:16px">🍽️ Nuevo Platillo</h3>
-      <div style="display:flex;gap:8px">
-        <button onclick="saveDish()" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">💾 Guardar</button>
-        <button onclick="closeDishModal()" style="background:var(--warm);border:none;border-radius:8px;padding:8px 12px;font-size:16px;cursor:pointer">✕</button>
-      </div>
+<div id="dish-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--cream);z-index:200;overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch">
+  <div style="max-width:500px;margin:0 auto">
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--brown)" id="dish-modal-title">🍽️ Nuevo Platillo</div>
+      <button onclick="closeDishModal()" style="background:var(--warm);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:14px;cursor:pointer;-webkit-appearance:none">✕ Cerrar</button>
     </div>
     <input type="hidden" id="dish-edit-id">
 
+    <!-- Emoji -->
     <div class="form-group">
       <label class="form-label">Emoji</label>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px" id="emoji-picker">
-        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍝</span>
-        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🌮</span>
-        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍛</span>
-        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍲</span>
-        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍰</span>
-        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥗</span>
-        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥩</span>
-        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍕</span>
-        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥤</span>
-        <span style="font-size:24px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍮</span>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🌮</span>
+        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍝</span>
+        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍲</span>
+        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥩</span>
+        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍛</span>
+        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥗</span>
+        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍰</span>
+        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥤</span>
+        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍮</span>
+        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍕</span>
       </div>
       <input class="form-input" id="dish-emoji" type="text" placeholder="🍽️" maxlength="2">
     </div>
@@ -4378,11 +4379,11 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-      <div class="form-group" style="margin:0">
+      <div>
         <label class="form-label">Precio ($) *</label>
         <input class="form-input" id="dish-price" type="number" placeholder="0.00" step="0.50" min="0">
       </div>
-      <div class="form-group" style="margin:0">
+      <div>
         <label class="form-label">Categoría</label>
         <select class="form-input" id="dish-category">
           <option>Plato principal</option>
@@ -4403,9 +4404,10 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
 
-    <button class="btn-submit" onclick="saveDish()" style="margin-top:16px">💾 Guardar Platillo</button>
-    <div style="height:80px"></div>
+    <button onclick="saveDish()" style="width:100%;background:#4CAF50;color:white;border:none;border-radius:12px;padding:16px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;-webkit-appearance:none;margin-top:8px">💾 Guardar Platillo</button>
+    <div style="height:100px"></div>
   </div>
+</div>
 </div>
 
     <div class="form-group">

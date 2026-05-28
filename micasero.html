@@ -3149,6 +3149,8 @@ function syncMenuToProfile() {
 }
 
 function openDishModal(id) {
+  const modal = document.getElementById('dish-modal');
+  if (modal) { modal.style.display = ''; modal.classList.add('open'); }
   document.getElementById('dish-edit-id').value = '';
   document.getElementById('dish-modal-title').textContent = '🍽️ Nuevo Platillo';
   document.getElementById('dish-emoji').value = '';
@@ -3157,25 +3159,11 @@ function openDishModal(id) {
   document.getElementById('dish-price').value = '';
   document.getElementById('dish-category').value = 'Plato principal';
   setDishAvail(true);
-  document.getElementById('dish-modal').classList.add('open');
-}
-
-function editDish(id) {
-  const d = cookMenu.find(x => x.id === id);
-  if (!d) return;
-  document.getElementById('dish-edit-id').value = id;
-  document.getElementById('dish-modal-title').textContent = '✏️ Editar Platillo';
-  document.getElementById('dish-emoji').value = d.emoji;
-  document.getElementById('dish-name').value = d.name;
-  document.getElementById('dish-desc').value = d.desc;
-  document.getElementById('dish-price').value = d.price;
-  document.getElementById('dish-category').value = d.category;
-  setDishAvail(d.available);
-  document.getElementById('dish-modal').classList.add('open');
 }
 
 function closeDishModal() {
-  document.getElementById('dish-modal').classList.remove('open');
+  const modal = document.getElementById('dish-modal');
+  if (modal) { modal.classList.remove('open'); modal.style.display = 'none'; }
 }
 
 function setDishAvail(val) {

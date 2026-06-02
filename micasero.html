@@ -4176,6 +4176,7 @@ function confirmarMembresia() {
   if (confirmed) confirmed.style.display = 'block';
 
   // Now save cook from payment page (this page works with Supabase!)
+  alert('Guardando... pendingCookData: ' + (pendingCookData ? pendingCookData.name : 'NULL') + '\nDishes: ' + savedDishesData.length);
   if (pendingCookData) {
     sbPost('cooks', pendingCookData).then(function(data) {
       const cook = data && data[0] ? data[0] : null;

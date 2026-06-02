@@ -2251,13 +2251,60 @@
         <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown)">
           🍽️ Mis Platillos <span style="font-size:14px;font-weight:400;color:var(--text-muted)" id="dash-count-label"></span>
         </div>
-        <button onclick="openDishModal()" style="background:var(--orange);color:white;border:none;border-radius:10px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ Agregar</button>
+        <button onclick="toggleAddDishForm()" style="background:var(--orange);color:white;border:none;border-radius:10px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none" id="add-dish-btn">+ Agregar</button>
       </div>
+
+      <!-- Inline add dish form -->
+      <div id="add-dish-form" style="display:none;background:white;border:1.5px solid var(--orange);border-radius:16px;padding:16px;margin-bottom:16px">
+        <div style="font-weight:700;color:var(--brown);margin-bottom:12px">🍽️ Nuevo Platillo</div>
+        <div class="form-group">
+          <label class="form-label">Emoji</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+            <span style="font-size:22px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🌮</span>
+            <span style="font-size:22px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍝</span>
+            <span style="font-size:22px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍲</span>
+            <span style="font-size:22px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥩</span>
+            <span style="font-size:22px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍛</span>
+            <span style="font-size:22px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍰</span>
+            <span style="font-size:22px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥤</span>
+            <span style="font-size:22px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍮</span>
+          </div>
+          <input class="form-input" id="dish-emoji" type="text" placeholder="🍽️" maxlength="2">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nombre *</label>
+          <input class="form-input" id="dish-name" type="text" placeholder="Ej. Tacos al Pastor">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <input class="form-input" id="dish-desc" type="text" placeholder="Ingredientes...">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div>
+            <label class="form-label">Precio ($) *</label>
+            <input class="form-input" id="dish-price" type="number" placeholder="0.00" step="0.50" min="0">
+          </div>
+          <div>
+            <label class="form-label">Categoría</label>
+            <select class="form-input" id="dish-category">
+              <option>Plato principal</option>
+              <option>Entrada</option>
+              <option>Postre</option>
+              <option>Bebida</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button onclick="saveDish()" style="flex:2;background:#4CAF50;color:white;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none">💾 Guardar</button>
+          <button onclick="toggleAddDishForm()" style="flex:1;background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;-webkit-appearance:none">Cancelar</button>
+        </div>
+      </div>
+
       <div id="dash-menu-list"></div>
       <div id="dash-empty" style="text-align:center;padding:32px;display:none">
         <div style="font-size:40px;margin-bottom:8px">🍽️</div>
         <div style="color:var(--text-muted);font-size:14px;margin-bottom:16px">Aún no tienes platillos</div>
-        <button onclick="openDishModal()" style="background:var(--orange);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ Agregar mi primer platillo</button>
+        <button onclick="toggleAddDishForm()" style="background:var(--orange);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none">+ Agregar mi primer platillo</button>
       </div>
     </div>
 
@@ -3148,24 +3195,28 @@ function syncMenuToProfile() {
   `).join('');
 }
 
-function openDishModal() {
-  const modal = document.getElementById('dish-modal');
-  if (modal) modal.style.display = 'block';
-  document.getElementById('dish-edit-id').value = '';
-  document.getElementById('dish-modal-title').textContent = '🍽️ Nuevo Platillo';
-  document.getElementById('dish-emoji').value = '';
-  document.getElementById('dish-name').value = '';
-  document.getElementById('dish-desc').value = '';
-  document.getElementById('dish-price').value = '';
-  document.getElementById('dish-category').value = 'Plato principal';
-  setDishAvail(true);
-  window.scrollTo(0,0);
+function toggleAddDishForm() {
+  const form = document.getElementById('add-dish-form');
+  const btn = document.getElementById('add-dish-btn');
+  if (!form) return;
+  const isOpen = form.style.display !== 'none';
+  form.style.display = isOpen ? 'none' : 'block';
+  if (btn) btn.textContent = isOpen ? '+ Agregar' : '✕ Cancelar';
+  if (!isOpen) {
+    // Clear form
+    ['dish-emoji','dish-name','dish-desc','dish-price'].forEach(function(id) {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+  }
 }
 
+function openDishModal() { toggleAddDishForm(); }
 function closeDishModal() {
-  const modal = document.getElementById('dish-modal');
-  if (modal) modal.style.display = 'none';
-  renderDashboard();
+  const form = document.getElementById('add-dish-form');
+  const btn = document.getElementById('add-dish-btn');
+  if (form) form.style.display = 'none';
+  if (btn) btn.textContent = '+ Agregar';
 }
 
 function setDishAvail(val) {
@@ -3215,6 +3266,7 @@ function saveDish() {
   }
   closeDishModal();
   renderDashboard();
+  showCookTab('menu');
 }
 
 function deleteDish(id) {

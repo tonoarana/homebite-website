@@ -2849,7 +2849,14 @@ function showPage(name) {
   if (name === 'profile') { renderMenu(); }
   if (name === 'membresia') { updateFounderUI(); }
   if (name === 'cooks') { renderCooksList(); }
-  if (name === 'pago-membresia') { updatePaymentPage(); }
+  if (name === 'pago-membresia') {
+    updatePaymentPage();
+    // Always reset to show form, not confirmation
+    const form = document.getElementById('pago-form');
+    const confirmed = document.getElementById('pago-confirmado');
+    if (form) form.style.display = 'block';
+    if (confirmed) confirmed.style.display = 'none';
+  }
 }
 
 
@@ -4183,11 +4190,20 @@ function confirmarMembresia() {
       const cook = data && data[0] ? data[0] : null;
       if (cook && cook.id) {
         setCookId(cook.id);
-        showToast('✅ ¡Perfil guardado en Supabase!');
-        // Save dishes
-        savedDishesData.forEach(function(dish) {
+        showToast('✅ ¡Perfil guardado!');
+        // Wait 2 seconds then save dishes one by one
+        var cookId = cook.id;
+        var dishIndex = 0;
+        function saveNextDish() {
+          if (dishIndex >= savedDishesData.length) {
+            refreshCooks();
+            pendingCookData = null;
+            return;
+          }
+          var dish = savedDishesData[dishIndex];
+          dishIndex++;
           sbPost('dishes', {
-            cook_id: cook.id,
+            cook_id: cookId,
             name: dish.name,
             price: dish.price,
             emoji: '🍽️',
@@ -4195,16 +4211,17 @@ function confirmarMembresia() {
             is_available: true
           }).then(function(d) {
             if (d && d[0]) {
-              alert('✅ Platillo guardado: ' + d[0].name);
+              showToast('🍽️ ' + d[0].name + ' guardado');
             } else {
-              alert('⚠️ Platillo NO guardado: ' + dish.name + '\nRespuesta: ' + JSON.stringify(d));
+              alert('⚠️ Error: ' + JSON.stringify(d).substring(0,50));
             }
+            setTimeout(saveNextDish, 500);
           }).catch(function(e) {
-            alert('❌ Error platillo: ' + e.message);
+            alert('❌ ' + e.message);
+            setTimeout(saveNextDish, 500);
           });
-        });
-        refreshCooks();
-        pendingCookData = null;
+        }
+        setTimeout(saveNextDish, 1000);
       }
     }).catch(function(e) {
       console.log('Error saving cook:', e);

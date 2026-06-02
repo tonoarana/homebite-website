@@ -2629,7 +2629,7 @@
   <button onclick="toggleMobileMenu()" id="mn-more">
     <span class="mn-icon">☰</span><span class="mn-label" data-i18n="nav-more">Más</span>
   </button>
-</div>
+
 
 
 
@@ -2658,7 +2658,12 @@ const menu = [
 ];
 
 // Selected cook
-let selectedCookId = null;
+let selectedCookId = localStorage.getItem('micasero_cook_id') || null;
+
+function setCookId(id) {
+  setCookId(id);
+  try { localStorage.setItem('micasero_cook_id', id); } catch(e) {}
+}
 
 // Demo reviews
 let reviewsData = [
@@ -2727,8 +2732,8 @@ function renderFeaturedCooks() {
   el.innerHTML = data.map(c => `
     <div class="cook-card" onclick="selectCook('${c.id}');showPage('profile')">
       <div class="cook-card-img" style="background:${c.color||'#FDE8D8'}">
-        <div class="cook-avatar" style="background:${c.color||'#FDE8D8'}">${c.emoji}</div>
-        ${c.delivery ? '<div class="cook-delivery-badge">🛵 Delivery</div>' : ''}
+        <div class="cook-avatar" style="background:${c.color||'#FDE8D8'}">${c.emoji}
+        ${c.delivery ? '<div class="cook-delivery-badge">🛵 Delivery' : ''}
       </div>
       <div class="cook-card-body">
         <h3>${c.name}</h3>
@@ -2787,7 +2792,7 @@ async function renderCooksList() {
 }
 
 function selectCook(cookId) {
-  selectedCookId = cookId;
+  setCookId(cookId);
   // Find cook data
   const cook = dbCooks.find(c => c.id === cookId) || dbCooks.find(c => String(c.id) === String(cookId));
   if (cook) {
@@ -3617,7 +3622,7 @@ function registrarCocineroYNavegar(btn) {
       btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
       return;
     }
-    selectedCookId = cook.id;
+    setCookId(cook.id);
     showToast('✅ ¡Perfil guardado!');
     btn.disabled = false;
     btn.textContent = 'Crear mi Perfil → Activar Plan 🚀';
@@ -3710,7 +3715,7 @@ function guardarCocinero() {
   }).then(data => {
     if (!data || !data[0]) return;
     const cookId = data[0].id;
-    selectedCookId = cookId;
+    setCookId(cookId);
     showToast('🎉 ¡Perfil guardado!');
     console.log('✅ Cook saved:', cookId);
 
@@ -3778,7 +3783,7 @@ async function finishCookReg() {
   try {
     const saved = await saveCookToDB(cookData);
     if (saved) {
-      selectedCookId = saved.id;
+      setCookId(saved.id);
       showToast('🎉 ¡Perfil guardado!');
       await loadCooksFromDB();
     } else {
@@ -3786,7 +3791,7 @@ async function finishCookReg() {
       cookData.email = `cook_${Date.now()}@micasero.app`;
       const retry = await saveCookToDB(cookData);
       if (retry) {
-        selectedCookId = retry.id;
+        setCookId(retry.id);
         showToast('🎉 ¡Perfil guardado!');
         await loadCooksFromDB();
       }
@@ -4261,7 +4266,7 @@ function confirmarMembresia() {
     sbPost('cooks', pendingCookData).then(function(data) {
       const cook = data && data[0] ? data[0] : null;
       if (cook && cook.id) {
-        selectedCookId = cook.id;
+        setCookId(cook.id);
         showToast('✅ ¡Perfil guardado en Supabase!');
         // Save dishes
         savedDishesData.forEach(function(dish) {

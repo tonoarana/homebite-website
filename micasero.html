@@ -2294,6 +2294,13 @@
             </select>
           </div>
         </div>
+        <div class="form-group">
+          <label class="form-label">Disponibilidad</label>
+          <div style="display:flex;gap:10px;margin-bottom:8px">
+            <div class="role-btn selected" id="avail-yes" onclick="setDishAvail(true)">✅ Disponible</div>
+            <div class="role-btn" id="avail-no" onclick="setDishAvail(false)">❌ Agotado</div>
+          </div>
+        </div>
         <div style="display:flex;gap:10px">
           <button onclick="saveDish()" style="flex:2;background:#4CAF50;color:white;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none">💾 Guardar</button>
           <button onclick="toggleAddDishForm()" style="flex:1;background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;-webkit-appearance:none">Cancelar</button>
@@ -2329,113 +2336,7 @@
 
   </div>
 
-<div style="max-width:800px;margin:0 auto;padding:20px">
-
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div>
-        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--brown)">👨‍🍳 Mi Menu</div>
-        <div style="font-size:13px;color:var(--text-muted)">Panel del Cocinero</div>
-      </div>
-      <!-- Toggle En Linea -->
-      <div onclick="toggleAvailable()" id="avail-toggle-card" style="background:#F0FFF4;border:2px solid #4CAF50;border-radius:12px;padding:10px 16px;text-align:center;cursor:pointer;min-width:90px">
-        <div style="font-size:20px" id="avail-icon">🟢</div>
-        <div style="font-size:11px;font-weight:700;color:#2E7D52" id="avail-label">En Línea</div>
-      </div>
-    </div>
-
-    <!-- ══ SECCIÓN 1: PEDIDOS NUEVOS ══ -->
-    <div style="background:#FFF8F0;border:2px solid var(--orange);border-radius:16px;padding:16px;margin-bottom:20px">
-      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px;display:flex;align-items:center;gap:8px">
-        📬 Pedidos Nuevos
-        <span style="background:var(--orange);color:white;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px" id="new-orders-badge">2</span>
-      </div>
-
-      <!-- Pedido 1 — Pendiente -->
-      <div id="order-card-1" style="background:white;border:1.5px solid #F4C9A8;border-radius:12px;padding:14px;margin-bottom:10px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div style="font-weight:700;color:var(--brown)">Carlos Méndez</div>
-          <div style="background:#FFF3E0;color:var(--orange);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">⏳ Nuevo pedido</div>
-        </div>
-        <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">🛵 Delivery · Hace 5 minutos</div>
-        <div style="background:var(--warm);border-radius:8px;padding:10px;margin-bottom:10px;font-size:13px">
-          • Tacos de carnitas x2 — $18.00<br>
-          • Agua de Jamaica x1 — $3.00<br>
-          <strong style="color:var(--orange)">Total: $21.00</strong>
-        </div>
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">💰 Pagará por: <strong>Venmo @carlos-mendez</strong></div>
-        <div style="display:flex;gap:8px">
-          <button onclick="acceptOrder('order-card-1')" style="flex:1;background:#4CAF50;color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✅ Aceptar</button>
-          <button onclick="rejectOrder('order-card-1')" style="flex:1;background:#FF5252;color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">❌ Rechazar</button>
-        </div>
-      </div>
-
-      <!-- Pedido 2 — Aceptado, esperando pago -->
-      <div id="order-card-2" style="background:white;border:1.5px solid #4CAF50;border-radius:12px;padding:14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div style="font-weight:700;color:var(--brown)">Ana López</div>
-          <div style="background:#F0FFF4;color:#2E7D52;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">✅ Aceptado</div>
-        </div>
-        <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">🏠 Recogida · Hace 15 minutos</div>
-        <div style="background:var(--warm);border-radius:8px;padding:10px;margin-bottom:10px;font-size:13px">
-          • Pozole rojo x1 — $14.00<br>
-          <strong style="color:var(--orange)">Total: $14.00</strong>
-        </div>
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">💰 Pagará por: <strong>PayPal ana.lopez@gmail.com</strong></div>
-        <div style="background:#FFF8F0;border:1px solid #F4C9A8;border-radius:8px;padding:8px;margin-bottom:10px;font-size:12px;color:var(--brown-mid)">
-          ⏳ Esperando que el cliente confirme el pago...
-        </div>
-        <button onclick="confirmPayment(this)" style="width:100%;background:var(--orange);color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">💳 Ya recibí el pago · Confirmar</button>
-      </div>
-    </div>
-
-    <!-- ══ SECCIÓN 2: EN PREPARACIÓN ══ -->
-    <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:20px">
-      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">
-        👨‍🍳 En Preparación
-      </div>
-      <div id="cooking-orders" style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">
-        🕐 Los pedidos confirmados aparecerán aquí
-      </div>
-    </div>
-
-    <!-- ══ SECCIÓN 3: MI MENÚ ══ -->
-    <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:20px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown)">
-          🍽️ Mi Menú <span style="font-size:14px;font-weight:400;color:var(--text-muted)" id="dash-count-label">(0 platillos)</span>
-        </div>
-        <button onclick="openDishModal()" style="background:var(--orange);color:white;border:none;border-radius:10px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ Agregar</button>
-      </div>
-      <div id="dash-menu-list"></div>
-      <div id="dash-empty" style="text-align:center;padding:24px;display:none">
-        <div style="font-size:40px;margin-bottom:8px">🍽️</div>
-        <div style="color:var(--text-muted);font-size:14px;margin-bottom:16px">Tu menú está vacío</div>
-        <button onclick="openDishModal()" style="background:var(--orange);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ Agregar mi primer platillo</button>
-      </div>
-    </div>
-
-    <!-- ══ SECCIÓN 4: CONFIGURACIÓN ══ -->
-    <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:20px">
-      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">⚙️ Configuración</div>
-      <div style="font-size:14px;font-weight:600;color:var(--brown);margin-bottom:8px">Servicios que ofrezco:</div>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
-        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
-          <input type="checkbox" checked style="accent-color:var(--orange);width:16px;height:16px"> 🛵 Delivery
-        </label>
-        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
-          <input type="checkbox" checked style="accent-color:var(--orange);width:16px;height:16px"> 🏠 Recogida en domicilio
-        </label>
-        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
-          <input type="checkbox" style="accent-color:#9B59B6;width:16px;height:16px"> 🕯️ Cena privada en mi casa
-        </label>
-      </div>
-    </div>
-
-  </div>
 </div>
-
-
 
 <div id="page-cancelaciones" class="page">
   <div style="max-width:700px;margin:0 auto;padding:32px 20px 60px">
@@ -2661,7 +2562,7 @@ const menu = [
 let selectedCookId = localStorage.getItem('micasero_cook_id') || null;
 
 function setCookId(id) {
-  setCookId(id);
+  selectedCookId = id;
   try { localStorage.setItem('micasero_cook_id', id); } catch(e) {}
 }
 
@@ -4397,127 +4298,11 @@ document.addEventListener('DOMContentLoaded', function() {
   <button onclick="closeCocinaMenu()" style="width:100%;margin-top:14px;background:none;border:none;font-size:13px;color:var(--text-muted);cursor:pointer;padding:8px;-webkit-appearance:none">✕ Cerrar</button>
 </div>
 
-<!-- ── MODAL: Agregar / Editar platillo ── -->
-<div id="dish-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--cream);z-index:200;overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch">
-  <div style="max-width:500px;margin:0 auto">
-    <!-- Header -->
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--brown)" id="dish-modal-title">🍽️ Nuevo Platillo</div>
-      <button onclick="closeDishModal()" style="background:var(--warm);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:14px;cursor:pointer;-webkit-appearance:none">✕ Cerrar</button>
-    </div>
-    <input type="hidden" id="dish-edit-id">
-
-    <!-- Emoji -->
-    <div class="form-group">
-      <label class="form-label">Emoji</label>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🌮</span>
-        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍝</span>
-        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍲</span>
-        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥩</span>
-        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍛</span>
-        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥗</span>
-        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍰</span>
-        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🥤</span>
-        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍮</span>
-        <span style="font-size:26px;cursor:pointer" onclick="document.getElementById('dish-emoji').value=this.textContent">🍕</span>
-      </div>
-      <input class="form-input" id="dish-emoji" type="text" placeholder="🍽️" maxlength="2">
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Nombre del platillo *</label>
-      <input class="form-input" id="dish-name" type="text" placeholder="Ej. Tacos al Pastor">
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Descripción</label>
-      <input class="form-input" id="dish-desc" type="text" placeholder="Ingredientes principales...">
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-      <div>
-        <label class="form-label">Precio ($) *</label>
-        <input class="form-input" id="dish-price" type="number" placeholder="0.00" step="0.50" min="0">
-      </div>
-      <div>
-        <label class="form-label">Categoría</label>
-        <select class="form-input" id="dish-category">
-          <option>Plato principal</option>
-          <option>Entrada</option>
-          <option>Sopa</option>
-          <option>Postre</option>
-          <option>Bebida</option>
-          <option>Desayuno</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Disponibilidad</label>
-      <div style="display:flex;gap:10px">
-        <div class="role-btn selected" id="avail-yes" onclick="setDishAvail(true)">✅ Disponible</div>
-        <div class="role-btn" id="avail-no" onclick="setDishAvail(false)">❌ Agotado</div>
-      </div>
-    </div>
-
-    <button onclick="saveDish()" style="width:100%;background:#4CAF50;color:white;border:none;border-radius:12px;padding:16px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;-webkit-appearance:none;margin-top:8px">💾 Guardar Platillo</button>
-    <div style="height:100px"></div>
-  </div>
+<!-- dish form is inline in dashboard -->
+</div>
 </div>
 </div>
 
-    <div class="form-group">
-      <label class="form-label">Emoji del platillo</label>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px" id="emoji-picker">
-        <span>🍝</span><span>🌮</span><span>🍛</span><span>🍲</span><span>🍰</span>
-        <span>🥗</span><span>🍣</span><span>🥩</span><span>🫔</span><span>🥘</span>
-        <span>🍜</span><span>🥪</span><span>🍕</span><span>🥞</span><span>🍱</span>
-      </div>
-      <input class="form-input" id="dish-emoji" type="text" placeholder="Elige un emoji arriba o escribe uno" maxlength="2" style="margin-top:8px">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Nombre del platillo</label>
-      <input class="form-input" id="dish-name" type="text" placeholder="Ej. Tacos al Pastor">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Descripción</label>
-      <textarea class="form-input" id="dish-desc" placeholder="Ingredientes, preparación, alergenos..." style="min-height:80px;resize:vertical"></textarea>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="form-group">
-        <label class="form-label">Precio ($)</label>
-        <input class="form-input" id="dish-price" type="number" placeholder="0.00" step="0.50" min="0">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Categoría</label>
-        <select class="form-input" id="dish-category" style="cursor:pointer">
-          <option>Plato principal</option>
-          <option>Entrada</option>
-          <option>Sopa / Caldo</option>
-          <option>Postre</option>
-          <option>Bebida</option>
-          <option>Desayuno</option>
-          <option>Vegano</option>
-          <option>Sin Gluten</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Disponibilidad</label>
-      <div style="display:flex;gap:10px">
-        <div class="role-btn selected" id="avail-yes" onclick="setDishAvail(true)">✅ Disponible</div>
-        <div class="role-btn" id="avail-no" onclick="setDishAvail(false)">❌ Agotado</div>
-      </div>
-    </div>
-
-    <button class="btn-submit" onclick="saveDish()">💾 Guardar Platillo</button>
-  </div>
-
-
-
-
-</div>
 <!-- ══════════════════════════════════════════
      TÉRMINOS DE SERVICIO — Internacional
 ══════════════════════════════════════════ -->

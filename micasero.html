@@ -4179,6 +4179,7 @@ function confirmarMembresia() {
   alert('Guardando... pendingCookData: ' + (pendingCookData ? pendingCookData.name : 'NULL') + '\nDishes: ' + savedDishesData.length);
   if (pendingCookData) {
     sbPost('cooks', pendingCookData).then(function(data) {
+      alert('Respuesta Supabase cooks: ' + JSON.stringify(data).substring(0,100));
       const cook = data && data[0] ? data[0] : null;
       if (cook && cook.id) {
         setCookId(cook.id);
@@ -4193,7 +4194,13 @@ function confirmarMembresia() {
             category: 'Plato principal',
             is_available: true
           }).then(function(d) {
-            if (d && d[0]) showToast('🍽️ ' + d[0].name);
+            if (d && d[0]) {
+              alert('✅ Platillo guardado: ' + d[0].name);
+            } else {
+              alert('⚠️ Platillo NO guardado: ' + dish.name + '\nRespuesta: ' + JSON.stringify(d));
+            }
+          }).catch(function(e) {
+            alert('❌ Error platillo: ' + e.message);
           });
         });
         refreshCooks();

@@ -4138,7 +4138,7 @@ function processPayment() {
 let pendingCookData = null;
 
 function prepararRegistro() {
-  // Collect all data from registration form
+  // Collect cook data
   pendingCookData = {
     name: document.getElementById('creg-name') ? document.getElementById('creg-name').value : 'Cocinero',
     email: (document.getElementById('creg-email') && document.getElementById('creg-email').value) ? document.getElementById('creg-email').value : ('cook_' + Date.now() + '@micasero.app'),
@@ -4152,8 +4152,21 @@ function prepararRegistro() {
     lat: 47.6246,
     lng: -122.5219
   };
-  // Dishes already saved in savedDishesData from step 4
-  console.log('Ready to register:', pendingCookData.name, 'dishes:', savedDishesData.length);
+
+  // Collect dishes fresh from DOM right now
+  savedDishesData = [];
+  const menuList = document.getElementById('creg-menu-list');
+  if (menuList) {
+    Array.from(menuList.children).forEach(function(div) {
+      const inputs = div.querySelectorAll('input[type="text"]');
+      if (inputs.length >= 2 && inputs[0].value.trim()) {
+        const price = parseFloat(inputs[1].value.replace('$','').replace(',','.')) || 0;
+        savedDishesData.push({ name: inputs[0].value.trim(), price: price });
+      }
+    });
+  }
+  console.log('Cook:', pendingCookData.name, '| Dishes:', savedDishesData.length, savedDishesData);
+  alert('Cocinero: ' + pendingCookData.name + '\nPlatillos: ' + savedDishesData.length + '\n' + savedDishesData.map(d => d.name + ' $' + d.price).join('\n'));
 }
 
 function confirmarMembresia() {

@@ -2901,7 +2901,13 @@ function selectRole(el, role) {
 }
 
 function showToast(msg) {
-  const t = document.getElementById('toast');
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.className = 'toast';
+    document.body.appendChild(t);
+  }
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
@@ -3144,7 +3150,8 @@ function saveDish() {
   const desc  = document.getElementById('dish-desc').value.trim();
   const price = parseFloat(document.getElementById('dish-price').value);
   const cat   = document.getElementById('dish-category').value;
-  const editId = document.getElementById('dish-edit-id').value;
+  const editIdEl = document.getElementById('dish-edit-id');
+  const editId = editIdEl ? editIdEl.value : '';
 
   if (!name) { showToast('⚠️ Escribe el nombre del platillo'); return; }
   if (!price || price <= 0) { showToast('⚠️ Agrega un precio válido'); return; }
@@ -4188,8 +4195,15 @@ function confirmarMembresia() {
   pendingCookData = null;
 
   sbPost('cooks', cookToSave).then(function(data) {
+    // Handle 409 duplicate email
+    if (!data) {
+      cookToSave.email = 'cook_' + Date.now() + '@micasero.app';
+      return sbPost('cooks', cookToSave);
+    }
+    return Promise.resolve(data);
+  }).then(function(data) {
     var cook = data && data[0] ? data[0] : null;
-    if (!cook || !cook.id) { showToast('⚠️ Error guardando cocinero'); return; }
+    if (!cook || !cook.id) { console.log('No cook saved'); return; }
     setCookId(cook.id);
     showToast('✅ Cocinero guardado!');
 

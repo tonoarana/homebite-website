@@ -4172,8 +4172,7 @@ function prepararRegistro() {
       }
     });
   }
-  console.log('Cook:', pendingCookData.name, '| Dishes:', savedDishesData.length, savedDishesData);
-  alert('Cocinero: ' + pendingCookData.name + '\nPlatillos: ' + savedDishesData.length + '\n' + savedDishesData.map(d => d.name + ' $' + d.price).join('\n'));
+  console.log('Cook:', pendingCookData.name, '| Dishes:', savedDishesData.length);
 }
 
 function confirmarMembresia() {
@@ -4182,53 +4181,44 @@ function confirmarMembresia() {
   if (form) form.style.display = 'none';
   if (confirmed) confirmed.style.display = 'block';
 
-  // Now save cook from payment page (this page works with Supabase!)
-  alert('Guardando... pendingCookData: ' + (pendingCookData ? pendingCookData.name : 'NULL') + '\nDishes: ' + savedDishesData.length);
-  if (pendingCookData) {
-    sbPost('cooks', pendingCookData).then(function(data) {
-      alert('Respuesta Supabase cooks: ' + JSON.stringify(data).substring(0,100));
-      const cook = data && data[0] ? data[0] : null;
-      if (cook && cook.id) {
-        setCookId(cook.id);
-        showToast('✅ ¡Perfil guardado!');
-        // Wait 2 seconds then save dishes one by one
-        var cookId = cook.id;
-        var dishIndex = 0;
-        function saveNextDish() {
-          if (dishIndex >= savedDishesData.length) {
-            refreshCooks();
-            pendingCookData = null;
-            return;
-          }
-          var dish = savedDishesData[dishIndex];
-          dishIndex++;
-          sbPost('dishes', {
-            cook_id: cookId,
-            name: dish.name,
-            price: dish.price,
-            emoji: '🍽️',
-            category: 'Plato principal',
-            is_available: true
-          }).then(function(d) {
-            if (d && d[0]) {
-              showToast('🍽️ ' + d[0].name + ' guardado');
-            } else {
-              alert('⚠️ Error: ' + JSON.stringify(d).substring(0,50));
-            }
-            setTimeout(saveNextDish, 500);
-          }).catch(function(e) {
-            alert('❌ ' + e.message);
-            setTimeout(saveNextDish, 500);
-          });
-        }
-        setTimeout(saveNextDish, 1000);
-      }
-    }).catch(function(e) {
-      console.log('Error saving cook:', e);
-    });
-  }
-  showToast('🎉 ¡Plan activado! Platillos: ' + savedDishesData.length);
+  if (!pendingCookData) { showToast('🎉 ¡Plan activado!'); return; }
+
+  var dishesToSave = savedDishesData.slice();
+  var cookToSave = pendingCookData;
+  pendingCookData = null;
+
+  sbPost('cooks', cookToSave).then(function(data) {
+    var cook = data && data[0] ? data[0] : null;
+    if (!cook || !cook.id) { showToast('⚠️ Error guardando cocinero'); return; }
+    setCookId(cook.id);
+    showToast('✅ Cocinero guardado!');
+
+    var i = 0;
+    function next() {
+      if (i >= dishesToSave.length) { refreshCooks(); return; }
+      var d = dishesToSave[i++];
+      fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/dishes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SB_KEY,
+          'Authorization': 'Bearer ' + SB_KEY,
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({ cook_id: cook.id, name: d.name, price: d.price, emoji: '🍽️', category: 'Plato principal', is_available: true })
+      }).then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res && res[0]) showToast('🍽️ ' + res[0].name);
+        setTimeout(next, 800);
+      }).catch(function(e) {
+        showToast('❌ ' + e.message);
+        setTimeout(next, 800);
+      });
+    }
+    setTimeout(next, 500);
+  }).catch(function(e) { showToast('⚠️ Error: ' + e.message); });
 }
+
 
 function toggleQR() {
   const qr = document.getElementById('qr-code-display');

@@ -2618,16 +2618,17 @@ function renderFeaturedCooks() {
   const el = document.getElementById('featured-cooks');
   if (!el) return;
   // Use Supabase data if available, otherwise use demo data
-  const data = dbCooks.length > 0 ? dbCooks.map(c => ({
+  const colors = ['#FDE8D8', '#E8F0FE', '#E8F8EE', '#FEF9E8', '#F0E8FE'];
+  const data = dbCooks.length > 0 ? dbCooks.map((c, i) => ({
     id: c.id,
     name: c.kitchen_name || c.name,
     emoji: '👨‍🍳',
-    cuisine: c.cuisine_type,
+    cuisine: c.cuisine_type || 'Local',
     rating: 4.9,
     reviews: 0,
     delivery: c.services && c.services.includes('delivery'),
     tags: [c.cuisine_type || 'Local'],
-    color: '#FDE8D8',
+    color: colors[i % colors.length],
   })) : cooks;
 
   el.innerHTML = data.map(c => `

@@ -4282,23 +4282,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- MOBILE MORE MENU -->
 <div id="mobile-more-menu" style="display:none;position:fixed;bottom:70px;left:0;right:0;max-height:80vh;z-index:9998;background:white;border-top:2px solid var(--orange);box-shadow:0 -4px 24px rgba(0,0,0,0.15);border-radius:20px 20px 0 0;padding:16px 16px 8px;-webkit-transform:translateZ(0);transform:translateZ(0);overflow-y:auto;-webkit-overflow-scrolling:touch">
+  <!-- Mi Menu - solo cocineros -->
+  <div style="margin-bottom:16px">
+    <button onclick="showCookAccess();closeMobileMenu()" style="width:100%;background:linear-gradient(135deg,#2D1507,#5C2810);border:1px solid #F4A020;border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:12px;color:#F4A020;-webkit-appearance:none">
+      <span style="font-size:24px">🍳</span>
+      <div style="text-align:left">
+        <div>Mi Menu — Panel del Cocinero</div>
+        <div style="font-size:11px;color:rgba(255,200,80,0.7);margin-top:2px">Gestiona tu menú y pedidos</div>
+      </div>
+    </button>
+  </div>
+
+  <!-- Legal y otros -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-    <!-- Mi Menu - solo para cocineros registrados -->
-    <button onclick="showCookAccess();closeMobileMenu()" style="background:linear-gradient(135deg,#2D1507,#5C2810);border:1px solid #F4A020;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:#F4A020;-webkit-appearance:none">
-      <span style="font-size:22px">🍳</span><span>Mi Menu</span><span style="font-size:9px;color:rgba(255,200,80,0.7)">Solo cocineros</span>
-    </button>
-    <button onclick="showPage('pago-membresia');closeMobileMenu()" style="background:#FFF3EE;border:1px solid #F4C9A8;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);-webkit-appearance:none">
-      <span style="font-size:22px">💳</span>Membresía
-    </button>
-    <button onclick="showPage('login');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
-      <span style="font-size:22px">🔑</span>Iniciar Sesión
-    </button>
-    <button onclick="showPage('register');closeMobileMenu()" style="background:#4CAF50;border:none;border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:white;-webkit-appearance:none">
-      <span style="font-size:22px">✨</span>Regístrate
-    </button>
-    <button onclick="showPage('reviews');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
-      <span style="font-size:22px">⭐</span>Reseñas
-    </button>
     <button onclick="showPage('terminos');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
       <span style="font-size:22px">⚖️</span>Términos
     </button>
@@ -4313,6 +4309,9 @@ document.addEventListener('DOMContentLoaded', function() {
     </button>
     <button onclick="showPage('delivery');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
       <span style="font-size:22px">🛵</span>Delivery
+    </button>
+    <button onclick="showPage('contenido');closeMobileMenu()" style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none">
+      <span style="font-size:22px">📸</span>Contenido
     </button>
   </div>
 

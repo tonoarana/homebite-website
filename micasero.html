@@ -3238,9 +3238,6 @@ document.addEventListener('click', e => {
     const d = document.getElementById('desktop-lang-drop');
     if (d) d.style.display = 'none';
   }
-  if (!e.target.closest('#mobile-more-menu') && !e.target.closest('#mn-more')) {
-    closeMobileMenu();
-  }
   if (!e.target.closest('#cocina-submenu') && !e.target.closest('#mn-profile')) {
     closeCocinaMenu();
   }
@@ -3268,6 +3265,18 @@ function toggleMobileMenu() {
   const isHidden = m.style.display === 'none' || m.style.display === '';
   m.style.display = isHidden ? 'block' : 'none';
   m.style.webkitTransform = 'translateZ(0)';
+  if (isHidden) {
+    // Prevent immediate close from click event
+    setTimeout(function() {
+      document.addEventListener('click', closeMenuOnClickOutside, { once: true });
+    }, 100);
+  }
+}
+
+function closeMenuOnClickOutside(e) {
+  if (!e.target.closest('#mobile-more-menu') && !e.target.closest('#mn-more')) {
+    closeMobileMenu();
+  }
 }
 function closeMobileMenu() {
   document.getElementById('mobile-more-menu').style.display = 'none';

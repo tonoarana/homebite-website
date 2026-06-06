@@ -2633,8 +2633,8 @@ function renderFeaturedCooks() {
   el.innerHTML = data.map(c => `
     <div class="cook-card" onclick="selectCook('${c.id}');showPage('profile')">
       <div class="cook-card-img" style="background:${c.color||'#FDE8D8'}">
-        <div class="cook-avatar" style="background:${c.color||'#FDE8D8'}">${c.emoji}
-        ${c.delivery ? '<div class="cook-delivery-badge">🛵 Delivery' : ''}
+        <div class="cook-avatar">${c.emoji}</div>
+        ${c.delivery ? '<div class="cook-delivery-badge">🛵 Delivery</div>' : ''}
       </div>
       <div class="cook-card-body">
         <h3>${c.name}</h3>

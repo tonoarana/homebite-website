@@ -2551,8 +2551,8 @@
   <button onclick="showPage('cooks')" id="mn-cooks">
     <span class="mn-icon">👨‍🍳</span><span class="mn-label">Cocineros</span>
   </button>
-  <button onclick="toggleCart()" id="mn-cart">
-    <span class="mn-icon">🛒</span><span class="mn-label" data-i18n="nav-cart">Carrito</span>
+  <button onclick="showPage('reviews')" id="mn-reviews">
+    <span class="mn-icon">⭐</span><span class="mn-label">Reseñas</span>
   </button>
   <button onclick="toggleMobileMenu()" id="mn-more">
     <span class="mn-icon">☰</span><span class="mn-label" data-i18n="nav-more">Más</span>
@@ -2968,6 +2968,7 @@ function submitReview() {
   const dish = document.getElementById('review-dish').value || '';
   const text = document.getElementById('review-text').value;
   if (!text) { showToast('⚠️ Escribe un comentario'); return; }
+  if (!selectedCookId) { showToast('⚠️ No hay cocinero seleccionado'); return; }
 
   const review = {
     cook_id: selectedCookId,
@@ -2977,11 +2978,14 @@ function submitReview() {
     comment: text
   };
 
+  showToast('💾 Guardando reseña...');
   sbPost('reviews', review).then(function(data) {
     if (data && data[0]) {
-      showToast('⭐ ¡Reseña publicada! Gracias.');
+      showToast('⭐ ¡Reseña publicada!');
       closeReviewModal();
       loadCookReviews();
+    } else {
+      showToast('⚠️ Error: ' + JSON.stringify(data).substring(0,50));
     }
   }).catch(function(e) {
     showToast('⚠️ Error: ' + e.message);

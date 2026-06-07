@@ -1059,10 +1059,9 @@
       <div class="profile-sidebar">
         <div class="sidebar-card">
           <h4>📦 Opciones de Entrega</h4>
-          <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--text-muted)">
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--text-muted)" id="profile-services">
             <div>🛵 Delivery — hasta 5km</div>
             <div>🏠 Recogida en domicilio</div>
-            <div>🕯️ Cena privada en casa del cocinero</div>
           </div>
         </div>
         <div class="sidebar-card">
@@ -2325,14 +2324,17 @@
         <div style="font-size:14px;font-weight:600;color:var(--brown);margin-bottom:8px">Servicios que ofrezco:</div>
         <div style="display:flex;flex-direction:column;gap:10px">
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
-            <input type="checkbox" checked style="accent-color:var(--orange);width:16px;height:16px"> 🛵 Delivery
+            <input type="checkbox" id="svc-delivery" checked onchange="updateServices()" style="accent-color:var(--orange);width:16px;height:16px"> 🛵 Delivery
           </label>
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
-            <input type="checkbox" checked style="accent-color:var(--orange);width:16px;height:16px"> 🏠 Recogida en domicilio
+            <input type="checkbox" id="svc-pickup" checked onchange="updateServices()" style="accent-color:var(--orange);width:16px;height:16px"> 🏠 Recogida en domicilio
           </label>
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
-            <input type="checkbox" style="accent-color:#9B59B6;width:16px;height:16px"> 🕯️ Cena privada en mi casa
+            <input type="checkbox" id="svc-cena" onchange="updateServices()" style="accent-color:#9B59B6;width:16px;height:16px"> 🕯️ Cena privada en mi casa
           </label>
+        </div>
+        <div style="margin-top:12px;background:var(--warm);border-radius:10px;padding:10px;font-size:12px;color:var(--text-muted)">
+          💡 Solo aparecen al cliente las opciones que marques aquí
         </div>
       </div>
     </div>
@@ -3103,6 +3105,29 @@ function showCookTab(tab) {
       btn.style.boxShadow = t === tab ? '0 2px 8px rgba(0,0,0,0.08)' : 'none';
     }
   });
+}
+
+function updateServices() {
+  const delivery = document.getElementById('svc-delivery')?.checked;
+  const pickup = document.getElementById('svc-pickup')?.checked;
+  const cena = document.getElementById('svc-cena')?.checked;
+
+  // Update profile sidebar
+  const el = document.getElementById('profile-services');
+  if (el) {
+    let html = '';
+    if (delivery) html += '<div>🛵 Delivery — hasta 5km</div>';
+    if (pickup) html += '<div>🏠 Recogida en domicilio</div>';
+    if (cena) html += '<div>🕯️ Cena privada en casa del cocinero</div>';
+    if (!html) html = '<div style="color:var(--text-muted);font-style:italic">No hay servicios activos</div>';
+    el.innerHTML = html;
+  }
+
+  // Update delivery badge on profile
+  const badge = document.getElementById('profile-delivery-badge');
+  if (badge) badge.style.display = delivery ? 'inline-block' : 'none';
+
+  showToast('✅ Servicios actualizados');
 }
 
 function cookLogout() {

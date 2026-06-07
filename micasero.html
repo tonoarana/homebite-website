@@ -3072,14 +3072,16 @@ function makeCookIcon(emoji, delivery, cena) {
 }
 
 function initLeafletMap() {
-  if (leafletMap) { leafletMap.invalidateSize(); return; }
+  if (leafletMap) { leafletMap.invalidateSize(); placeAllMarkers(); return; }
   leafletMap = L.map('leaflet-map', { zoomControl:true }).setView([47.626, -122.527], 13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom:19
   }).addTo(leafletMap);
-  placeAllMarkers();
-  // Auto-locate on map open
+  // Load fresh cooks from Supabase then place markers
+  refreshCooks().then(function() {
+    placeAllMarkers();
+  });
   autoLocate();
 }
 
@@ -3102,7 +3104,23 @@ function placeUserDot(lat, lng) {
 function placeAllMarkers() {
   leafletMarkers.forEach(m => leafletMap.removeLayer(m));
   leafletMarkers = [];
-  cookLocations.forEach(c => {
+
+  // Use Supabase cooks if available, otherwise use demo cookLocations
+  const data = dbCooks.length > 0 ? dbCooks.map(c => ({
+    id: c.id,
+    name: c.kitchen_name || c.name,
+    emoji: '👨‍🍳',
+    lat: c.lat || 47.6246,
+    lng: c.lng || -122.5219,
+    cuisine: c.cuisine_type || 'Local',
+    rating: 4.9,
+    delivery: c.services ? c.services.includes('delivery') : true,
+    cena: c.services ? c.services.includes('cena') : false,
+    tags: [c.cuisine_type ? c.cuisine_type.toLowerCase() : 'local',
+           c.services && c.services.includes('delivery') ? 'delivery' : 'recogida']
+  })) : cookLocations;
+
+  data.forEach(c => {
     if (activeFilter !== 'todos' && !c.tags.includes(activeFilter)) return;
     const marker = L.marker([c.lat, c.lng], { icon: makeCookIcon(c.emoji, c.delivery, c.cena) });
     marker.bindPopup(`
@@ -3112,10 +3130,9 @@ function placeAllMarkers() {
         <div style="font-size:13px;color:#8A6A50;margin:2px 0">${c.cuisine} · ⭐${c.rating}</div>
         <div style="font-size:12px;margin-bottom:8px;display:flex;flex-direction:column;gap:2px">
           ${c.delivery ? '<span>🛵 Delivery disponible</span>' : ''}
-          ${c.tags.includes('recogida') ? '<span>🏠 Recogida en domicilio</span>' : ''}
           ${c.cena ? '<span>🕯️ Cena privada (reserva)</span>' : ''}
         </div>
-        <button onclick="showPage('profile')" style="background:#E8622A;color:white;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;width:100%">Ver menú y pedir →</button>
+        <button onclick="selectCook('${c.id}');showPage('profile')" style="background:#E8622A;color:white;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;width:100%">Ver menú y pedir →</button>
       </div>`, { maxWidth:220 });
     marker.addTo(leafletMap);
     leafletMarkers.push(marker);

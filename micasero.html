@@ -1070,11 +1070,8 @@
           </div>
         </div>
         <div class="sidebar-card">
-          <h4>⏰ Horarios</h4>
-          <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--text-muted)">
-            <div>Lun–Vie: 12:00 – 21:00</div>
-            <div>Sáb–Dom: 10:00 – 22:00</div>
-          </div>
+          <h4>📍 Dirección</h4>
+          <div id="profile-address" style="font-size:13px;color:var(--text-muted);line-height:1.6">Bainbridge Island, WA</div>
         </div>
         <div class="sidebar-card">
           <h4>🏷️ Especialidades</h4>
@@ -2719,21 +2716,24 @@ async function renderCooksList() {
 }
 
 function selectCook(cookId) {
-  setCookId(cookId);
-  // Find cook data
+  // Store browsing cook in sessionStorage (resets on browser close)
+  selectedCookId = cookId;
+  try { sessionStorage.setItem('micasero_viewing_cook', cookId); } catch(e) {}
+
   const cook = dbCooks.find(c => c.id === cookId) || dbCooks.find(c => String(c.id) === String(cookId));
   if (cook) {
-    // Update profile page with real data
     const name = document.getElementById('profile-name');
     const loc = document.getElementById('profile-location');
     const desc = document.getElementById('profile-desc');
     const avatar = document.getElementById('profile-avatar');
     const rating = document.getElementById('profile-rating');
     if (name) name.textContent = cook.kitchen_name || cook.name;
-    if (loc) loc.textContent = '📍 ' + (cook.city || 'Bainbridge Island');
+    if (loc) loc.textContent = '📍 ' + (cook.address || cook.city || 'Bainbridge Island');
     if (desc) desc.textContent = cook.description || 'Cocinero apasionado compartiendo sabores caseros.';
     if (avatar) avatar.textContent = '👨‍🍳';
     if (rating) rating.textContent = '4.9';
+    const addrEl = document.getElementById('profile-address');
+    if (addrEl) addrEl.textContent = cook.address || cook.city || 'Bainbridge Island, WA';
   }
 }
 
@@ -3198,12 +3198,12 @@ let dishAvailable = true;
 let cookAvailable = true;
 
 function showCookAccess() {
-  // Check if already logged in
-  if (selectedCookId) {
+  // Check if cook is logged in (separate from client browsing)
+  const loggedInCook = localStorage.getItem('micasero_logged_cook_id');
+  if (loggedInCook) {
     showPage('cocina');
     return;
   }
-  // Show cook login page
   showPage('cook-login');
 }
 
@@ -3229,6 +3229,7 @@ async function cookLogin() {
       const cook = data[0];
       setCookId(cook.id);
       // Store cook name for dashboard
+      localStorage.setItem('micasero_logged_cook_id', cook.id);
       localStorage.setItem('micasero_cook_name', cook.kitchen_name || cook.name);
       showToast('✅ Bienvenido ' + (cook.kitchen_name || cook.name));
       showPage('cocina');
@@ -3284,7 +3285,7 @@ function updateServices() {
 
 function cookLogout() {
   setCookId(null);
-  try { localStorage.removeItem('micasero_cook_id'); localStorage.removeItem('micasero_cook_name'); } catch(e) {}
+  try { localStorage.removeItem('micasero_logged_cook_id'); localStorage.removeItem('micasero_cook_name'); } catch(e) {}
   showPage('home');
   showToast('👋 Sesión cerrada');
 }
@@ -3294,6 +3295,9 @@ function renderDashboard() {
   const nameEl = document.getElementById('dash-cook-name');
   if (nameEl) {
     const cookName = localStorage.getItem('micasero_cook_name') || 'Panel del Cocinero';
+  // Use logged in cook id for dashboard
+  const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
+  if (loggedCookId) setCookId(loggedCookId);
     nameEl.textContent = cookName;
   }
 
@@ -3789,6 +3793,7 @@ function registrarCocineroYNavegar(btn) {
     name: document.getElementById('creg-name') ? document.getElementById('creg-name').value : 'Cocinero',
     email: (document.getElementById('creg-email') && document.getElementById('creg-email').value) ? document.getElementById('creg-email').value : ('cook_' + Date.now() + '@micasero.app'),
     phone: document.getElementById('creg-phone') ? document.getElementById('creg-phone').value : '',
+    address: document.getElementById('creg-address') ? document.getElementById('creg-address').value : '',
     kitchen_name: document.getElementById('creg-kitchen') ? document.getElementById('creg-kitchen').value : '',
     cuisine_type: document.getElementById('creg-cuisine') ? document.getElementById('creg-cuisine').value : 'Local',
     description: document.getElementById('creg-desc') ? document.getElementById('creg-desc').value : '',
@@ -4135,43 +4140,36 @@ function setFounderSpots(n) {
 }
 
 function updateFounderUI() {
-  const spots = getFounderSpots();
-  const pct = (spots / FOUNDER_TOTAL) * 100;
+  // Count actual founder cooks from Supabase
+  sbFetch('cooks', "plan=eq.fundador&is_online=eq.true").then(function(data) {
+    const taken = data ? data.length : 0;
+    const spots = Math.max(0, FOUNDER_TOTAL - taken);
 
-  // Update all counters
-  ['mem-spots-left','reg-spots-left'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = spots;
-  });
+    ['mem-spots-left','reg-spots-left'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = spots;
+    });
 
-  // Update progress bar
-  const bar = document.getElementById('mem-spots-bar');
-  if (bar) bar.style.width = pct + '%';
+    const bar = document.getElementById('mem-spots-bar');
+    if (bar) bar.style.width = ((spots / FOUNDER_TOTAL) * 100) + '%';
 
-  // If sold out — show waitlist
-  const btnSection = document.getElementById('founder-btn-section');
-  if (btnSection) {
-    if (spots <= 0) {
+    const btnSection = document.getElementById('founder-btn-section');
+    if (spots <= 0 && btnSection) {
       btnSection.innerHTML = `
         <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:16px;margin-bottom:12px">
           <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:10px">😔 Los 20 lugares están tomados.<br>Únete a la lista de espera:</div>
           <input id="waitlist-email" type="email" placeholder="tu@correo.com" style="width:100%;padding:10px 12px;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:13px;margin-bottom:8px;box-sizing:border-box">
           <button onclick="joinWaitlist()" style="width:100%;background:#F4A020;color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">📋 Unirme a la lista de espera</button>
         </div>`;
-      // Update badges
-      ['mem-founder-badge','reg-founder-badge'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) { el.textContent = '⛔ AGOTADO'; el.style.background = '#888'; }
-      });
-      ['mem-founder-counter','reg-founder-counter'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.innerHTML = '⛔ Los 20 lugares están tomados';
-      });
-      // Disable fundador card in registration
-      const card = document.getElementById('plan-fundador');
-      if (card) { card.style.opacity = '0.5'; card.onclick = null; card.style.cursor = 'not-allowed'; }
     }
-  }
+  }).catch(function() {
+    // Fallback to localStorage if Supabase fails
+    const spots = getFounderSpots();
+    ['mem-spots-left','reg-spots-left'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = spots;
+    });
+  });
 }
 
 function claimFounderSpot() {

@@ -2139,13 +2139,15 @@
      REVIEW MODAL
 ══════════════════════════════════════════ -->
 <div class="modal-overlay" id="review-modal">
-  <div class="modal">
+  <div class="modal" style="overflow-y:auto;max-height:85vh;-webkit-overflow-scrolling:touch;padding-bottom:20px">
     <button class="modal-close" onclick="closeReviewModal()">✕</button>
     <h3>⭐ Dejar una Reseña</h3>
     <div id="review-cook-name" style="font-size:15px;font-weight:700;color:var(--orange);margin-bottom:16px;background:var(--warm);padding:10px 14px;border-radius:10px"></div>
+
+    <!-- Calificación primero y visible -->
     <div class="form-group">
-      <label class="form-label">Calificación</label>
-      <div class="stars-input" id="stars-input">
+      <label class="form-label">Calificación ⭐</label>
+      <div class="stars-input" id="stars-input" style="font-size:36px;gap:12px">
         <span class="star-sel" onclick="setStar(1)">☆</span>
         <span class="star-sel" onclick="setStar(2)">☆</span>
         <span class="star-sel" onclick="setStar(3)">☆</span>
@@ -2153,21 +2155,28 @@
         <span class="star-sel" onclick="setStar(5)">☆</span>
       </div>
     </div>
+
     <div class="form-group">
       <label class="form-label">Tu nombre (opcional)</label>
       <input class="form-input" type="text" id="review-name" placeholder="Anónimo">
     </div>
+
     <div class="form-group">
-      <label class="form-label">¿Qué platillo pediste?</label>
-      <select class="form-input" id="review-dish">
+      <label class="form-label">Platillo que pediste</label>
+      <select class="form-input" id="review-dish" style="cursor:pointer">
         <option value="">— Selecciona un platillo —</option>
       </select>
     </div>
+
     <div class="form-group">
-      <label class="form-label">Tu comentario</label>
-      <textarea class="form-input" id="review-text" placeholder="¿Cómo fue tu experiencia?"></textarea>
+      <label class="form-label">Tu comentario *</label>
+      <textarea class="form-input" id="review-text" placeholder="¿Cómo fue tu experiencia?" style="min-height:80px"></textarea>
     </div>
-    <button class="btn-submit" onclick="submitReview()">Publicar Reseña ⭐</button>
+
+    <!-- Botón siempre visible -->
+    <button onclick="submitReview()" style="width:100%;background:var(--orange);color:white;border:none;border-radius:12px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none;margin-top:8px">
+      ⭐ Publicar Reseña
+    </button>
   </div>
 </div>
 
@@ -2892,6 +2901,7 @@ function showPage(name) {
   if (name === 'profile') { renderMenu(); loadCookReviews(); }
   if (name === 'membresia') { updateFounderUI(); }
   if (name === 'reviews') { refreshCooks().then(renderReviews); }
+  if (name === 'cooks') { renderCooksList(); }
   if (name === 'pago-membresia') {
     updatePaymentPage();
     // Always reset to show form, not confirmation

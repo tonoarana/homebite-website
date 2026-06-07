@@ -4452,6 +4452,21 @@ function prepararRegistro() {
   console.log('Cook:', pendingCookData.name, '| Dishes:', savedDishesData.length);
 }
 
+// Geocoding - convert address to coordinates using OpenStreetMap
+async function geocodeAddress(address) {
+  try {
+    const url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(address) + '&limit=1';
+    const r = await fetch(url, { headers: { 'Accept-Language': 'es' } });
+    const data = await r.json();
+    if (data && data[0]) {
+      return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+    }
+  } catch(e) {
+    console.log('Geocoding error:', e);
+  }
+  return null;
+}
+
 function confirmarMembresia() {
   const form = document.getElementById('pago-form');
   const confirmed = document.getElementById('pago-confirmado');
@@ -4464,7 +4479,23 @@ function confirmarMembresia() {
   var cookToSave = pendingCookData;
   pendingCookData = null;
 
-  sbPost('cooks', cookToSave).then(function(data) {
+  // Geocode address if available
+  var savePromise;
+  if (cookToSave.address) {
+    showToast('📍 Obteniendo coordenadas...');
+    savePromise = geocodeAddress(cookToSave.address).then(function(coords) {
+      if (coords) {
+        cookToSave.lat = coords.lat;
+        cookToSave.lng = coords.lng;
+        console.log('✅ Geocoded:', coords);
+      }
+      return sbPost('cooks', cookToSave);
+    });
+  } else {
+    savePromise = sbPost('cooks', cookToSave);
+  }
+
+  savePromise.then(function(data) {
     // Handle 409 duplicate email
     if (!data) {
       cookToSave.email = 'cook_' + Date.now() + '@micasero.app';

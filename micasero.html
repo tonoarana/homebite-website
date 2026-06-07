@@ -3106,12 +3106,12 @@ function placeAllMarkers() {
   leafletMarkers = [];
 
   // Use Supabase cooks if available, otherwise use demo cookLocations
-  const data = dbCooks.length > 0 ? dbCooks.map(c => ({
+  const data = dbCooks.length > 0 ? dbCooks.map((c, i) => ({
     id: c.id,
     name: c.kitchen_name || c.name,
     emoji: '👨‍🍳',
-    lat: c.lat || 47.6246,
-    lng: c.lng || -122.5219,
+    lat: (c.lat || 47.6246) + (i * 0.001),
+    lng: (c.lng || -122.5219) + (i * 0.001),
     cuisine: c.cuisine_type || 'Local',
     rating: 4.9,
     delivery: c.services ? c.services.includes('delivery') : true,

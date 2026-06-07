@@ -2173,11 +2173,14 @@
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
       <div>
         <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--brown)">👨‍🍳 Mi Menu</div>
-        <div style="font-size:13px;color:var(--text-muted)">Panel del Cocinero</div>
+        <div style="font-size:13px;color:var(--text-muted)" id="dash-cook-name">Panel del Cocinero</div>
       </div>
-      <div onclick="toggleAvailable()" id="avail-toggle-card" style="background:#F0FFF4;border:2px solid #4CAF50;border-radius:12px;padding:10px 16px;text-align:center;cursor:pointer;min-width:90px">
-        <div style="font-size:20px" id="avail-icon">🟢</div>
-        <div style="font-size:11px;font-weight:700;color:#2E7D52" id="avail-label">En Línea</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div onclick="toggleAvailable()" id="avail-toggle-card" style="background:#F0FFF4;border:2px solid #4CAF50;border-radius:12px;padding:10px 16px;text-align:center;cursor:pointer;min-width:90px">
+          <div style="font-size:20px" id="avail-icon">🟢</div>
+          <div style="font-size:11px;font-weight:700;color:#2E7D52" id="avail-label">En Línea</div>
+        </div>
+        <button onclick="cookLogout()" style="background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:12px;cursor:pointer;-webkit-appearance:none;color:var(--text-muted)">🚪 Salir</button>
       </div>
     </div>
 
@@ -3041,9 +3044,51 @@ let dishAvailable = true;
 let cookAvailable = true;
 
 function showCookAccess() {
-  // In demo mode, go directly to cook dashboard
-  // In production, would check if user is logged in as cook
-  showPage('cocina');
+  // Check if already logged in
+  if (selectedCookId) {
+    showPage('cocina');
+    return;
+  }
+  // Show cook login page
+  showPage('cook-login');
+}
+
+async function cookLogin() {
+  const email = document.getElementById('cook-login-email').value.trim();
+  const pass = document.getElementById('cook-login-pass').value;
+  const btn = document.getElementById('cook-login-btn');
+  const err = document.getElementById('cook-login-error');
+
+  if (!email || !pass) {
+    err.textContent = '⚠️ Ingresa tu email y contraseña';
+    err.style.display = 'block';
+    return;
+  }
+
+  btn.textContent = 'Verificando...';
+  btn.disabled = true;
+  err.style.display = 'none';
+
+  try {
+    const data = await sbFetch('cooks', `email=eq.${encodeURIComponent(email)}&password_hash=eq.${encodeURIComponent(pass)}&select=id,name,kitchen_name`);
+    if (data && data.length > 0) {
+      const cook = data[0];
+      setCookId(cook.id);
+      // Store cook name for dashboard
+      localStorage.setItem('micasero_cook_name', cook.kitchen_name || cook.name);
+      showToast('✅ Bienvenido ' + (cook.kitchen_name || cook.name));
+      showPage('cocina');
+    } else {
+      err.textContent = '⚠️ Email o contraseña incorrectos';
+      err.style.display = 'block';
+    }
+  } catch(e) {
+    err.textContent = '⚠️ Error de conexión';
+    err.style.display = 'block';
+  }
+
+  btn.textContent = 'Entrar a mi Panel →';
+  btn.disabled = false;
 }
 
 function showCookTab(tab) {
@@ -3060,15 +3105,56 @@ function showCookTab(tab) {
   });
 }
 
+function cookLogout() {
+  setCookId(null);
+  try { localStorage.removeItem('micasero_cook_id'); localStorage.removeItem('micasero_cook_name'); } catch(e) {}
+  showPage('home');
+  showToast('👋 Sesión cerrada');
+}
+
 function renderDashboard() {
+  // Show cook name
+  const nameEl = document.getElementById('dash-cook-name');
+  if (nameEl) {
+    const cookName = localStorage.getItem('micasero_cook_name') || 'Panel del Cocinero';
+    nameEl.textContent = cookName;
+  }
+
+  // Load dishes from Supabase if cook is logged in
+  if (selectedCookId) {
+    sbFetch('dishes', `cook_id=eq.${selectedCookId}&order=created_at.desc`).then(function(dishes) {
+      if (dishes && dishes.length > 0) {
+        // Merge Supabase dishes into cookMenu
+        cookMenu = dishes.map(d => ({
+          id: d.id,
+          name: d.name,
+          desc: d.description || '',
+          price: parseFloat(d.price),
+          emoji: d.emoji || '🍽️',
+          category: d.category || 'Plato principal',
+          available: d.is_available !== false
+        }));
+      }
+      renderDishList();
+    }).catch(function() {
+      renderDishList();
+    });
+  } else {
+    renderDishList();
+  }
+}
+
+function renderDishList() {
   const list = document.getElementById('dash-menu-list');
   const empty = document.getElementById('dash-empty');
-  const dc = document.getElementById('dash-count'); if (dc) dc.textContent = cookMenu.length;
+  if (!list) return;
 
   if (cookMenu.length === 0) {
-    list.innerHTML = ''; empty.style.display = 'block'; return;
+    list.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
   }
-  empty.style.display = 'none';
+  if (empty) empty.style.display = 'none';
   list.innerHTML = cookMenu.map(d => `
     <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;display:flex;gap:14px;align-items:center;${!d.available?'opacity:0.6':''}">
       <div style="font-size:38px;flex-shrink:0">${d.emoji}</div>
@@ -4164,6 +4250,7 @@ function prepararRegistro() {
   pendingCookData = {
     name: document.getElementById('creg-name') ? document.getElementById('creg-name').value : 'Cocinero',
     email: (document.getElementById('creg-email') && document.getElementById('creg-email').value) ? document.getElementById('creg-email').value : ('cook_' + Date.now() + '@micasero.app'),
+    password_hash: document.getElementById('creg-pass') ? document.getElementById('creg-pass').value : '',
     phone: document.getElementById('creg-phone') ? document.getElementById('creg-phone').value : '',
     kitchen_name: document.getElementById('creg-kitchen') ? document.getElementById('creg-kitchen').value : '',
     cuisine_type: document.getElementById('creg-cuisine') ? document.getElementById('creg-cuisine').value : 'Local',
@@ -4350,6 +4437,36 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- dish form is inline in dashboard -->
 </div>
 </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     COOK LOGIN PAGE
+══════════════════════════════════════════ -->
+<div id="page-cook-login" class="page">
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div style="font-size:40px;margin-bottom:8px">🍳</div>
+        <div class="auth-logo-text">Micasero</div>
+        <div class="auth-subtitle">Panel del Cocinero</div>
+      </div>
+      <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:13px;cursor:pointer;margin-bottom:16px;padding:0">← Volver al inicio</button>
+      <h2 style="text-align:center;margin-bottom:20px">Iniciar Sesión</h2>
+      <div class="form-group">
+        <label class="form-label">Email registrado</label>
+        <input class="form-input" type="email" id="cook-login-email" placeholder="tu@correo.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" type="password" id="cook-login-pass" placeholder="••••••••">
+      </div>
+      <div id="cook-login-error" style="display:none;background:#FEE8E8;color:#C0392B;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:12px"></div>
+      <button id="cook-login-btn" class="btn-submit" onclick="cookLogin()">Entrar a mi Panel →</button>
+      <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--text-muted)">
+        ¿No tienes cuenta? <a onclick="showPage('register-cocinero')" style="color:#4CAF50;font-weight:600;cursor:pointer">Regístrate aquí</a>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════

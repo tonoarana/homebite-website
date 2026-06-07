@@ -1044,7 +1044,12 @@
         <h3 class="section-title" style="margin-bottom:16px">🍽️ Menú</h3>
         <div class="menu-grid" id="menu-items"></div>
 
-        <!-- Ir al Pago — aparece solo cuando hay items en el carrito -->
+        <!-- Reseñas del cocinero -->
+        <div style="margin-top:24px">
+          <h3 class="section-title" style="margin-bottom:16px">⭐ Reseñas</h3>
+          <div id="cook-reviews-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px"></div>
+          <button class="btn-order" onclick="openReviewModal()" style="background:var(--warm);color:var(--brown);border:1.5px solid var(--border)">✏️ Dejar mi Reseña</button>
+        </div>
         <div id="profile-cart-cta" style="display:none;margin-top:24px;background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:1.5px solid #F4C9A8;border-radius:16px;padding:18px 20px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
             <div>
@@ -2135,7 +2140,8 @@
 <div class="modal-overlay" id="review-modal">
   <div class="modal">
     <button class="modal-close" onclick="closeReviewModal()">✕</button>
-    <h3>✍️ Escribe tu Reseña</h3>
+    <h3>⭐ Dejar una Reseña</h3>
+    <div id="review-cook-name" style="font-size:14px;color:var(--text-muted);margin-bottom:16px"></div>
     <div class="form-group">
       <label class="form-label">Calificación</label>
       <div class="stars-input" id="stars-input">
@@ -2147,18 +2153,20 @@
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Tu nombre</label>
-      <input class="form-input" type="text" id="review-name" placeholder="¿Cómo te llamas?">
+      <label class="form-label">Tu nombre (opcional)</label>
+      <input class="form-input" type="text" id="review-name" placeholder="Anónimo">
     </div>
     <div class="form-group">
-      <label class="form-label">Platillo</label>
-      <input class="form-input" type="text" id="review-dish" placeholder="¿Qué pediste?">
+      <label class="form-label">¿Qué platillo pediste?</label>
+      <select class="form-input" id="review-dish">
+        <option value="">— Selecciona un platillo —</option>
+      </select>
     </div>
     <div class="form-group">
-      <label class="form-label">Tu reseña</label>
-      <textarea class="form-input" id="review-text" placeholder="Cuéntanos tu experiencia..."></textarea>
+      <label class="form-label">Tu comentario</label>
+      <textarea class="form-input" id="review-text" placeholder="¿Cómo fue tu experiencia?"></textarea>
     </div>
-    <button class="btn-submit" onclick="submitReview()">Publicar Reseña</button>
+    <button class="btn-submit" onclick="submitReview()">Publicar Reseña ⭐</button>
   </div>
 </div>
 
@@ -2850,7 +2858,7 @@ function showPage(name) {
   if (name === 'register-cocinero') { cookRegStep(1); }
   if (name === 'map') { setTimeout(initLeafletMap, 100); refreshCooks().then(renderMapList); }
   if (name === 'cocina') { renderDashboard(); showCookTab('pedidos'); }
-  if (name === 'profile') { renderMenu(); }
+  if (name === 'profile') { renderMenu(); loadCookReviews(); }
   if (name === 'membresia') { updateFounderUI(); }
   if (name === 'cooks') { renderCooksList(); }
   if (name === 'pago-membresia') {
@@ -2871,29 +2879,92 @@ function showPage(name) {
 let selectedStar = 0;
 
 function openReviewModal() {
+  // Set cook name in modal
+  const cook = selectedCookId ? dbCooks.find(c => c.id === selectedCookId) : null;
+  const nameEl = document.getElementById('review-cook-name');
+  if (nameEl) nameEl.textContent = cook ? '👨‍🍳 ' + (cook.kitchen_name || cook.name) : '';
+
+  // Load dishes into select
+  const dishSelect = document.getElementById('review-dish');
+  if (dishSelect) {
+    dishSelect.innerHTML = '<option value="">— Selecciona un platillo —</option>';
+    if (selectedCookId) {
+      sbFetch('dishes', `cook_id=eq.${selectedCookId}&is_available=eq.true`).then(function(dishes) {
+        if (dishes) dishes.forEach(function(d) {
+          dishSelect.innerHTML += `<option value="${d.name}">${d.emoji || '🍽️'} ${d.name}</option>`;
+        });
+      });
+    }
+  }
+
+  // Reset form
+  setStar(5);
+  const nameInput = document.getElementById('review-name');
+  const textInput = document.getElementById('review-text');
+  if (nameInput) nameInput.value = '';
+  if (textInput) textInput.value = '';
+
   document.getElementById('review-modal').classList.add('open');
 }
+
 function closeReviewModal() {
   document.getElementById('review-modal').classList.remove('open');
 }
+
 function setStar(n) {
   selectedStar = n;
   const stars = document.querySelectorAll('#stars-input .star-sel');
   stars.forEach((s, i) => s.textContent = i < n ? '★' : '☆');
 }
+
 function submitReview() {
   const name = document.getElementById('review-name').value || 'Anónimo';
-  const dish = document.getElementById('review-dish').value || 'Platillo sin especificar';
+  const dish = document.getElementById('review-dish').value || '';
   const text = document.getElementById('review-text').value;
-  if (!text) { showToast('⚠️ Escribe algo en tu reseña'); return; }
-  reviewsData.unshift({
-    name, avatar: '🧑', stars: selectedStar || 5,
-    dish: `${dish} · Micasero`,
-    text, date: 'Ahora mismo', bg: '#FDE8D8'
+  if (!text) { showToast('⚠️ Escribe un comentario'); return; }
+
+  const review = {
+    cook_id: selectedCookId,
+    customer_name: name,
+    stars: selectedStar || 5,
+    dish: dish,
+    comment: text
+  };
+
+  sbPost('reviews', review).then(function(data) {
+    if (data && data[0]) {
+      showToast('⭐ ¡Reseña publicada! Gracias.');
+      closeReviewModal();
+      loadCookReviews();
+    }
+  }).catch(function(e) {
+    showToast('⚠️ Error: ' + e.message);
   });
-  renderReviews();
-  closeReviewModal();
-  showToast('⭐ ¡Reseña publicada! Gracias.');
+}
+
+async function loadCookReviews() {
+  const el = document.getElementById('cook-reviews-list');
+  if (!el || !selectedCookId) return;
+
+  try {
+    const reviews = await sbFetch('reviews', `cook_id=eq.${selectedCookId}&order=created_at.desc&limit=5`);
+    if (!reviews || reviews.length === 0) {
+      el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;font-style:italic">Aún no hay reseñas. ¡Sé el primero!</div>';
+      return;
+    }
+    el.innerHTML = reviews.map(r => `
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-weight:600;font-size:14px;color:var(--brown)">${r.customer_name}</div>
+          <div style="color:#F4A020">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+        </div>
+        ${r.dish ? `<div style="font-size:12px;color:var(--orange);margin-bottom:4px">🍽️ ${r.dish}</div>` : ''}
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.5">${r.comment}</div>
+      </div>
+    `).join('');
+  } catch(e) {
+    console.log('Error loading reviews:', e);
+  }
 }
 
 // ════════════════════════════════════════

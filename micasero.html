@@ -1045,10 +1045,10 @@
         <div class="menu-grid" id="menu-items"></div>
 
         <!-- Reseñas del cocinero -->
-        <div style="margin-top:24px">
+        <div style="margin-top:24px;margin-bottom:100px">
           <h3 class="section-title" style="margin-bottom:16px">⭐ Reseñas</h3>
           <div id="cook-reviews-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px"></div>
-          <button class="btn-order" onclick="openReviewModal()" style="background:var(--warm);color:var(--brown);border:1.5px solid var(--border)">✏️ Dejar mi Reseña</button>
+          <button onclick="openReviewModal()" style="width:100%;background:var(--orange);color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none">✏️ Dejar mi Reseña a este Cocinero</button>
         </div>
         <div id="profile-cart-cta" style="display:none;margin-top:24px;background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:1.5px solid #F4C9A8;border-radius:16px;padding:18px 20px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
@@ -1135,27 +1135,28 @@
   <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;margin:16px 20px 0;padding:0;display:flex;align-items:center;gap:4px;-webkit-appearance:none">← Volver</button>
   <div class="reviews-container">
     <div class="reviews-header">
-      <div class="section-title">Reseñas de Platillos</div>
-      <div class="section-sub">Lo que dice nuestra comunidad sobre los cocineros de Micasero.</div>
+      <div class="section-title">⭐ Reseñas</div>
+      <div class="section-sub">Elige un cocinero para ver o dejar una reseña.</div>
     </div>
 
-    <div class="overall-rating">
-      <div>
-        <div class="rating-big">4.8</div>
-        <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px">de 5 estrellas · 1,240 reseñas</div>
-      </div>
-      <div class="rating-bars">
-        <div class="rating-bar-row"><span class="rating-bar-label">5</span><div class="rating-bar-bg"><div class="rating-bar-fill" style="width:82%"></div></div><span style="font-size:12px;opacity:0.7">82%</span></div>
-        <div class="rating-bar-row"><span class="rating-bar-label">4</span><div class="rating-bar-bg"><div class="rating-bar-fill" style="width:12%"></div></div><span style="font-size:12px;opacity:0.7">12%</span></div>
-        <div class="rating-bar-row"><span class="rating-bar-label">3</span><div class="rating-bar-bg"><div class="rating-bar-fill" style="width:4%"></div></div><span style="font-size:12px;opacity:0.7">4%</span></div>
-        <div class="rating-bar-row"><span class="rating-bar-label">2</span><div class="rating-bar-bg"><div class="rating-bar-fill" style="width:1%"></div></div><span style="font-size:12px;opacity:0.7">1%</span></div>
-        <div class="rating-bar-row"><span class="rating-bar-label">1</span><div class="rating-bar-bg"><div class="rating-bar-fill" style="width:1%"></div></div><span style="font-size:12px;opacity:0.7">1%</span></div>
-      </div>
+    <!-- Elegir cocinero -->
+    <div style="margin-bottom:24px">
+      <label class="form-label">¿A qué cocinero quieres reseñar?</label>
+      <div id="review-cook-picker" style="display:flex;flex-direction:column;gap:10px;margin-top:8px"></div>
     </div>
 
-    <button class="add-review-btn" onclick="openReviewModal()">✏️ Escribir una Reseña</button>
-
-    <div style="margin-top:24px" id="reviews-list"></div>
+    <!-- Reseñas del cocinero seleccionado -->
+    <div id="review-section" style="display:none">
+      <div style="background:var(--warm);border-radius:12px;padding:14px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
+        <span style="font-size:28px">👨‍🍳</span>
+        <div>
+          <div style="font-weight:700;color:var(--brown)" id="review-selected-cook-name"></div>
+          <div style="font-size:12px;color:var(--text-muted)">Reseñas de clientes</div>
+        </div>
+      </div>
+      <button onclick="openReviewModal()" style="width:100%;background:var(--orange);color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none;margin-bottom:16px">✏️ Dejar mi Reseña</button>
+      <div id="reviews-list" style="display:flex;flex-direction:column;gap:12px"></div>
+    </div>
   </div>
 </div>
 
@@ -2141,7 +2142,7 @@
   <div class="modal">
     <button class="modal-close" onclick="closeReviewModal()">✕</button>
     <h3>⭐ Dejar una Reseña</h3>
-    <div id="review-cook-name" style="font-size:14px;color:var(--text-muted);margin-bottom:16px"></div>
+    <div id="review-cook-name" style="font-size:15px;font-weight:700;color:var(--orange);margin-bottom:16px;background:var(--warm);padding:10px 14px;border-radius:10px"></div>
     <div class="form-group">
       <label class="form-label">Calificación</label>
       <div class="stars-input" id="stars-input">
@@ -2822,23 +2823,53 @@ function renderMapList() {
 }
 
 function renderReviews() {
-  const el = document.getElementById('reviews-list');
-  el.innerHTML = reviewsData.map(r => `
-    <div class="review-card">
-      <div class="review-header">
-        <div class="reviewer">
-          <div class="reviewer-avatar" style="background:${r.bg};font-size:20px">${r.avatar}</div>
-          <div>
-            <div class="reviewer-name">${r.name}</div>
-            <div class="reviewer-date">${r.date}</div>
-          </div>
-        </div>
-        <div class="stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+  const picker = document.getElementById('review-cook-picker');
+  if (!picker) return;
+
+  const data = dbCooks.length > 0 ? dbCooks : cooks;
+  picker.innerHTML = data.map(c => `
+    <button onclick="selectReviewCook('${c.id}','${(c.kitchen_name || c.name).replace(/'/g,"\\'")}') " style="background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;-webkit-appearance:none;width:100%">
+      <span style="font-size:24px">👨‍🍳</span>
+      <div>
+        <div style="font-weight:700;color:var(--brown)">${c.kitchen_name || c.name}</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${c.cuisine_type || 'Local'} · ${c.city || 'Bainbridge Island'}</div>
       </div>
-      <div class="review-dish">🍽️ ${r.dish}</div>
-      <div class="review-text">${r.text}</div>
-    </div>
+      <span style="margin-left:auto;color:var(--orange)">→</span>
+    </button>
   `).join('');
+}
+
+function selectReviewCook(cookId, cookName) {
+  setCookId(cookId);
+  const section = document.getElementById('review-section');
+  const nameEl = document.getElementById('review-selected-cook-name');
+  if (section) section.style.display = 'block';
+  if (nameEl) nameEl.textContent = cookName;
+
+  // Load reviews for this cook
+  const list = document.getElementById('reviews-list');
+  if (list) list.innerHTML = '<div style="color:var(--text-muted);font-size:13px">Cargando reseñas...</div>';
+
+  sbFetch('reviews', `cook_id=eq.${cookId}&order=created_at.desc`).then(function(reviews) {
+    if (!list) return;
+    if (!reviews || reviews.length === 0) {
+      list.innerHTML = '<div style="color:var(--text-muted);font-size:13px;font-style:italic;padding:16px 0">Aún no hay reseñas. ¡Sé el primero!</div>';
+      return;
+    }
+    list.innerHTML = reviews.map(r => `
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-weight:600;font-size:14px;color:var(--brown)">${r.customer_name}</div>
+          <div style="color:#F4A020">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+        </div>
+        ${r.dish ? `<div style="font-size:12px;color:var(--orange);margin-bottom:4px">🍽️ ${r.dish}</div>` : ''}
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.5">${r.comment}</div>
+      </div>
+    `).join('');
+  });
+
+  // Scroll to section
+  section.scrollIntoView({ behavior: 'smooth' });
 }
 
 // ════════════════════════════════════════
@@ -2860,7 +2891,7 @@ function showPage(name) {
   if (name === 'cocina') { renderDashboard(); showCookTab('pedidos'); }
   if (name === 'profile') { renderMenu(); loadCookReviews(); }
   if (name === 'membresia') { updateFounderUI(); }
-  if (name === 'cooks') { renderCooksList(); }
+  if (name === 'reviews') { refreshCooks().then(renderReviews); }
   if (name === 'pago-membresia') {
     updatePaymentPage();
     // Always reset to show form, not confirmation

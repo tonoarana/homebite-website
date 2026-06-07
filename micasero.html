@@ -2852,8 +2852,10 @@ function renderReviews() {
   `).join('');
 }
 
+let reviewCookId = null;
+
 function selectReviewCook(cookId, cookName) {
-  setCookId(cookId);
+  reviewCookId = cookId;
   const section = document.getElementById('review-section');
   const nameEl = document.getElementById('review-selected-cook-name');
   if (section) section.style.display = 'block';
@@ -2924,8 +2926,9 @@ function showPage(name) {
 let selectedStar = 0;
 
 function openReviewModal() {
-  // Set cook name in modal
-  const cook = selectedCookId ? dbCooks.find(c => c.id === selectedCookId) : null;
+  // Set cook name in modal - use reviewCookId if coming from reviews page, else selectedCookId
+  const activeCookId = reviewCookId || selectedCookId;
+  const cook = activeCookId ? dbCooks.find(c => c.id === activeCookId) : null;
   const nameEl = document.getElementById('review-cook-name');
   if (nameEl) nameEl.textContent = cook ? '👨‍🍳 ' + (cook.kitchen_name || cook.name) : '';
 
@@ -2933,8 +2936,8 @@ function openReviewModal() {
   const dishSelect = document.getElementById('review-dish');
   if (dishSelect) {
     dishSelect.innerHTML = '<option value="">— Selecciona un platillo —</option>';
-    if (selectedCookId) {
-      sbFetch('dishes', `cook_id=eq.${selectedCookId}&is_available=eq.true`).then(function(dishes) {
+    if (activeCookId) {
+      sbFetch('dishes', `cook_id=eq.${activeCookId}&is_available=eq.true`).then(function(dishes) {
         if (dishes) dishes.forEach(function(d) {
           dishSelect.innerHTML += `<option value="${d.name}">${d.emoji || '🍽️'} ${d.name}</option>`;
         });
@@ -2959,19 +2962,24 @@ function closeReviewModal() {
 
 function setStar(n) {
   selectedStar = n;
-  const stars = document.querySelectorAll('#stars-input .star-sel');
-  stars.forEach((s, i) => s.textContent = i < n ? '★' : '☆');
+  const stars = document.querySelectorAll('#stars-input span');
+  stars.forEach((s, i) => {
+    s.textContent = i < n ? '★' : '☆';
+    s.style.color = i < n ? '#F4A020' : 'var(--text-muted)';
+  });
 }
 
 function submitReview() {
   const name = document.getElementById('review-name').value || 'Anónimo';
   const dish = document.getElementById('review-dish').value || '';
   const text = document.getElementById('review-text').value;
+  const cookId = reviewCookId || selectedCookId;
+
   if (!text) { showToast('⚠️ Escribe un comentario'); return; }
-  if (!selectedCookId) { showToast('⚠️ No hay cocinero seleccionado'); return; }
+  if (!cookId) { showToast('⚠️ No hay cocinero seleccionado'); return; }
 
   const review = {
-    cook_id: selectedCookId,
+    cook_id: cookId,
     customer_name: name,
     stars: selectedStar || 5,
     dish: dish,
@@ -2982,6 +2990,7 @@ function submitReview() {
   sbPost('reviews', review).then(function(data) {
     if (data && data[0]) {
       showToast('⭐ ¡Reseña publicada!');
+      reviewCookId = null;
       closeReviewModal();
       loadCookReviews();
     } else {

@@ -2877,7 +2877,7 @@ function selectReviewCook(cookId, cookName) {
           <div style="font-weight:600;font-size:14px;color:var(--brown)">${r.customer_name}</div>
           <div style="color:#F4A020">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
         </div>
-        ${r.dish ? `<div style="font-size:12px;color:var(--orange);margin-bottom:4px">🍽️ ${r.dish}</div>` : ''}
+        ${r.dish_name ? `<div style="font-size:12px;color:var(--orange);margin-bottom:4px">🍽️ ${r.dish_name}</div>` : ''}
         <div style="font-size:13px;color:var(--text-muted);line-height:1.5">${r.comment}</div>
       </div>
     `).join('');
@@ -2982,7 +2982,7 @@ function submitReview() {
     cook_id: cookId,
     customer_name: name,
     stars: selectedStar || 5,
-    dish: dish,
+    dish_name: dish,
     comment: text
   };
 
@@ -3017,7 +3017,7 @@ async function loadCookReviews() {
           <div style="font-weight:600;font-size:14px;color:var(--brown)">${r.customer_name}</div>
           <div style="color:#F4A020">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
         </div>
-        ${r.dish ? `<div style="font-size:12px;color:var(--orange);margin-bottom:4px">🍽️ ${r.dish}</div>` : ''}
+        ${r.dish_name ? `<div style="font-size:12px;color:var(--orange);margin-bottom:4px">🍽️ ${r.dish_name}</div>` : ''}
         <div style="font-size:13px;color:var(--text-muted);line-height:1.5">${r.comment}</div>
       </div>
     `).join('');

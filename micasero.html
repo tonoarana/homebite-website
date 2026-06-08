@@ -746,12 +746,9 @@
   <div class="nav-links">
     <button onclick="showPage('home')" id="nav-home" class="active">Inicio</button>
     <button onclick="showPage('map')" id="nav-map">Mapa</button>
-    <button onclick="showPage('reviews')" id="nav-reviews">Reseñas</button>
     <button onclick="showPage('cooks')" id="nav-cooks">Cocineros</button>
-    <button onclick="showPage('membresia')" id="nav-membresia" style="color:var(--orange);font-weight:600">👨‍🍳 Para Cocineros</button>
-    <button onclick="showPage('dashboard')" id="nav-cocina" style="color:var(--green);font-weight:600">📋 Mi Menu</button>
-    <button onclick="showPage('login')" id="nav-login">Iniciar Sesión</button>
-    <button onclick="showPage('register')" id="nav-register" class="nav-cta">Regístrate</button>
+    <button onclick="showPage('reviews')" id="nav-reviews">⭐ Reseñas</button>
+    <button onclick="showCookAccess()" id="nav-cocina" style="color:var(--orange);font-weight:600">🍳 Mi Menu</button>
     <button class="cart-btn" onclick="toggleCart()">
       🛒 Carrito
       <span class="cart-badge" id="cart-badge" style="display:none">0</span>
@@ -2217,50 +2214,18 @@
 
     <!-- TAB: PEDIDOS -->
     <div id="cook-tab-pedidos">
-      <!-- Pedidos Nuevos -->
-      <div style="background:#FFF8F0;border:2px solid var(--orange);border-radius:16px;padding:16px;margin-bottom:16px">
-        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">
-          📬 Pedidos Nuevos
+      <div id="orders-loading" style="text-align:center;padding:30px;color:var(--text-muted)">Cargando pedidos...</div>
+      <div id="orders-container" style="display:none">
+        <div style="background:#FFF8F0;border:2px solid var(--orange);border-radius:16px;padding:16px;margin-bottom:16px">
+          <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">📬 Pedidos Nuevos</div>
+          <div id="new-orders-list"><div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;font-style:italic">No hay pedidos nuevos</div></div>
         </div>
-        <div id="order-card-1" style="background:white;border:1.5px solid #F4C9A8;border-radius:12px;padding:14px;margin-bottom:10px">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <div style="font-weight:700;color:var(--brown)">Carlos Méndez</div>
-            <div style="background:#FFF3E0;color:var(--orange);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">⏳ Nuevo</div>
-          </div>
-          <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">🛵 Delivery · Hace 5 min</div>
-          <div style="background:var(--warm);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px">
-            • Tacos de carnitas x2 — $18.00<br>
-            • Agua de Jamaica x1 — $3.00<br>
-            <strong style="color:var(--orange)">Total: $21.00</strong>
-          </div>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">💰 Pagará por: <strong>Venmo @carlos-mendez</strong></div>
-          <div style="display:flex;gap:8px">
-            <button onclick="acceptOrder('order-card-1')" style="flex:1;background:#4CAF50;color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✅ Aceptar</button>
-            <button onclick="rejectOrder('order-card-1')" style="flex:1;background:#FF5252;color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">❌ Rechazar</button>
-          </div>
-        </div>
-        <div id="order-card-2" style="background:white;border:1.5px solid #4CAF50;border-radius:12px;padding:14px">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <div style="font-weight:700;color:var(--brown)">Ana López</div>
-            <div style="background:#F0FFF4;color:#2E7D52;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">✅ Aceptado</div>
-          </div>
-          <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">🏠 Recogida · Hace 15 min</div>
-          <div style="background:var(--warm);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px">
-            • Pozole rojo x1 — $14.00<br>
-            <strong style="color:var(--orange)">Total: $14.00</strong>
-          </div>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">💰 Pagará por: <strong>PayPal ana.lopez@gmail.com</strong></div>
-          <div style="background:#FFF8F0;border:1px solid #F4C9A8;border-radius:8px;padding:8px;margin-bottom:10px;font-size:12px;color:var(--brown-mid)">
-            ⏳ Esperando que el cliente confirme el pago...
-          </div>
-          <button onclick="confirmPayment(this)" style="width:100%;background:var(--orange);color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">💳 Ya recibí el pago · Confirmar</button>
+        <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px">
+          <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:12px">👨‍🍳 En Preparación</div>
+          <div id="cooking-orders"><div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px;font-style:italic">Sin pedidos en preparación</div></div>
         </div>
       </div>
-
-      <!-- En Preparación -->
-      <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px">
-        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:12px">👨‍🍳 En Preparación</div>
-        <div id="cooking-orders" style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">
+    </div>
           🕐 Los pedidos confirmados aparecerán aquí
         </div>
       </div>
@@ -3291,38 +3256,86 @@ function cookLogout() {
 }
 
 function renderDashboard() {
+  const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
+  const cookName = localStorage.getItem('micasero_cook_name') || 'Panel del Cocinero';
+
   // Show cook name
   const nameEl = document.getElementById('dash-cook-name');
-  if (nameEl) {
-    const cookName = localStorage.getItem('micasero_cook_name') || 'Panel del Cocinero';
-  // Use logged in cook id for dashboard
-  const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
-  if (loggedCookId) setCookId(loggedCookId);
-    nameEl.textContent = cookName;
+  if (nameEl) nameEl.textContent = cookName;
+
+  if (!loggedCookId) {
+    showPage('cook-login');
+    return;
   }
 
-  // Load dishes from Supabase if cook is logged in
-  if (selectedCookId) {
-    sbFetch('dishes', `cook_id=eq.${selectedCookId}&order=created_at.desc`).then(function(dishes) {
-      if (dishes && dishes.length > 0) {
-        // Merge Supabase dishes into cookMenu
-        cookMenu = dishes.map(d => ({
-          id: d.id,
-          name: d.name,
-          desc: d.description || '',
-          price: parseFloat(d.price),
-          emoji: d.emoji || '🍽️',
-          category: d.category || 'Plato principal',
-          available: d.is_available !== false
-        }));
+  // Load real orders from Supabase for this cook only
+  const ordersLoading = document.getElementById('orders-loading');
+  const ordersContainer = document.getElementById('orders-container');
+  if (ordersLoading) ordersLoading.style.display = 'block';
+  if (ordersContainer) ordersContainer.style.display = 'none';
+
+  sbFetch('orders', `cook_id=eq.${loggedCookId}&order=created_at.desc`).then(function(orders) {
+    if (ordersLoading) ordersLoading.style.display = 'none';
+    if (ordersContainer) ordersContainer.style.display = 'block';
+
+    const newList = document.getElementById('new-orders-list');
+    const cookingList = document.getElementById('cooking-orders');
+
+    const newOrders = orders ? orders.filter(o => o.status === 'nuevo' || o.status === 'pending') : [];
+    const cookingOrders = orders ? orders.filter(o => o.status === 'preparando' || o.status === 'aceptado') : [];
+
+    if (newList) {
+      if (newOrders.length === 0) {
+        newList.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;font-style:italic">No hay pedidos nuevos 🎉</div>';
+      } else {
+        newList.innerHTML = newOrders.map(o => `
+          <div style="background:white;border:1.5px solid #F4C9A8;border-radius:12px;padding:14px;margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+              <div style="font-weight:700;color:var(--brown)">${o.customer_name}</div>
+              <div style="background:#FFF3E0;color:var(--orange);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">⏳ Nuevo</div>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">${o.delivery_type === 'delivery' ? '🛵 Delivery' : '🏠 Recogida'} · $${o.total}</div>
+            ${o.notes ? `<div style="background:var(--warm);border-radius:8px;padding:8px;font-size:13px;margin-bottom:8px">📝 ${o.notes}</div>` : ''}
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">💰 Pago por: <strong>${o.payment_method || 'Por confirmar'}</strong></div>
+            <div style="display:flex;gap:8px">
+              <button onclick="acceptOrder('${o.id}')" style="flex:1;background:#4CAF50;color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none">✅ Aceptar</button>
+              <button onclick="rejectOrder('${o.id}')" style="flex:1;background:#FF5252;color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none">❌ Rechazar</button>
+            </div>
+          </div>`).join('');
       }
-      renderDishList();
-    }).catch(function() {
-      renderDishList();
-    });
-  } else {
+    }
+
+    if (cookingList) {
+      cookingList.innerHTML = cookingOrders.length === 0
+        ? '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px;font-style:italic">Sin pedidos en preparación</div>'
+        : cookingOrders.map(o => `
+          <div style="background:#F0FFF4;border:1.5px solid #4CAF50;border-radius:12px;padding:14px;margin-bottom:10px">
+            <div style="font-weight:700;color:var(--brown);margin-bottom:4px">${o.customer_name}</div>
+            <div style="font-size:13px;color:var(--text-muted);">${o.delivery_type === 'delivery' ? '🛵 Delivery' : '🏠 Recogida'} · $${o.total}</div>
+          </div>`).join('');
+    }
+  }).catch(function() {
+    if (ordersLoading) ordersLoading.style.display = 'none';
+    if (ordersContainer) ordersContainer.style.display = 'block';
+  });
+
+  // Load dishes for this cook
+  sbFetch('dishes', `cook_id=eq.${loggedCookId}&order=created_at.desc`).then(function(dishes) {
+    if (dishes && dishes.length > 0) {
+      cookMenu = dishes.map(d => ({
+        id: d.id,
+        name: d.name,
+        desc: d.description || '',
+        price: parseFloat(d.price),
+        emoji: d.emoji || '🍽️',
+        category: d.category || 'Plato principal',
+        available: d.is_available !== false
+      }));
+    } else {
+      cookMenu = [];
+    }
     renderDishList();
-  }
+  }).catch(function() { renderDishList(); });
 }
 
 function renderDishList() {
@@ -3431,10 +3444,11 @@ function saveDish() {
     cookMenu.push(newDish);
     showToast('🎉 ' + name + ' agregado!');
 
-    // Save to Supabase if cook is logged in
-    if (selectedCookId) {
+    // Save to Supabase using logged cook id
+    const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
+    if (loggedCookId) {
       sbPost('dishes', {
-        cook_id: selectedCookId,
+        cook_id: loggedCookId,
         name: name,
         description: desc,
         price: price,
@@ -3443,7 +3457,7 @@ function saveDish() {
         is_available: dishAvailable !== false
       }).then(function(d) {
         if (d && d[0]) {
-          showToast('✅ ' + name + ' guardado en Supabase');
+          showToast('✅ ' + name + ' guardado!');
         }
       }).catch(function(e) {
         console.log('Error saving dish:', e);

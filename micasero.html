@@ -2226,10 +2226,6 @@
         </div>
       </div>
     </div>
-          🕐 Los pedidos confirmados aparecerán aquí
-        </div>
-      </div>
-    </div>
 
     <!-- TAB: MI MENÚ -->
     <div id="cook-tab-menu" style="display:none">
@@ -4425,28 +4421,27 @@ function processPayment() {
   const items = Object.values(cart);
   const total = items.reduce((s,v) => s+v.price*v.qty, 0);
   const order = {
-    cook_id: selectedCookId || 'a9332f16-c972-4fe1-ac29-dbb3b2715aef',
-    customer_name: 'Cliente',
+    cook_id: selectedCookId,
+    customer_name: document.getElementById('checkout-name')?.value || 'Cliente',
     delivery_type: currentDelivery,
     delivery_address: document.getElementById('del-address')?.value || '',
     notes: document.getElementById('del-notes')?.value || '',
     total: total,
     payment_method: currentPayMethod || 'venmo',
-    status: 'pending',
+    status: 'nuevo',
     city: 'Bainbridge Island'
   };
 
   sbPost('orders', order).then(data => {
     if (data && data[0]) {
-      console.log('✅ Pedido guardado:', data[0].id);
-      showToast('✅ Pedido guardado en Supabase');
+      showToast('✅ Pedido enviado al cocinero');
     }
   }).catch(e => console.log('Error guardando pedido:', e));
 
   coStep(5);
   cart = {}; updateCartUI();
   setTimeout(()=>{
-    showToast('👩‍🍳 Chef María recibió tu pago · Preparando tu pedido 🍽️');
+    showToast('⏳ Esperando confirmación del cocinero...');
   }, 2000);
 }
 

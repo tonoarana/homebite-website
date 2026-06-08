@@ -2201,13 +2201,13 @@
 
     <!-- TABS -->
     <div style="display:flex;gap:0;margin-bottom:20px;background:var(--warm);border-radius:12px;padding:4px">
-      <button onclick="showCookTab('pedidos')" id="tab-pedidos" style="flex:1;background:white;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;color:var(--orange);box-shadow:0 2px 8px rgba(0,0,0,0.08)">
-        📬 Pedidos <span style="background:var(--orange);color:white;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px">2</span>
+      <button onclick="showCookTab('pedidos')" id="tab-pedidos" style="flex:1;background:white;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;color:var(--orange);box-shadow:0 2px 8px rgba(0,0,0,0.08);-webkit-appearance:none">
+        📬 Pedidos <span id="orders-badge" style="display:none;background:var(--orange);color:white;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px">0</span>
       </button>
-      <button onclick="showCookTab('menu')" id="tab-menu" style="flex:1;background:none;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;color:var(--text-muted)">
+      <button onclick="showCookTab('menu')" id="tab-menu" style="flex:1;background:none;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;color:var(--text-muted);-webkit-appearance:none">
         🍽️ Mi Menú
       </button>
-      <button onclick="showCookTab('config')" id="tab-config" style="flex:1;background:none;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;color:var(--text-muted)">
+      <button onclick="showCookTab('config')" id="tab-config" style="flex:1;background:none;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;color:var(--text-muted);-webkit-appearance:none">
         ⚙️ Config
       </button>
     </div>
@@ -3085,8 +3085,11 @@ function placeAllMarkers() {
     address: c.address || c.city || 'Bainbridge Island',
     delivery: c.services ? c.services.includes('delivery') : true,
     cena: c.services ? c.services.includes('cena') : false,
-    tags: [c.cuisine_type ? c.cuisine_type.toLowerCase() : 'local',
-           c.services && c.services.includes('delivery') ? 'delivery' : 'recogida']
+    tags: [
+      (c.cuisine_type || 'local').toLowerCase(),
+      c.services && c.services.includes('delivery') ? 'delivery' : 'recogida',
+      'todos'
+    ]
   })) : cookLocations;
 
   data.forEach(c => {
@@ -3283,6 +3286,17 @@ function renderDashboard() {
 
     const newOrders = orders ? orders.filter(o => o.status === 'nuevo' || o.status === 'pending') : [];
     const cookingOrders = orders ? orders.filter(o => o.status === 'preparando' || o.status === 'aceptado') : [];
+
+    // Update badge
+    const badge = document.getElementById('orders-badge');
+    if (badge) {
+      if (newOrders.length > 0) {
+        badge.textContent = newOrders.length;
+        badge.style.display = 'inline';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
 
     if (newList) {
       if (newOrders.length === 0) {
@@ -4081,32 +4095,36 @@ function addRegDish() {
 // ════════════════════════════════════════
 // ORDER MANAGEMENT — Cook Dashboard
 // ════════════════════════════════════════
-function acceptOrder(cardId) {
-  const card = document.getElementById(cardId);
-  if (!card) return;
-  // Update status badge
-  const badge = card.querySelector('[style*="Nuevo pedido"]');
-  if (badge) { badge.textContent = '✅ Aceptado'; badge.style.background = '#F0FFF4'; badge.style.color = '#2E7D52'; }
-  card.style.border = '1.5px solid #4CAF50';
-  // Replace buttons with confirm payment
-  const btnDiv = card.querySelector('[style*="display:flex;gap:8px"]');
-  if (btnDiv) {
-    btnDiv.outerHTML = `
-      <div style="background:#FFF8F0;border:1px solid #F4C9A8;border-radius:8px;padding:8px;margin-bottom:10px;font-size:12px;color:var(--brown-mid)">
-        ⏳ Esperando que el cliente confirme el pago...
-      </div>
-      <button onclick="confirmPayment(this)" style="width:100%;background:var(--orange);color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">💳 Ya recibí el pago · Confirmar</button>`;
-  }
-  showToast('✅ Pedido aceptado — espera el pago del cliente');
+function acceptOrder(orderId) {
+  const card = document.getElementById('order-' + orderId);
+  // Update in Supabase
+  fetch(`https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/orders?id=eq.${orderId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY
+    },
+    body: JSON.stringify({ status: 'aceptado' })
+  }).then(function() {
+    showToast('✅ Pedido aceptado');
+    renderDashboard();
+  });
 }
 
-function rejectOrder(cardId) {
-  const card = document.getElementById(cardId);
-  if (!card) return;
-  card.style.opacity = '0';
-  card.style.transition = 'opacity 0.4s';
-  setTimeout(() => { card.style.display = 'none'; }, 400);
-  showToast('❌ Pedido rechazado');
+function rejectOrder(orderId) {
+  fetch(`https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/orders?id=eq.${orderId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY
+    },
+    body: JSON.stringify({ status: 'rechazado' })
+  }).then(function() {
+    showToast('❌ Pedido rechazado');
+    renderDashboard();
+  });
 }
 
 function confirmPayment(btn) {

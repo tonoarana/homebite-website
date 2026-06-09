@@ -2299,8 +2299,17 @@
 
     <!-- TAB: CONFIGURACIÓN -->
     <div id="cook-tab-config" style="display:none">
+      <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px">
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">📍 Mi Dirección</div>
+        <div class="form-group">
+          <label class="form-label">Dirección completa</label>
+          <input class="form-input" type="text" id="config-address" placeholder="123 Calle, Ciudad, Estado, ZIP">
+        </div>
+        <button onclick="saveConfigAddress()" style="width:100%;background:var(--orange);color:white;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none;margin-bottom:4px">📍 Guardar Dirección y Ubicación</button>
+        <div style="font-size:11px;color:var(--text-muted);text-align:center">Esto actualizará tu pin en el mapa</div>
+      </div>
       <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px">
-        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">⚙️ Configuración</div>
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">⚙️ Servicios</div>
         <div style="font-size:14px;font-weight:600;color:var(--brown);margin-bottom:8px">Servicios que ofrezco:</div>
         <div style="display:flex;flex-direction:column;gap:10px">
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
@@ -3221,6 +3230,54 @@ function showCookTab(tab) {
       btn.style.fontWeight = t === tab ? '700' : '600';
       btn.style.boxShadow = t === tab ? '0 2px 8px rgba(0,0,0,0.08)' : 'none';
     }
+  });
+
+  // Load address in config tab
+  if (tab === 'config') {
+    const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
+    if (loggedCookId) {
+      sbFetch('cooks', `id=eq.${loggedCookId}&select=address`).then(function(data) {
+        const addrInput = document.getElementById('config-address');
+        if (addrInput && data && data[0] && data[0].address) {
+          addrInput.value = data[0].address;
+        }
+      });
+    }
+  }
+}
+
+async function saveConfigAddress() {
+  const address = document.getElementById('config-address')?.value.trim();
+  if (!address) { showToast('⚠️ Escribe tu dirección'); return; }
+
+  const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
+  if (!loggedCookId) { showToast('⚠️ No hay sesión activa'); return; }
+
+  showToast('📍 Buscando coordenadas...');
+
+  const coords = await geocodeAddress(address);
+  const updateData = { address: address };
+  if (coords) {
+    updateData.lat = coords.lat;
+    updateData.lng = coords.lng;
+  }
+
+  fetch(`https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/cooks?id=eq.${loggedCookId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY
+    },
+    body: JSON.stringify(updateData)
+  }).then(function() {
+    if (coords) {
+      showToast('✅ Dirección y ubicación guardadas!');
+    } else {
+      showToast('✅ Dirección guardada — coordenadas no encontradas');
+    }
+  }).catch(function(e) {
+    showToast('⚠️ Error: ' + e.message);
   });
 }
 
@@ -4479,17 +4536,23 @@ function prepararRegistro() {
   console.log('Cook:', pendingCookData.name, '| Dishes:', savedDishesData.length);
 }
 
-// Geocoding - convert address to coordinates using OpenStreetMap
+// Google Maps Geocoding
+const GOOGLE_MAPS_KEY = 'AIzaSyD5TId1SoPW0eOtIQ4vSj6NT-Z-IL1cBUw';
+
 async function geocodeAddress(address) {
   try {
-    const url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(address) + '&limit=1';
-    const r = await fetch(url, { headers: { 'Accept-Language': 'es' } });
+    const url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' +
+      encodeURIComponent(address) + '&key=' + GOOGLE_MAPS_KEY;
+    const r = await fetch(url);
     const data = await r.json();
-    if (data && data[0]) {
-      return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+    if (data.status === 'OK' && data.results && data.results[0]) {
+      const loc = data.results[0].geometry.location;
+      console.log('✅ Geocoded:', address, '->', loc.lat, loc.lng);
+      return { lat: loc.lat, lng: loc.lng };
     }
+    console.log('❌ Geocoding failed:', data.status, address);
   } catch(e) {
-    console.log('Geocoding error:', e);
+    console.log('Geocoding error:', e.message);
   }
   return null;
 }

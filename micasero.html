@@ -3310,10 +3310,20 @@ function initConfigMap(lat, lng) {
 async function saveConfigLocation() {
   const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
   if (!loggedCookId) { showToast('⚠️ Inicia sesión primero'); return; }
-  if (!configMarker) { showToast('⚠️ Mueve el pin primero'); return; }
 
-  const pos = configMarker.getLatLng();
   const address = document.getElementById('config-address')?.value.trim() || '';
+  
+  // Get position from marker if available, otherwise use current map center
+  let lat = 47.6246, lng = -122.5219;
+  if (configMarker) {
+    const pos = configMarker.getLatLng();
+    lat = pos.lat;
+    lng = pos.lng;
+  } else if (configMap) {
+    const center = configMap.getCenter();
+    lat = center.lat;
+    lng = center.lng;
+  }
 
   showToast('💾 Guardando...');
 
@@ -3324,12 +3334,12 @@ async function saveConfigLocation() {
       'apikey': SB_KEY,
       'Authorization': 'Bearer ' + SB_KEY
     },
-    body: JSON.stringify({ lat: pos.lat, lng: pos.lng, address: address })
+    body: JSON.stringify({ lat: lat, lng: lng, address: address })
   }).then(function(r) {
     if (r.status === 204) {
       showToast('✅ Ubicación guardada!');
     } else {
-      showToast('⚠️ Error: ' + r.status);
+      r.text().then(t => showToast('⚠️ Error ' + r.status + ': ' + t.substring(0,50)));
     }
   }).catch(function(e) {
     showToast('⚠️ Error: ' + e.message);

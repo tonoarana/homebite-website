@@ -988,8 +988,7 @@
     <!-- Por Tipo de Comida -->
     <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px" id="filter-food">🌮 Por Tipo de Comida</div>
     <div class="map-filters" style="margin-bottom:14px">
-      <button class="filter-btn" onclick="filterMapLeaflet(this,'local')">🏡 Local</button>
-      <button class="filter-btn" onclick="filterMapLeaflet(this,'casera')">🥘 Casera</button>
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'local')">🏡 Local/Casera</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'mexicana')">🌮 Mexicana</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'italiana')">🍝 Italiana</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'asiatica')">🍜 Asiática</button>
@@ -1368,8 +1367,7 @@
         <div class="form-group">
           <label class="form-label">Tipo de comida *</label>
           <select class="form-input" id="creg-cuisine" style="cursor:pointer">
-            <option value="Local">🏡 Local</option>
-            <option value="Casera">🥘 Casera</option>
+            <option value="Local">🏡 Local/Casera</option>
             <option value="Mexicana">🌮 Mexicana</option>
             <option value="Italiana">🍝 Italiana</option>
             <option value="Asiatica">🍜 Asiática</option>
@@ -3125,8 +3123,10 @@ function placeAllMarkers() {
   // Use Supabase cooks if available, otherwise use demo cookLocations
   const data = dbCooks.length > 0 ? dbCooks.map(function(c) {
     const cuisine = (c.cuisine_type || 'local').toLowerCase();
-    const knownTypes = ['local', 'casera', 'mexicana', 'italiana', 'asiatica'];
-    const cuisineTag = knownTypes.find(function(t) { return cuisine.includes(t); }) || 'otras';
+    const knownTypes = ['mexicana', 'italiana', 'asiatica'];
+    let cuisineTag = 'otras';
+    if (cuisine.includes('local') || cuisine.includes('casera')) cuisineTag = 'local';
+    else cuisineTag = knownTypes.find(function(t) { return cuisine.includes(t); }) || 'otras';
     return {
       id: c.id,
       name: c.kitchen_name || c.name,

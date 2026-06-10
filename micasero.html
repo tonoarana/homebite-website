@@ -2300,14 +2300,25 @@
     <!-- TAB: CONFIGURACIÓN -->
     <div id="cook-tab-config" style="display:none">
       <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px">
-        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">📍 Mi Dirección</div>
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:6px">📍 Mi Ubicación en el Mapa</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px">Escribe tu dirección y arrastra el pin a tu ubicación exacta.</div>
+        
         <div class="form-group">
           <label class="form-label">Dirección completa</label>
           <input class="form-input" type="text" id="config-address" placeholder="123 Calle, Ciudad, Estado, ZIP">
         </div>
-        <button onclick="saveConfigAddress()" style="width:100%;background:var(--orange);color:white;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none;margin-bottom:4px">📍 Guardar Dirección y Ubicación</button>
-        <div style="font-size:11px;color:var(--text-muted);text-align:center">Esto actualizará tu pin en el mapa</div>
+
+        <!-- Mini mapa con pin arrastrable -->
+        <div id="config-map" style="width:100%;height:220px;border-radius:12px;margin-bottom:12px;border:1.5px solid var(--border);overflow:hidden"></div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;text-align:center">
+          📌 Arrastra el pin rojo a tu ubicación exacta
+        </div>
+
+        <button onclick="saveConfigLocation()" style="width:100%;background:var(--orange);color:white;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none">
+          📍 Guardar Mi Ubicación
+        </button>
       </div>
+
       <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px">
         <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">⚙️ Servicios</div>
         <div style="font-size:14px;font-weight:600;color:var(--brown);margin-bottom:8px">Servicios que ofrezco:</div>
@@ -3232,35 +3243,83 @@ function showCookTab(tab) {
     }
   });
 
-  // Load address in config tab
+  // Load address and init map in config tab
   if (tab === 'config') {
     const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
     if (loggedCookId) {
-      sbFetch('cooks', `id=eq.${loggedCookId}&select=address`).then(function(data) {
-        const addrInput = document.getElementById('config-address');
-        if (addrInput && data && data[0] && data[0].address) {
-          addrInput.value = data[0].address;
+      sbFetch('cooks', `id=eq.${loggedCookId}&select=address,lat,lng`).then(function(data) {
+        if (data && data[0]) {
+          const addrInput = document.getElementById('config-address');
+          if (addrInput && data[0].address) addrInput.value = data[0].address;
+          // Init map with cook's current coordinates
+          setTimeout(function() {
+            initConfigMap(data[0].lat, data[0].lng);
+          }, 100);
+        } else {
+          setTimeout(function() { initConfigMap(); }, 100);
         }
+      }).catch(function() {
+        setTimeout(function() { initConfigMap(); }, 100);
       });
+    } else {
+      setTimeout(function() { initConfigMap(); }, 100);
     }
   }
 }
 
-async function saveConfigAddress() {
-  const address = document.getElementById('config-address')?.value.trim();
-  if (!address) { showToast('⚠️ Escribe tu dirección'); return; }
+// Config map with draggable pin
+let configMap = null;
+let configMarker = null;
 
-  const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
-  if (!loggedCookId) { showToast('⚠️ No hay sesión activa'); return; }
+function initConfigMap(lat, lng) {
+  const mapEl = document.getElementById('config-map');
+  if (!mapEl) return;
 
-  showToast('📍 Buscando coordenadas...');
+  // Default to Bainbridge Island if no coords
+  const startLat = lat || 47.6246;
+  const startLng = lng || -122.5219;
 
-  const coords = await geocodeAddress(address);
-  const updateData = { address: address };
-  if (coords) {
-    updateData.lat = coords.lat;
-    updateData.lng = coords.lng;
+  // Initialize map
+  if (configMap) {
+    configMap.setView([startLat, startLng], 15);
+    configMarker.setLatLng([startLat, startLng]);
+    return;
   }
+
+  configMap = L.map('config-map').setView([startLat, startLng], 15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    maxZoom: 19
+  }).addTo(configMap);
+
+  // Draggable red marker
+  const redIcon = L.divIcon({
+    html: '<div style="font-size:32px;margin-top:-16px;margin-left:-8px">📍</div>',
+    className: '',
+    iconSize: [32, 32]
+  });
+
+  configMarker = L.marker([startLat, startLng], {
+    draggable: true,
+    icon: redIcon
+  }).addTo(configMap);
+
+  configMarker.bindPopup('📌 Arrastra para mover tu ubicación').openPopup();
+}
+
+async function saveConfigLocation() {
+  const address = document.getElementById('config-address')?.value.trim();
+  const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
+
+  if (!loggedCookId) { showToast('⚠️ No hay sesión activa'); return; }
+  if (!configMarker) { showToast('⚠️ Espera que cargue el mapa'); return; }
+
+  const pos = configMarker.getLatLng();
+  const updateData = {
+    lat: pos.lat,
+    lng: pos.lng
+  };
+  if (address) updateData.address = address;
 
   fetch(`https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/cooks?id=eq.${loggedCookId}`, {
     method: 'PATCH',
@@ -3271,11 +3330,7 @@ async function saveConfigAddress() {
     },
     body: JSON.stringify(updateData)
   }).then(function() {
-    if (coords) {
-      showToast('✅ Dirección y ubicación guardadas!');
-    } else {
-      showToast('✅ Dirección guardada — coordenadas no encontradas');
-    }
+    showToast('✅ Ubicación guardada en el mapa!');
   }).catch(function(e) {
     showToast('⚠️ Error: ' + e.message);
   });

@@ -3308,38 +3308,30 @@ function initConfigMap(lat, lng) {
 }
 
 async function saveConfigLocation() {
-  const address = document.getElementById('config-address')?.value.trim();
   const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
-
-  console.log('saveConfigLocation called');
-  console.log('loggedCookId:', loggedCookId);
-  console.log('configMarker:', configMarker);
-  console.log('address:', address);
-
-  if (!loggedCookId) { showToast('⚠️ No hay sesión activa'); return; }
-  if (!configMarker) { showToast('⚠️ Espera que cargue el mapa'); return; }
+  if (!loggedCookId) { showToast('⚠️ Inicia sesión primero'); return; }
+  if (!configMarker) { showToast('⚠️ Mueve el pin primero'); return; }
 
   const pos = configMarker.getLatLng();
-  console.log('Pin position:', pos.lat, pos.lng);
-
-  const updateData = { lat: pos.lat, lng: pos.lng };
-  if (address) updateData.address = address;
+  const address = document.getElementById('config-address')?.value.trim() || '';
 
   showToast('💾 Guardando...');
 
-  fetch(`https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/cooks?id=eq.${loggedCookId}`, {
+  fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/cooks?id=eq.' + loggedCookId, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
       'apikey': SB_KEY,
       'Authorization': 'Bearer ' + SB_KEY
     },
-    body: JSON.stringify(updateData)
+    body: JSON.stringify({ lat: pos.lat, lng: pos.lng, address: address })
   }).then(function(r) {
-    console.log('Supabase response status:', r.status);
-    showToast('✅ Ubicación guardada!');
+    if (r.status === 204) {
+      showToast('✅ Ubicación guardada!');
+    } else {
+      showToast('⚠️ Error: ' + r.status);
+    }
   }).catch(function(e) {
-    console.log('Error:', e.message);
     showToast('⚠️ Error: ' + e.message);
   });
 }

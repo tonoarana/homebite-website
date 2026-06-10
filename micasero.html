@@ -989,9 +989,11 @@
     <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px" id="filter-food">🌮 Por Tipo de Comida</div>
     <div class="map-filters" style="margin-bottom:14px">
       <button class="filter-btn" onclick="filterMapLeaflet(this,'local')">🏡 Local</button>
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'casera')">🥘 Casera</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'mexicana')">🌮 Mexicana</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'italiana')">🍝 Italiana</button>
       <button class="filter-btn" onclick="filterMapLeaflet(this,'asiatica')">🍜 Asiática</button>
+      <button class="filter-btn" onclick="filterMapLeaflet(this,'otras')">🍲 Otras</button>
     </div>
 
     <!-- Por Servicio -->
@@ -1052,13 +1054,8 @@
         <h3 class="section-title" style="margin-bottom:16px">🍽️ Menú</h3>
         <div class="menu-grid" id="menu-items"></div>
 
-        <!-- Reseñas del cocinero -->
-        <div style="margin-top:24px;margin-bottom:100px">
-          <h3 class="section-title" style="margin-bottom:16px">⭐ Reseñas</h3>
-          <div id="cook-reviews-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px"></div>
-          <button onclick="openReviewModal()" style="width:100%;background:var(--orange);color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none">✏️ Dejar mi Reseña a este Cocinero</button>
-        </div>
-        <div id="profile-cart-cta" style="display:none;margin-top:24px;background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:1.5px solid #F4C9A8;border-radius:16px;padding:18px 20px">
+        <!-- Carrito CTA — aparece cuando hay items -->
+        <div id="profile-cart-cta" style="display:none;margin-top:20px;background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:1.5px solid #F4C9A8;border-radius:16px;padding:18px 20px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
             <div>
               <div style="font-weight:700;font-size:15px;color:var(--brown)">🛒 Tu pedido está listo</div>
@@ -1066,6 +1063,12 @@
             </div>
             <button class="btn-order" style="padding:14px 28px;font-size:15px;white-space:nowrap" onclick="goToCheckout()">Ver tu Carrito 🛒</button>
           </div>
+        </div>
+
+        <!-- Reseñas del cocinero — solo muestra las existentes -->
+        <div style="margin-top:24px;margin-bottom:100px">
+          <h3 class="section-title" style="margin-bottom:16px">⭐ Reseñas</h3>
+          <div id="cook-reviews-list" style="display:flex;flex-direction:column;gap:12px"></div>
         </div>
       </div>
 
@@ -1365,13 +1368,14 @@
         <div class="form-group">
           <label class="form-label">Tipo de comida *</label>
           <select class="form-input" id="creg-cuisine" style="cursor:pointer">
-            <option>🏠 Local / Casera</option>
-            <option>🌮 Mexicana</option>
-            <option>🍝 Italiana</option>
-            <option>🍜 Asiática</option>
-            <option>🥩 Argentina / Parrilla</option>
-            <option>🇵🇾 Paraguaya</option>
-            <option>🫕 Otra</option>
+            <option value="Local">🏡 Local</option>
+            <option value="Casera">🥘 Casera</option>
+            <option value="Mexicana">🌮 Mexicana</option>
+            <option value="Italiana">🍝 Italiana</option>
+            <option value="Asiatica">🍜 Asiática</option>
+            <option value="Argentina">🥩 Argentina / Parrilla</option>
+            <option value="Paraguaya">🇵🇾 Paraguaya</option>
+            <option value="Otras">🍲 Otras</option>
           </select>
         </div>
         <div class="form-group">
@@ -3119,23 +3123,24 @@ function placeAllMarkers() {
   leafletMarkers = [];
 
   // Use Supabase cooks if available, otherwise use demo cookLocations
-  const data = dbCooks.length > 0 ? dbCooks.map((c, i) => ({
-    id: c.id,
-    name: c.kitchen_name || c.name,
-    emoji: '👨‍🍳',
-    lat: c.lat || 47.6246,
-    lng: c.lng || -122.5219,
-    cuisine: c.cuisine_type || 'Local',
-    rating: 4.9,
-    address: c.address || c.city || 'Bainbridge Island',
-    delivery: c.services ? c.services.includes('delivery') : true,
-    cena: c.services ? c.services.includes('cena') : false,
-    tags: [
-      (c.cuisine_type || 'local').toLowerCase(),
-      c.services && c.services.includes('delivery') ? 'delivery' : 'recogida',
-      'todos'
-    ]
-  })) : cookLocations;
+  const data = dbCooks.length > 0 ? dbCooks.map(function(c) {
+    const cuisine = (c.cuisine_type || 'local').toLowerCase();
+    const knownTypes = ['local', 'casera', 'mexicana', 'italiana', 'asiatica'];
+    const cuisineTag = knownTypes.find(function(t) { return cuisine.includes(t); }) || 'otras';
+    return {
+      id: c.id,
+      name: c.kitchen_name || c.name,
+      emoji: '👨‍🍳',
+      lat: c.lat || 47.6246,
+      lng: c.lng || -122.5219,
+      cuisine: c.cuisine_type || 'Local',
+      rating: 4.9,
+      address: c.address || c.city || 'Bainbridge Island',
+      delivery: c.services ? c.services.includes('delivery') : true,
+      cena: c.services ? c.services.includes('cena') : false,
+      tags: [cuisineTag, c.services && c.services.includes('delivery') ? 'delivery' : 'recogida', 'todos']
+    };
+  }) : cookLocations;
 
   data.forEach(c => {
     if (activeFilter !== 'todos' && !c.tags.includes(activeFilter)) return;

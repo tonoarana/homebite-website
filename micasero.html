@@ -2332,6 +2332,9 @@
         <button style="width:100%;background:var(--orange);color:white;border:none;border-radius:10px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none;position:relative;z-index:9999;touch-action:manipulation" onclick="saveConfigLocation()">
           📍 Guardar Mi Ubicación
         </button>
+        <div id="save-location-msg" style="display:none;margin-top:10px;background:#F0FFF4;border:1.5px solid #4CAF50;border-radius:10px;padding:12px;text-align:center;font-size:14px;font-weight:600;color:#2E7D52">
+          ✅ ¡Ubicación guardada correctamente!
+        </div>
       </div>
 
       <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px">
@@ -3371,7 +3374,11 @@ async function saveConfigLocation() {
   }).then(function(r) {
     if (r.status === 204) {
       showToast('✅ Ubicación guardada!');
-      // Refresh map markers
+      const msg = document.getElementById('save-location-msg');
+      if (msg) {
+        msg.style.display = 'block';
+        setTimeout(function() { msg.style.display = 'none'; }, 4000);
+      }
       if (leafletMap) refreshCooks().then(placeAllMarkers);
     } else {
       r.text().then(t => showToast('⚠️ Error ' + r.status + ': ' + t.substring(0,50)));

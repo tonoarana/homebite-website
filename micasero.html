@@ -2622,6 +2622,17 @@ async function sbPost(table, body) {
   return data;
 }
 
+async function sbPatch(table, query, body) {
+  const r = await fetch(`${SB_API}/${table}?${query}`, {
+    method: 'PATCH',
+    headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+    body: JSON.stringify(body)
+  });
+  if (r.status === 204 || r.ok) return true;
+  console.log('sbPatch error:', r.status);
+  return false;
+}
+
 async function refreshCooks() {
   try {
     const data = await sbFetch('cooks', 'is_online=eq.true&order=created_at.desc');
@@ -3348,8 +3359,6 @@ async function saveConfigLocation() {
   if (!loggedCookId) { showToast('⚠️ Inicia sesión primero'); return; }
 
   const address = document.getElementById('config-address')?.value.trim() || '';
-  
-  // Get position from marker if available, otherwise use current map center
   let lat = 47.6246, lng = -122.5219;
   if (configMarker) {
     const pos = configMarker.getLatLng();
@@ -3361,31 +3370,22 @@ async function saveConfigLocation() {
     lng = center.lng;
   }
 
-  showToast('💾 Guardando...');
+  const ok = await sbPatch('cooks', 'id=eq.' + loggedCookId, { lat, lng, address });
 
-  fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/cooks?id=eq.' + loggedCookId, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SB_KEY,
-      'Authorization': 'Bearer ' + SB_KEY
-    },
-    body: JSON.stringify({ lat: lat, lng: lng, address: address })
-  }).then(function(r) {
-    if (r.status === 204) {
-      showToast('✅ Ubicación guardada!');
-      const msg = document.getElementById('save-location-msg');
-      if (msg) {
-        msg.style.display = 'block';
-        setTimeout(function() { msg.style.display = 'none'; }, 4000);
-      }
-      if (leafletMap) refreshCooks().then(placeAllMarkers);
-    } else {
-      r.text().then(t => showToast('⚠️ Error ' + r.status + ': ' + t.substring(0,50)));
+  const msg = document.getElementById('save-location-msg');
+  if (ok) {
+    if (msg) { msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 4000); }
+    if (leafletMap) refreshCooks().then(placeAllMarkers);
+  } else {
+    if (msg) { 
+      msg.style.background = '#FEE8E8'; 
+      msg.style.borderColor = '#FF5252'; 
+      msg.style.color = '#C0392B';
+      msg.textContent = '⚠️ Error al guardar. Intenta de nuevo.';
+      msg.style.display = 'block'; 
+      setTimeout(() => msg.style.display = 'none', 4000); 
     }
-  }).catch(function(e) {
-    showToast('⚠️ Error: ' + e.message);
-  });
+  }
 }
 
 function updateServices() {
@@ -4256,34 +4256,14 @@ function addRegDish() {
 // ORDER MANAGEMENT — Cook Dashboard
 // ════════════════════════════════════════
 function acceptOrder(orderId) {
-  const card = document.getElementById('order-' + orderId);
-  // Update in Supabase
-  fetch(`https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/orders?id=eq.${orderId}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SB_KEY,
-      'Authorization': 'Bearer ' + SB_KEY
-    },
-    body: JSON.stringify({ status: 'aceptado' })
-  }).then(function() {
-    showToast('✅ Pedido aceptado');
-    renderDashboard();
+  sbPatch('orders', 'id=eq.' + orderId, { status: 'aceptado' }).then(function(ok) {
+    if (ok) { showToast('✅ Pedido aceptado'); renderDashboard(); }
   });
 }
 
 function rejectOrder(orderId) {
-  fetch(`https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/orders?id=eq.${orderId}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SB_KEY,
-      'Authorization': 'Bearer ' + SB_KEY
-    },
-    body: JSON.stringify({ status: 'rechazado' })
-  }).then(function() {
-    showToast('❌ Pedido rechazado');
-    renderDashboard();
+  sbPatch('orders', 'id=eq.' + orderId, { status: 'rechazado' }).then(function(ok) {
+    if (ok) { showToast('❌ Pedido rechazado'); renderDashboard(); }
   });
 }
 

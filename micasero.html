@@ -3098,8 +3098,8 @@ function placeAllMarkers() {
     id: c.id,
     name: c.kitchen_name || c.name,
     emoji: '👨‍🍳',
-    lat: (c.lat || 47.6246) + (i * 0.001),
-    lng: (c.lng || -122.5219) + (i * 0.001),
+    lat: c.lat || 47.6246,
+    lng: c.lng || -122.5219,
     cuisine: c.cuisine_type || 'Local',
     rating: 4.9,
     address: c.address || c.city || 'Bainbridge Island',
@@ -3354,6 +3354,8 @@ async function saveConfigLocation() {
   }).then(function(r) {
     if (r.status === 204) {
       showToast('✅ Ubicación guardada!');
+      // Refresh map markers
+      if (leafletMap) refreshCooks().then(placeAllMarkers);
     } else {
       r.text().then(t => showToast('⚠️ Error ' + r.status + ': ' + t.substring(0,50)));
     }

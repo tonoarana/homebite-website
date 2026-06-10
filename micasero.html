@@ -2314,7 +2314,7 @@
           📌 Arrastra el pin rojo a tu ubicación exacta
         </div>
 
-        <button onclick="saveConfigLocation()" style="width:100%;background:var(--orange);color:white;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none">
+        <button id="save-location-btn" style="width:100%;background:var(--orange);color:white;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none">
           📍 Guardar Mi Ubicación
         </button>
       </div>
@@ -3251,7 +3251,6 @@ function showCookTab(tab) {
         if (data && data[0]) {
           const addrInput = document.getElementById('config-address');
           if (addrInput && data[0].address) addrInput.value = data[0].address;
-          // Init map with cook's current coordinates
           setTimeout(function() {
             initConfigMap(data[0].lat, data[0].lng);
           }, 100);
@@ -3264,6 +3263,19 @@ function showCookTab(tab) {
     } else {
       setTimeout(function() { initConfigMap(); }, 100);
     }
+
+    // Attach save button listener
+    setTimeout(function() {
+      const btn = document.getElementById('save-location-btn');
+      if (btn) {
+        btn.onclick = null;
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          saveConfigLocation();
+        });
+      }
+    }, 200);
   }
 }
 

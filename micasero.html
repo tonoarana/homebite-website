@@ -3140,7 +3140,7 @@ function placeAllMarkers() {
   data.forEach(c => {
     if (activeFilter !== 'todos' && !c.tags.includes(activeFilter)) return;
     const marker = L.marker([c.lat, c.lng], { icon: makeCookIcon(c.emoji, c.delivery, c.cena) });
-    marker.bindTooltip(`<b>${c.name}</b><br>📍 ${c.address}<br>🍽️ ${c.cuisine}`, {
+    marker.bindTooltip(`<b>${c.name}</b><br>🍽️ ${c.cuisine || 'Local'}<br>📍 ${c.address || 'Bainbridge Island'}`, {
       permanent: false,
       direction: 'top',
       offset: [0, -30],

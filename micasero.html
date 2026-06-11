@@ -3141,7 +3141,13 @@ function placeAllMarkers() {
       address: c.address || c.city || 'Bainbridge Island',
       delivery: c.services ? c.services.includes('delivery') : true,
       cena: c.services ? c.services.includes('cena') : false,
-      tags: [cuisineTag, c.services && c.services.includes('delivery') ? 'delivery' : 'recogida', 'todos']
+      tags: (function() {
+        var t = ['todos', cuisineTag];
+        if (!c.services || c.services.includes('delivery')) t.push('delivery');
+        if (!c.services || c.services.includes('pickup')) t.push('recogida');
+        if (!c.services || c.services.includes('cena')) t.push('cena');
+        return t;
+      })()
     };
   }) : cookLocations;
 
@@ -3290,13 +3296,23 @@ function showCookTab(tab) {
   if (tab === 'config') {
     const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
     if (loggedCookId) {
-      sbFetch('cooks', `id=eq.${loggedCookId}&select=address,lat,lng`).then(function(data) {
+      sbFetch('cooks', `id=eq.${loggedCookId}&select=address,lat,lng,services`).then(function(data) {
         if (data && data[0]) {
           const addrInput = document.getElementById('config-address');
           if (addrInput && data[0].address) addrInput.value = data[0].address;
-          setTimeout(function() {
-            initConfigMap(data[0].lat, data[0].lng);
-          }, 100);
+
+          // Load saved services
+          if (data[0].services) {
+            const svcs = data[0].services;
+            const delEl = document.getElementById('svc-delivery');
+            const pickEl = document.getElementById('svc-pickup');
+            const cenaEl = document.getElementById('svc-cena');
+            if (delEl) delEl.checked = svcs.includes('delivery');
+            if (pickEl) pickEl.checked = svcs.includes('pickup');
+            if (cenaEl) cenaEl.checked = svcs.includes('cena');
+          }
+
+          setTimeout(function() { initConfigMap(data[0].lat, data[0].lng); }, 100);
         } else {
           setTimeout(function() { initConfigMap(); }, 100);
         }
@@ -3412,11 +3428,19 @@ function updateServices() {
     el.innerHTML = html;
   }
 
-  // Update delivery badge on profile
-  const badge = document.getElementById('profile-delivery-badge');
-  if (badge) badge.style.display = delivery ? 'inline-block' : 'none';
+  // Build services array and save to Supabase
+  const services = [];
+  if (delivery) services.push('delivery');
+  if (pickup) services.push('pickup');
+  if (cena) services.push('cena');
 
-  showToast('✅ Servicios actualizados');
+  const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
+  if (loggedCookId) {
+    sbPatch('cooks', 'id=eq.' + loggedCookId, { services: services.join(',') })
+      .then(function(ok) {
+        if (ok) showToast('✅ Servicios guardados');
+      });
+  }
 }
 
 function checkPendingPayment() {

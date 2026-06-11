@@ -3416,6 +3416,38 @@ function updateServices() {
   showToast('✅ Servicios actualizados');
 }
 
+function checkPendingPayment() {
+  try {
+    const pending = localStorage.getItem('micasero_pending_payment');
+    if (!pending) return;
+    const data = JSON.parse(pending);
+    // Only show if less than 2 hours old
+    if (Date.now() - data.ts > 7200000) {
+      localStorage.removeItem('micasero_pending_payment');
+      return;
+    }
+    const banner = document.getElementById('pending-payment-banner');
+    const cookName = document.getElementById('pending-cook-name');
+    const total = document.getElementById('pending-total');
+    if (banner) banner.style.display = 'block';
+    if (cookName) cookName.textContent = '👨‍🍳 ' + (data.cookName || 'Tu cocinero');
+    if (total) total.textContent = 'Total: ' + (data.total || '');
+    // Restore selectedCookId
+    if (data.cookId) selectedCookId = data.cookId;
+  } catch(e) {}
+}
+
+function confirmPendingPayment() {
+  localStorage.removeItem('micasero_pending_payment');
+  document.getElementById('pending-payment-banner').style.display = 'none';
+  processPayment();
+}
+
+function dismissPendingPayment() {
+  localStorage.removeItem('micasero_pending_payment');
+  document.getElementById('pending-payment-banner').style.display = 'none';
+}
+
 function cookLogout() {
   setCookId(null);
   try { localStorage.removeItem('micasero_logged_cook_id'); localStorage.removeItem('micasero_cook_name'); } catch(e) {}
@@ -4561,6 +4593,17 @@ function coStep(n) {
     const ct2 = document.getElementById('checkout-total');
     const st = document.getElementById('summary-total');
     if (st && ct2) st.textContent = ct2.textContent;
+
+    // Save pending payment state so user can return after paying
+    try {
+      localStorage.setItem('micasero_pending_payment', JSON.stringify({
+        cookId: selectedCookId,
+        cookName: document.getElementById('profile-name')?.textContent || '',
+        total: ct2?.textContent || '',
+        delivery: currentDelivery,
+        ts: Date.now()
+      }));
+    } catch(e) {}
   }
   window.scrollTo(0,0);
 }
@@ -4743,6 +4786,7 @@ document.addEventListener('DOMContentLoaded', function() {
   updateFounderUI();
   renderReviews();
   refreshCooks();
+  checkPendingPayment();
   try {
     const savedLang = localStorage.getItem('micasero_lang');
     if (savedLang && savedLang !== 'es') setLang(savedLang);
@@ -4754,6 +4798,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+
+<!-- PENDING PAYMENT BANNER -->
+<div id="pending-payment-banner" style="display:none;position:fixed;bottom:80px;left:12px;right:12px;z-index:9000;background:linear-gradient(135deg,#2D7A3A,#4CAF50);border-radius:16px;padding:16px 20px;box-shadow:0 4px 20px rgba(0,0,0,0.25);-webkit-transform:translateZ(0);transform:translateZ(0)">
+  <div style="color:white;font-size:13px;margin-bottom:4px;opacity:0.9">💸 Tienes un pago pendiente</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div>
+      <div style="color:white;font-weight:700;font-size:15px" id="pending-cook-name"></div>
+      <div style="color:rgba(255,255,255,0.8);font-size:13px" id="pending-total"></div>
+    </div>
+    <button onclick="confirmPendingPayment()" style="background:white;color:#2D7A3A;border:none;border-radius:10px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none;white-space:nowrap">
+      ✅ Ya Pagué
+    </button>
+  </div>
+  <button onclick="dismissPendingPayment()" style="position:absolute;top:8px;right:12px;background:none;border:none;color:rgba(255,255,255,0.7);font-size:18px;cursor:pointer;padding:0">×</button>
+</div>
 
 <!-- MOBILE MORE MENU -->
 <div id="mobile-more-menu" style="display:none;position:fixed;bottom:70px;left:0;right:0;max-height:80vh;z-index:9998;background:white;border-top:2px solid var(--orange);box-shadow:0 -4px 24px rgba(0,0,0,0.15);border-radius:20px 20px 0 0;padding:16px 16px 8px;-webkit-transform:translateZ(0);transform:translateZ(0);overflow-y:auto;-webkit-overflow-scrolling:touch">

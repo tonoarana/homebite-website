@@ -3674,9 +3674,22 @@ function saveDish() {
   if (!price || price <= 0) { showToast('⚠️ Agrega un precio válido'); return; }
 
   if (editId) {
-    const i = cookMenu.findIndex(x => x.id === editId);
-    if (i > -1) cookMenu[i] = { ...cookMenu[i], emoji, name, desc, price, category:cat, available:dishAvailable };
-    showToast('✅ Platillo actualizado');
+    // Update in Supabase
+    sbPatch('dishes', 'id=eq.' + editId, {
+      name: name,
+      description: desc,
+      price: price,
+      emoji: emoji,
+      category: cat,
+      is_available: dishAvailable !== false
+    }).then(function(ok) {
+      if (ok) {
+        const i = cookMenu.findIndex(x => x.id === editId);
+        if (i > -1) cookMenu[i] = { ...cookMenu[i], emoji, name, desc, price, category:cat, available:dishAvailable };
+        renderDishList();
+        showToast('✅ Platillo actualizado');
+      }
+    });
   } else {
     const newDish = { id:'m'+Date.now(), emoji, name, desc, price, category:cat, available:dishAvailable };
     cookMenu.push(newDish);
@@ -3703,8 +3716,13 @@ function saveDish() {
     }
   }
   closeDishModal();
-  renderDashboard();
-  showCookTab('menu');
+  // Clear edit ID
+  const editIdEl2 = document.getElementById('dish-edit-id');
+  if (editIdEl2) editIdEl2.value = '';
+  if (!editId) {
+    renderDashboard();
+    showCookTab('menu');
+  }
 }
 
 function editDish(id) {

@@ -1084,26 +1084,9 @@
           <div id="profile-address" style="font-size:13px;color:var(--text-muted);line-height:1.6">Bainbridge Island, WA</div>
         </div>
         <div class="sidebar-card">
-          <h4>🏷️ Especialidades</h4>
-          <div class="cook-tags">
-            <span class="tag">Mexicana</span>
-            <span class="tag">Vegana</span>
-            <span class="tag">Sin Gluten</span>
-            <span class="tag">Postres</span>
-          </div>
-        </div>
-        <div class="sidebar-card">
-          <h4>📊 Estadísticas</h4>
-          <div style="display:flex;flex-direction:column;gap:8px;font-size:14px">
-            <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Pedidos totales</span><strong>843</strong></div>
-            <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Tiempo promedio</span><strong>35 min</strong></div>
-            <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Tasa de repetición</span><strong>78%</strong></div>
-          </div>
-        </div>
-        <div class="sidebar-card">
-          <h4>💳 Pagas directo al cocinero</h4>
-          <div style="font-size:13px;color:var(--text-muted);line-height:1.8">
-            📲 Venmo · 💙 PayPal<br>💚 Zelle · 📱 QR
+          <h4>💳 Paga directo al cocinero</h4>
+          <div id="profile-payment-methods" style="font-size:13px;color:var(--text-muted);line-height:1.8">
+            📲 Venmo · 💙 PayPal · 💚 Zelle
           </div>
         </div>
       </div>
@@ -2343,8 +2326,33 @@
         </div>
       </div>
 
-      <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px">
-        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">⚙️ Servicios</div>
+      <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px">
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">💳 Métodos de Pago</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px">Pon tu usuario o número para cada método que aceptes:</div>
+        <div class="form-group">
+          <label class="form-label">📲 Venmo</label>
+          <input class="form-input" type="text" id="config-venmo" placeholder="@tu-usuario">
+        </div>
+        <div class="form-group">
+          <label class="form-label">💙 PayPal</label>
+          <input class="form-input" type="text" id="config-paypal" placeholder="tu@email.com o @usuario">
+        </div>
+        <div class="form-group">
+          <label class="form-label">💚 Zelle</label>
+          <input class="form-input" type="text" id="config-zelle" placeholder="Teléfono o email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">💵 Efectivo</label>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input type="checkbox" id="config-cash" style="accent-color:var(--orange);width:16px;height:16px">
+            <label for="config-cash" style="font-size:14px;cursor:pointer">Acepto efectivo</label>
+          </div>
+        </div>
+        <button onclick="savePaymentMethods()" style="width:100%;background:var(--orange);color:white;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none">💾 Guardar Métodos de Pago</button>
+        <div id="save-payment-msg" style="display:none;margin-top:10px;background:#F0FFF4;border:1.5px solid #4CAF50;border-radius:10px;padding:10px;text-align:center;font-size:14px;font-weight:600;color:#2E7D52">
+          ✅ ¡Métodos de pago guardados!
+        </div>
+      </div>
         <div style="font-size:14px;font-weight:600;color:var(--brown);margin-bottom:8px">Servicios que ofrezco:</div>
         <div style="display:flex;flex-direction:column;gap:10px">
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
@@ -2750,6 +2758,22 @@ function selectCook(cookId) {
     if (rating) rating.textContent = '4.9';
     const addrEl = document.getElementById('profile-address');
     if (addrEl) addrEl.textContent = cook.address || cook.city || 'Bainbridge Island, WA';
+
+    // Show payment methods
+    const pmEl = document.getElementById('profile-payment-methods');
+    if (pmEl && cook.payment_methods) {
+      try {
+        const pm = typeof cook.payment_methods === 'string' 
+          ? JSON.parse(cook.payment_methods) 
+          : cook.payment_methods;
+        let pmHtml = '';
+        if (pm.venmo) pmHtml += `<div>📲 Venmo: <strong>${pm.venmo}</strong></div>`;
+        if (pm.paypal) pmHtml += `<div>💙 PayPal: <strong>${pm.paypal}</strong></div>`;
+        if (pm.zelle) pmHtml += `<div>💚 Zelle: <strong>${pm.zelle}</strong></div>`;
+        if (pm.cash) pmHtml += `<div>💵 Acepta efectivo</div>`;
+        if (pmHtml) pmEl.innerHTML = pmHtml;
+      } catch(e) {}
+    }
   }
 }
 
@@ -3297,7 +3321,7 @@ function showCookTab(tab) {
   if (tab === 'config') {
     const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
     if (loggedCookId) {
-      sbFetch('cooks', `id=eq.${loggedCookId}&select=address,lat,lng,services`).then(function(data) {
+      sbFetch('cooks', `id=eq.${loggedCookId}&select=address,lat,lng,services,payment_methods`).then(function(data) {
         if (data && data[0]) {
           const addrInput = document.getElementById('config-address');
           if (addrInput && data[0].address) addrInput.value = data[0].address;
@@ -3311,6 +3335,19 @@ function showCookTab(tab) {
             if (delEl) delEl.checked = svcs.includes('delivery');
             if (pickEl) pickEl.checked = svcs.includes('pickup');
             if (cenaEl) cenaEl.checked = svcs.includes('cena');
+          }
+
+          // Load payment methods
+          if (data[0].payment_methods) {
+            try {
+              const pm = typeof data[0].payment_methods === 'string' 
+                ? JSON.parse(data[0].payment_methods) 
+                : data[0].payment_methods;
+              if (document.getElementById('config-venmo')) document.getElementById('config-venmo').value = pm.venmo || '';
+              if (document.getElementById('config-paypal')) document.getElementById('config-paypal').value = pm.paypal || '';
+              if (document.getElementById('config-zelle')) document.getElementById('config-zelle').value = pm.zelle || '';
+              if (document.getElementById('config-cash')) document.getElementById('config-cash').checked = pm.cash || false;
+            } catch(e) {}
           }
 
           setTimeout(function() { initConfigMap(data[0].lat, data[0].lng); }, 100);
@@ -3410,6 +3447,25 @@ async function saveConfigLocation() {
       msg.style.display = 'block'; 
       setTimeout(() => msg.style.display = 'none', 4000); 
     }
+  }
+}
+
+async function savePaymentMethods() {
+  const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
+  if (!loggedCookId) { showToast('⚠️ Inicia sesión primero'); return; }
+
+  const venmo = document.getElementById('config-venmo')?.value.trim() || '';
+  const paypal = document.getElementById('config-paypal')?.value.trim() || '';
+  const zelle = document.getElementById('config-zelle')?.value.trim() || '';
+  const cash = document.getElementById('config-cash')?.checked || false;
+
+  const payment_methods = JSON.stringify({ venmo, paypal, zelle, cash });
+
+  const ok = await sbPatch('cooks', 'id=eq.' + loggedCookId, { payment_methods });
+  const msg = document.getElementById('save-payment-msg');
+  if (ok && msg) {
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display = 'none', 3000);
   }
 }
 

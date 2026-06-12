@@ -3436,7 +3436,7 @@ function updateServices() {
 
   const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
   if (loggedCookId) {
-    sbPatch('cooks', 'id=eq.' + loggedCookId, { services: services.join(',') })
+    sbPatch('cooks', 'id=eq.' + loggedCookId, { services: services })
       .then(function(ok) {
         if (ok) showToast('✅ Servicios guardados');
       });

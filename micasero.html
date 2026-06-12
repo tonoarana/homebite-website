@@ -3707,15 +3707,56 @@ function saveDish() {
   showCookTab('menu');
 }
 
+function editDish(id) {
+  const d = cookMenu.find(x => x.id === id);
+  if (!d) return;
+  // Fill the inline form with dish data
+  const emoji = document.getElementById('dish-emoji');
+  const name = document.getElementById('dish-name');
+  const price = document.getElementById('dish-price');
+  const desc = document.getElementById('dish-desc');
+  const editId = document.getElementById('dish-edit-id');
+  if (emoji) emoji.value = d.emoji || '🍽️';
+  if (name) name.value = d.name || '';
+  if (price) price.value = d.price || '';
+  if (desc) desc.value = d.desc || '';
+  if (editId) editId.value = d.id;
+  // Show the form
+  const form = document.getElementById('add-dish-form');
+  if (form) form.style.display = 'block';
+  // Switch to menu tab
+  showCookTab('menu');
+  // Scroll to form
+  if (form) form.scrollIntoView({ behavior: 'smooth' });
+  showToast('✏️ Editando: ' + d.name);
+}
+
 function deleteDish(id) {
-  cookMenu = cookMenu.filter(x => x.id !== id);
-  renderDashboard();
-  showToast('🗑️ Platillo eliminado');
+  if (!confirm('¿Eliminar este platillo?')) return;
+  // Delete from Supabase
+  sbPatch('dishes', 'id=eq.' + id, { is_available: false }).then(function() {
+    fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/dishes?id=eq.' + id, {
+      method: 'DELETE',
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+    }).then(function() {
+      cookMenu = cookMenu.filter(x => x.id !== id);
+      renderDishList();
+      showToast('🗑️ Platillo eliminado');
+    });
+  });
 }
 
 function toggleDishAvail(id) {
   const d = cookMenu.find(x => x.id === id);
-  if (d) { d.available = !d.available; renderDashboard(); showToast(d.available ? '✅ Platillo activado' : '❌ Marcado como agotado'); }
+  if (!d) return;
+  d.available = !d.available;
+  // Save to Supabase
+  sbPatch('dishes', 'id=eq.' + id, { is_available: d.available }).then(function(ok) {
+    if (ok) {
+      renderDishList();
+      showToast(d.available ? '✅ Platillo disponible' : '❌ Marcado como agotado');
+    }
+  });
 }
 
 function toggleAvailable() {

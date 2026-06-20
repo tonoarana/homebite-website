@@ -1693,7 +1693,8 @@
       <!-- Resumen del pago -->
       <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:20px">
         <div style="font-weight:700;color:var(--brown);margin-bottom:8px">Resumen del pedido</div>
-        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--text-muted);margin-bottom:4px"><span>Pedido a</span><span>Chef María Rodríguez</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--text-muted);margin-bottom:4px"><span>Tu nombre</span><span id="summary-customer-name">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--text-muted);margin-bottom:4px"><span>Pedido a</span><span id="summary-cook-name">—</span></div>
         <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--text-muted);margin-bottom:4px"><span>Entrega</span><span id="summary-delivery">Delivery</span></div>
         <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"><span>Total</span><span style="color:var(--orange)" id="summary-total">$0.00</span></div>
       </div>
@@ -1774,9 +1775,14 @@
       <!-- Dirección del cocinero — aparece al elegir recogida o cena -->
       <div id="cook-address-note" style="display:none;background:#F0FFF4;border:1.5px solid #4CAF50;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13px">
         <div style="font-weight:700;color:var(--brown);margin-bottom:6px">📍 Dirección del cocinero:</div>
-        <div style="color:var(--brown-mid)">Chef María Rodríguez<br>123 Winslow Way, Bainbridge Island, WA 98110</div>
+        <div style="color:var(--brown-mid)" id="checkout-cook-address">Cargando...</div>
         <button onclick="showToast('🗺️ Abriendo Maps...')" style="margin-top:10px;background:#4CAF50;color:white;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;-webkit-appearance:none">Ver en Mapa 🗺️</button>
       </div>
+      <div class="form-group">
+        <label class="form-label">Tu nombre *</label>
+        <input class="form-input" id="checkout-name" type="text" placeholder="¿Cómo te llamas?">
+      </div>
+
       <div id="del-address-block" style="display:block">
         <div class="form-group">
           <label class="form-label">Tu dirección de entrega</label>
@@ -1789,7 +1795,7 @@
       </div>
       <div style="display:flex;gap:12px;margin-top:8px">
         <button style="flex:1;padding:14px;border-radius:12px;cursor:pointer;background:#6C757D;color:white;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;-webkit-appearance:none" onclick="coStep(1)">← Atrás</button>
-        <button style="flex:2;background:var(--orange);color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="coStep(3)">Continuar → Confirmar Pedido</button>
+        <button style="flex:2;background:var(--orange);color:white;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none" onclick="validateAndContinue()">Continuar → Confirmar Pedido</button>
       </div>
     </div>
 
@@ -4700,7 +4706,26 @@ function selectDelivery2(type) {
   const cenaNote = document.getElementById('cena-note');
   if (cenaNote) cenaNote.style.display = type==='cena' ? 'block' : 'none';
   const cookAddr = document.getElementById('cook-address-note');
-  if (cookAddr) cookAddr.style.display = (type==='pickup'||type==='cena') ? 'block' : 'none';
+  if (cookAddr) {
+    cookAddr.style.display = (type==='pickup'||type==='cena') ? 'block' : 'none';
+    if (type==='pickup'||type==='cena') {
+      const cook = dbCooks.find(c => c.id === selectedCookId);
+      const addrText = document.getElementById('checkout-cook-address');
+      if (addrText && cook) {
+        addrText.innerHTML = (cook.kitchen_name || cook.name) + '<br>' + (cook.address || cook.city || 'Bainbridge Island, WA');
+      }
+    }
+  }
+}
+
+function validateAndContinue() {
+  const name = document.getElementById('checkout-name')?.value.trim();
+  if (!name) {
+    showToast('⚠️ Por favor escribe tu nombre');
+    document.getElementById('checkout-name')?.focus();
+    return;
+  }
+  coStep(3);
 }
 
 function coStep(n) {
@@ -4728,6 +4753,15 @@ function coStep(n) {
     if (ct) ct.textContent = '$'+total.toFixed(2);
     if (cd) cd.textContent = currentDelivery==='delivery'?'Delivery a domicilio 🛵':
       currentDelivery==='pickup'?'Recogida en domicilio 🏠':'Cena privada 🕯️';
+  }
+  if (n===3) {
+    const custName = document.getElementById('checkout-name')?.value || 'Cliente';
+    const sumName = document.getElementById('summary-customer-name');
+    if (sumName) sumName.textContent = custName;
+
+    const cook = dbCooks.find(c => c.id === selectedCookId);
+    const sumCook = document.getElementById('summary-cook-name');
+    if (sumCook) sumCook.textContent = cook ? (cook.kitchen_name || cook.name) : 'Cocinero';
   }
   if (n===4) {
     const sd = document.getElementById('summary-delivery');

@@ -1636,8 +1636,8 @@
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
           <span style="font-size:36px">👩‍🍳</span>
           <div>
-            <div style="font-weight:700;font-size:16px;color:var(--brown)">Chef María Rodríguez</div>
-            <div style="font-size:13px;color:var(--text-muted)">⭐ 4.9 · 127 reseñas</div>
+            <div style="font-weight:700;font-size:16px;color:var(--brown)" id="pay-step-cook-name">Cocinero</div>
+            <div style="font-size:13px;color:var(--text-muted)" id="pay-step-cook-rating">⭐ 4.9</div>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:10px">
@@ -1718,7 +1718,7 @@
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
           <span style="font-size:28px">👩‍🍳</span>
           <div>
-            <div style="font-weight:700;color:var(--brown)">Chef María Rodríguez</div>
+            <div style="font-weight:700;color:var(--brown)" id="confirm-step-cook-name">Cocinero</div>
             <div style="font-size:12px;color:var(--green);font-weight:600">✅ Pago notificado</div>
           </div>
         </div>
@@ -3528,9 +3528,23 @@ function checkPendingPayment() {
 }
 
 function confirmPendingPayment() {
+  const pending = localStorage.getItem('micasero_pending_payment');
+  let cookName = 'tu cocinero';
+  try {
+    const data = JSON.parse(pending);
+    cookName = data.cookName || cookName;
+    if (data.cookId) selectedCookId = data.cookId;
+  } catch(e) {}
+
   localStorage.removeItem('micasero_pending_payment');
   document.getElementById('pending-payment-banner').style.display = 'none';
-  processPayment();
+
+  const cn5 = document.getElementById('confirm-step-cook-name');
+  if (cn5) cn5.textContent = cookName;
+
+  showPage('checkout');
+  coStep(5);
+  showToast('✅ ¡Gracias! Notificamos a ' + cookName);
 }
 
 function dismissPendingPayment() {
@@ -4669,6 +4683,7 @@ function updateProfileCTA() {
 }
 
 function goToCheckout() {
+  orderSavedForCheckout = false;
   toggleCart();
   showPage('checkout');
   renderCheckout();
@@ -4764,6 +4779,9 @@ function coStep(n) {
     if (sumCook) sumCook.textContent = cook ? (cook.kitchen_name || cook.name) : 'Cocinero';
   }
   if (n===4) {
+    const cook4 = dbCooks.find(c => c.id === selectedCookId);
+    const cn4 = document.getElementById('pay-step-cook-name');
+    if (cn4) cn4.textContent = cook4 ? (cook4.kitchen_name || cook4.name) : 'Cocinero';
     const sd = document.getElementById('summary-delivery');
     if (sd) sd.textContent = currentDelivery==='delivery'?'Delivery 🛵':
       currentDelivery==='cena'?'Cena privada 🕯️':'Recogida 🏠';
@@ -4771,11 +4789,14 @@ function coStep(n) {
     const st = document.getElementById('summary-total');
     if (st && ct2) st.textContent = ct2.textContent;
 
+    // Save the order NOW (before customer leaves to pay)
+    saveOrderToSupabase(cook4);
+
     // Save pending payment state so user can return after paying
     try {
       localStorage.setItem('micasero_pending_payment', JSON.stringify({
         cookId: selectedCookId,
-        cookName: document.getElementById('profile-name')?.textContent || '',
+        cookName: cook4 ? (cook4.kitchen_name || cook4.name) : '',
         total: ct2?.textContent || '',
         delivery: currentDelivery,
         ts: Date.now()
@@ -4785,13 +4806,17 @@ function coStep(n) {
   window.scrollTo(0,0);
 }
 
-function processPayment() {
-  // Save order to Supabase
+let orderSavedForCheckout = false;
+
+function saveOrderToSupabase(cook) {
+  if (orderSavedForCheckout) return; // avoid duplicate saves
   const items = Object.values(cart);
+  if (items.length === 0) return;
   const total = items.reduce((s,v) => s+v.price*v.qty, 0);
+  const custName = document.getElementById('checkout-name')?.value || 'Cliente';
   const order = {
     cook_id: selectedCookId,
-    customer_name: document.getElementById('checkout-name')?.value || 'Cliente',
+    customer_name: custName,
     delivery_type: currentDelivery,
     delivery_address: document.getElementById('del-address')?.value || '',
     notes: document.getElementById('del-notes')?.value || '',
@@ -4801,14 +4826,29 @@ function processPayment() {
     city: 'Bainbridge Island'
   };
 
+  orderSavedForCheckout = true;
   sbPost('orders', order).then(data => {
     if (data && data[0]) {
-      showToast('✅ Pedido enviado al cocinero');
+      console.log('✅ Pedido guardado:', data[0].id);
+    } else {
+      console.log('⚠️ Order save returned no data:', data);
+      orderSavedForCheckout = false;
     }
-  }).catch(e => console.log('Error guardando pedido:', e));
+  }).catch(e => {
+    console.log('Error guardando pedido:', e);
+    orderSavedForCheckout = false;
+  });
+}
+
+function processPayment() {
+  // Populate step 5 cook name
+  const cook5 = dbCooks.find(c => c.id === selectedCookId);
+  const cn5 = document.getElementById('confirm-step-cook-name');
+  if (cn5) cn5.textContent = cook5 ? (cook5.kitchen_name || cook5.name) : 'Cocinero';
 
   coStep(5);
   cart = {}; updateCartUI();
+  orderSavedForCheckout = false;
   setTimeout(()=>{
     showToast('⏳ Esperando confirmación del cocinero...');
   }, 2000);

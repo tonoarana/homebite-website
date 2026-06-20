@@ -1037,7 +1037,7 @@
         <span class="profile-badge">⭐ <span id="profile-rating">4.9</span></span>
         <span class="profile-badge green">✓ Verificado</span>
         <span class="profile-badge" id="profile-delivery-badge">🛵 Delivery</span>
-        <span class="profile-badge">🕐 Hoy disponible</span>
+        <span class="profile-badge" id="profile-founder-badge" style="display:none;background:#F4A020;color:white">🏅 Cocinero Fundador</span>
       </div>
     </div>
   </div>
@@ -2732,7 +2732,7 @@ async function renderCooksList() {
             ${c.services && c.services.includes('delivery') ? '<div class="cook-delivery-badge">🛵 Delivery</div>' : ''}
           </div>
           <div class="cook-card-body">
-            <h3>${c.kitchen_name || c.name}</h3>
+            <h3>${c.kitchen_name || c.name} ${c.plan === 'fundador' ? '🏅' : ''}</h3>
             <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">${c.cuisine_type || 'Local'}</div>
             <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">📍 ${c.city || ''}</div>
             <button class="btn-order" style="margin-top:8px" onclick="event.stopPropagation();selectCook('${c.id}');showPage('profile')">Ver Menú →</button>
@@ -2762,6 +2762,8 @@ function selectCook(cookId) {
     if (desc) desc.textContent = cook.description || 'Cocinero apasionado compartiendo sabores caseros.';
     if (avatar) avatar.textContent = '👨‍🍳';
     if (rating) rating.textContent = '4.9';
+    const founderBadge = document.getElementById('profile-founder-badge');
+    if (founderBadge) founderBadge.style.display = cook.plan === 'fundador' ? 'inline-flex' : 'none';
     const addrEl = document.getElementById('profile-address');
     if (addrEl) addrEl.textContent = cook.address || cook.city || 'Bainbridge Island, WA';
 
@@ -4952,7 +4954,7 @@ function confirmarMembresia() {
 
     var i = 0;
     function next() {
-      if (i >= dishesToSave.length) { refreshCooks(); return; }
+      if (i >= dishesToSave.length) { refreshCooks(); updateFounderUI(); return; }
       var d = dishesToSave[i++];
       fetch('https://cuhfukhlpuqhqepuruya.supabase.co/rest/v1/dishes', {
         method: 'POST',

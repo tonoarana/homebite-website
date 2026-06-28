@@ -1259,7 +1259,7 @@
         </div>
         <div style="display:flex;gap:10px">
           <button onclick="cookRegStep(1)" style="flex:1;background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">← Atrás</button>
-          <button onclick="cookRegStep(3)" class="btn-submit" style="flex:2">Continuar →</button>
+          <button onclick="validateStep2()" class="btn-submit" style="flex:2">Continuar →</button>
         </div>
       </div>
 
@@ -4297,6 +4297,14 @@ function previewQR(input) {
     showToast('📱 Código QR subido correctamente');
   };
   reader.readAsDataURL(file);
+}
+
+function validateStep2() {
+  const phone = document.getElementById('creg-phone')?.value.trim();
+  const address = document.getElementById('creg-address')?.value.trim();
+  if (!phone) { showToast('⚠️ Por favor ingresa tu teléfono'); return; }
+  if (!address) { showToast('⚠️ Por favor ingresa tu dirección completa'); return; }
+  cookRegStep(3);
 }
 
 function cookRegStep(step) {

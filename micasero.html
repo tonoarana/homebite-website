@@ -2515,11 +2515,10 @@ const menu = [
 ];
 
 // Selected cook
-let selectedCookId = localStorage.getItem('micasero_cook_id') || null;
+let selectedCookId = null; // ID del cocinero que el cliente está viendo
 
 function setCookId(id) {
   selectedCookId = id;
-  try { localStorage.setItem('micasero_cook_id', id); } catch(e) {}
 }
 
 // Demo reviews
@@ -2661,7 +2660,7 @@ async function renderCooksList() {
 }
 
 function selectCook(cookId) {
-  // Store browsing cook in sessionStorage (resets on browser close)
+  console.log('selectCook called with:', cookId);
   selectedCookId = cookId;
   try { sessionStorage.setItem('micasero_viewing_cook', cookId); } catch(e) {}
 
@@ -3479,17 +3478,13 @@ function cookLogout() {
 function renderDashboard() {
   const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
   const cookName = localStorage.getItem('micasero_cook_name') || 'Panel del Cocinero';
+  if (!loggedCookId) { showPage('cook-login'); return; }
 
   // Show cook name
   const nameEl = document.getElementById('dash-cook-name');
   if (nameEl) nameEl.textContent = cookName;
 
-  if (!loggedCookId) {
-    showPage('cook-login');
-    return;
-  }
-
-  // Load real orders from Supabase for this cook only
+  // Load orders
   const ordersLoading = document.getElementById('orders-loading');
   const ordersContainer = document.getElementById('orders-container');
   if (ordersLoading) ordersLoading.style.display = 'block';
@@ -3501,26 +3496,16 @@ function renderDashboard() {
 
     const newList = document.getElementById('new-orders-list');
     const cookingList = document.getElementById('cooking-orders');
-
     const newOrders = orders ? orders.filter(o => o.status === 'nuevo' || o.status === 'pending') : [];
     const cookingOrders = orders ? orders.filter(o => o.status === 'preparando' || o.status === 'aceptado') : [];
 
-    // Update badge
     const badge = document.getElementById('orders-badge');
-    if (badge) {
-      if (newOrders.length > 0) {
-        badge.textContent = newOrders.length;
-        badge.style.display = 'inline';
-      } else {
-        badge.style.display = 'none';
-      }
-    }
+    if (badge) { badge.textContent = newOrders.length; badge.style.display = newOrders.length > 0 ? 'inline' : 'none'; }
 
     if (newList) {
-      if (newOrders.length === 0) {
-        newList.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;font-style:italic">No hay pedidos nuevos 🎉</div>';
-      } else {
-        newList.innerHTML = newOrders.map(o => `
+      newList.innerHTML = newOrders.length === 0
+        ? '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;font-style:italic">No hay pedidos nuevos 🎉</div>'
+        : newOrders.map(o => `
           <div style="background:white;border:1.5px solid #F4C9A8;border-radius:12px;padding:14px;margin-bottom:10px">
             <div style="display:flex;justify-content:space-between;margin-bottom:8px">
               <div style="font-weight:700;color:var(--brown)">${o.customer_name}</div>
@@ -3534,7 +3519,6 @@ function renderDashboard() {
               <button onclick="rejectOrder('${o.id}')" style="flex:1;background:#FF5252;color:white;border:none;border-radius:8px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none">❌ Rechazar</button>
             </div>
           </div>`).join('');
-      }
     }
 
     if (cookingList) {
@@ -3543,7 +3527,7 @@ function renderDashboard() {
         : cookingOrders.map(o => `
           <div style="background:#F0FFF4;border:1.5px solid #4CAF50;border-radius:12px;padding:14px;margin-bottom:10px">
             <div style="font-weight:700;color:var(--brown);margin-bottom:4px">${o.customer_name}</div>
-            <div style="font-size:13px;color:var(--text-muted);">${o.delivery_type === 'delivery' ? '🛵 Delivery' : '🏠 Recogida'} · $${o.total}</div>
+            <div style="font-size:13px;color:var(--text-muted)">${o.delivery_type === 'delivery' ? '🛵 Delivery' : '🏠 Recogida'} · $${o.total}</div>
           </div>`).join('');
     }
   }).catch(function() {
@@ -3551,7 +3535,7 @@ function renderDashboard() {
     if (ordersContainer) ordersContainer.style.display = 'block';
   });
 
-  // Load dishes for this cook
+  // Load dishes for logged in cook
   sbFetch('dishes', `cook_id=eq.${loggedCookId}&order=created_at.desc`).then(function(dishes) {
     if (dishes && dishes.length > 0) {
       cookMenu = dishes.map(d => ({

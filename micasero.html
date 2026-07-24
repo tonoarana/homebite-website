@@ -1305,6 +1305,20 @@
             <div id="creg-photo-name" style="font-size:12px;color:var(--text-muted);margin-top:6px;text-align:center"></div>
           </div>
         </div>
+        <div class="form-group">
+          <label class="form-label">Servicios que ofreces *</label>
+          <div style="display:flex;flex-direction:column;gap:10px;background:var(--warm);border-radius:12px;padding:14px">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
+              <input type="checkbox" id="creg-svc-delivery" checked style="accent-color:var(--orange);width:16px;height:16px"> 🛵 Delivery
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
+              <input type="checkbox" id="creg-svc-pickup" checked style="accent-color:var(--orange);width:16px;height:16px"> 🏠 Recogida en domicilio
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
+              <input type="checkbox" id="creg-svc-cena" style="accent-color:#9B59B6;width:16px;height:16px"> 🕯️ Cena privada en mi casa
+            </label>
+          </div>
+        </div>
         <div style="display:flex;gap:10px">
           <button onclick="cookRegStep(2)" style="flex:1;background:var(--warm);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">← Atrás</button>
           <button onclick="cookRegStep(4)" class="btn-submit" style="flex:2">Continuar →</button>
@@ -4737,12 +4751,42 @@ function processPayment() {
 let pendingCookData = null;
 
 function prepararRegistro() {
-  // Collect cook data
+  // Collect payment methods from step 5 checkboxes
+  const pmInputs = document.querySelectorAll('#creg-step-5 input[type="text"], #creg-step-5 input[type="email"], #creg-step-5 input[type="tel"]');
+  const pmChecks = document.querySelectorAll('#creg-step-5 input[type="checkbox"]');
+  
+  // Build payment methods object from checked items and their inputs
+  const pm = {};
+  const pmKeys = ['venmo', 'paypal', 'zelle', 'cash'];
+  let inputIdx = 0;
+  pmChecks.forEach(function(chk, i) {
+    if (chk.id === 'qr-check') return;
+    const key = pmKeys[i] || ('method' + i);
+    if (chk.checked) {
+      if (key === 'cash') {
+        pm.cash = true;
+      } else {
+        const input = pmInputs[inputIdx];
+        if (input && input.value.trim()) pm[key] = input.value.trim();
+        inputIdx++;
+      }
+    } else {
+      inputIdx++;
+    }
+  });
+
+  // Collect services from step 3
+  const services = [];
+  if (document.getElementById('creg-svc-delivery')?.checked) services.push('delivery');
+  if (document.getElementById('creg-svc-pickup')?.checked) services.push('pickup');
+  if (document.getElementById('creg-svc-cena')?.checked) services.push('cena');
+
   pendingCookData = {
     name: document.getElementById('creg-name') ? document.getElementById('creg-name').value : 'Cocinero',
     email: (document.getElementById('creg-email') && document.getElementById('creg-email').value) ? document.getElementById('creg-email').value : ('cook_' + Date.now() + '@micasero.app'),
     password_hash: document.getElementById('creg-pass') ? document.getElementById('creg-pass').value : '',
     phone: document.getElementById('creg-phone') ? document.getElementById('creg-phone').value : '',
+    address: document.getElementById('creg-address') ? document.getElementById('creg-address').value : '',
     kitchen_name: document.getElementById('creg-kitchen') ? document.getElementById('creg-kitchen').value : '',
     cuisine_type: document.getElementById('creg-cuisine') ? document.getElementById('creg-cuisine').value : 'Local',
     description: document.getElementById('creg-desc') ? document.getElementById('creg-desc').value : '',
@@ -4750,7 +4794,9 @@ function prepararRegistro() {
     is_online: true,
     city: 'Bainbridge Island',
     lat: 47.6246,
-    lng: -122.5219
+    lng: -122.5219,
+    services: services,
+    payment_methods: pm
   };
 
   // Collect dishes fresh from DOM right now
@@ -4765,7 +4811,7 @@ function prepararRegistro() {
       }
     });
   }
-  console.log('Cook:', pendingCookData.name, '| Dishes:', savedDishesData.length);
+  console.log('Cook:', pendingCookData.name, '| Dishes:', savedDishesData.length, '| PM:', pm, '| Services:', services);
 }
 
 // Google Maps Geocoding

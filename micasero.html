@@ -2438,11 +2438,7 @@ let dbCooks = [];
 let dbDishes = [];
 
 // Demo cooks fallback
-const cooks = [
-  { id:'demo1', name:'Chef María R.', emoji:'👩‍🍳', cuisine:'Mexicana', rating:4.9, reviews:127, delivery:true, tags:['Mexicana','Casera'], color:'#FDE8D8' },
-  { id:'demo2', name:'Chef Carlos M.', emoji:'👨‍🍳', cuisine:'Local', rating:4.7, reviews:89, delivery:true, tags:['Local','Casera'], color:'#E8F0FE' },
-  { id:'demo3', name:'Chef Ana G.', emoji:'👩‍🍳', cuisine:'Italiana', rating:4.8, reviews:45, delivery:false, tags:['Italiana','Pasta'], color:'#E8F8EE' },
-];
+const cooks = []; // Demo cooks removed - loaded from Supabase
 
 // Demo menu fallback
 const menu = [
@@ -2460,11 +2456,7 @@ function setCookId(id) {
 }
 
 // Demo reviews
-let reviewsData = [
-  { name:'Carlos M.', avatar:'👨', stars:5, dish:'Tacos al Pastor · Chef María', text:'¡Increíble! Los mejores tacos que he probado fuera de México. Muy auténticos.', date:'hace 2 días', bg:'#FDE8D8' },
-  { name:'Laura S.', avatar:'🧑', stars:5, dish:'Pozole Rojo · Chef Carlos', text:'¡Una joya escondida! Se nota el cariño en cada bocado. ¡Volveré pronto!', date:'hace 1 semana', bg:'#E8F8EE' },
-  { name:'Miguel R.', avatar:'👦', stars:4, dish:'Lasaña · Chef Ana', text:'Excelente comida casera, porciones generosas y muy buen precio.', date:'hace 2 semanas', bg:'#E8F0FE' },
-];
+let reviewsData = []; // Demo reviews removed - loaded from Supabase
 const SB_HEADERS = {
   'Content-Type': 'application/json',
   'apikey': SB_KEY,
@@ -2955,11 +2947,7 @@ let leafletMarkers = [];
 let userMarker = null;
 let activeFilter = 'todos';
 
-const cookLocations = [
-  { id:1, name:'Chef María R.',  emoji:'👩‍🍳', lat:47.6262, lng:-122.5210, cuisine:'Mexicana',  rating:4.9, delivery:true,  cena:true,  tags:['mexicana','delivery','cena'] },
-  { id:2, name:'Chef Carlos M.', emoji:'👨‍🍳', lat:47.6318, lng:-122.5378, cuisine:'Italiana',  rating:4.7, delivery:true,  cena:false, tags:['italiana','delivery'] },
-  { id:5, name:'Chef Ana L.',    emoji:'👩‍🍳', lat:47.6230, lng:-122.5440, cuisine:'Mexicana',  rating:4.5, delivery:false, cena:false, tags:['mexicana','recogida'] },
-];
+const cookLocations = []; // Demo locations removed - loaded from Supabase
 
 function makeCookIcon(emoji, delivery, cena) {
   const color = cena ? '#9B59B6' : delivery ? '#E8622A' : '#2E7D52';

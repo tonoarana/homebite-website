@@ -1010,7 +1010,7 @@
         <div class="sidebar-card">
           <h4>💳 Paga directo al cocinero</h4>
           <div id="profile-payment-methods" style="font-size:13px;color:var(--text-muted);line-height:1.8">
-            📲 Venmo · 💙 PayPal · 💚 Zelle
+            📱 Yappy · 📲 Nequi · 💙 PayPal · 💵 Efectivo
           </div>
         </div>
       </div>
@@ -1352,22 +1352,34 @@
         <h2 style="margin-bottom:4px">💳 Paso 6 — Cómo Cobras</h2>
         <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px">El cliente verá esta info para pagarte directo</p>
         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
-          <!-- Métodos populares por región -->
-          <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🌎 Métodos Populares</div>
-
-          <!-- USA -->
-          <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:4px">🇺🇸 Estados Unidos</div>
+          <!-- Panamá -->
+          <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:4px">🇵🇦 Panamá</div>
           <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" checked style="accent-color:var(--orange)"> <strong>📲 Venmo</strong>
+              <input type="checkbox" checked style="accent-color:var(--orange)"> <strong>📱 Yappy (Banco General)</strong>
             </label>
-            <input class="form-input" type="text" placeholder="@tu-usuario-venmo" style="font-size:13px">
+            <input class="form-input" type="tel" placeholder="+507 6000-0000" style="font-size:13px">
           </div>
           <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" checked style="accent-color:var(--orange)"> <strong>💙 PayPal</strong>
+              <input type="checkbox" style="accent-color:var(--orange)"> <strong>📲 Nequi (Banistmo)</strong>
             </label>
-            <input class="form-input" type="email" placeholder="tu@paypal.com" style="font-size:13px">
+            <input class="form-input" type="tel" placeholder="+507 6000-0000" style="font-size:13px">
+          </div>
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
+              <input type="checkbox" style="accent-color:var(--orange)"> <strong>💳 Zinli</strong>
+            </label>
+            <input class="form-input" type="email" placeholder="tu@email.com" style="font-size:13px">
+          </div>
+
+          <!-- USA -->
+          <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:12px">🇺🇸 Estados Unidos</div>
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
+              <input type="checkbox" style="accent-color:var(--orange)"> <strong>📲 Venmo</strong>
+            </label>
+            <input class="form-input" type="text" placeholder="@tu-usuario-venmo" style="font-size:13px">
           </div>
           <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
@@ -1375,45 +1387,15 @@
             </label>
             <input class="form-input" type="tel" placeholder="+1 (206) 555-0123" style="font-size:13px">
           </div>
-          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
-            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" style="accent-color:var(--orange)"> <strong>💵 CashApp</strong>
-            </label>
-            <input class="form-input" type="text" placeholder="$tu-cashtag" style="font-size:13px">
-          </div>
-
-          <!-- Paraguay / Latinoamérica -->
-          <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:12px">🇵🇾 Paraguay / Latinoamérica</div>
-          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
-            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" style="accent-color:var(--orange)"> <strong>📱 Tigo Money</strong>
-            </label>
-            <input class="form-input" type="tel" placeholder="+595 981 123 456" style="font-size:13px">
-          </div>
-          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
-            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" style="accent-color:var(--orange)"> <strong>💜 Billetera Personal</strong>
-            </label>
-            <input class="form-input" type="tel" placeholder="+595 971 123 456" style="font-size:13px">
-          </div>
-          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
-            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" style="accent-color:var(--orange)"> <strong>🔵 MercadoPago</strong>
-            </label>
-            <input class="form-input" type="text" placeholder="usuario o teléfono" style="font-size:13px">
-          </div>
-
-          <!-- Brasil -->
-          <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:12px">🇧🇷 Brasil</div>
-          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
-            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" style="accent-color:var(--orange)"> <strong>🟢 Pix</strong>
-            </label>
-            <input class="form-input" type="text" placeholder="CPF, teléfono o email Pix" style="font-size:13px">
-          </div>
 
           <!-- Universal -->
           <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:12px">🌍 Universal</div>
+          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
+            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
+              <input type="checkbox" checked style="accent-color:var(--orange)"> <strong>💙 PayPal</strong>
+            </label>
+            <input class="form-input" type="email" placeholder="tu@paypal.com" style="font-size:13px">
+          </div>
           <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:10px">
               <input type="checkbox" id="qr-check" style="accent-color:var(--orange)" onchange="document.getElementById('qr-upload-area').style.display=this.checked?'block':'none'"> <strong>📱 Código QR</strong>
@@ -1558,59 +1540,15 @@
 
       <div style="background:linear-gradient(135deg,#FFF8F0,#FEE8D4);border:1.5px solid #F4C9A8;border-radius:16px;padding:20px;margin-bottom:20px">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-          <span style="font-size:36px">👩‍🍳</span>
+          <span style="font-size:36px">👨‍🍳</span>
           <div>
             <div style="font-weight:700;font-size:16px;color:var(--brown)" id="pay-step-cook-name">Cocinero</div>
             <div style="font-size:13px;color:var(--text-muted)" id="pay-step-cook-rating">⭐ 4.9</div>
           </div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
-            <span style="font-size:22px">📲</span>
-            <div style="flex:1"><div style="font-weight:600;font-size:14px">Venmo</div><div style="font-size:13px;color:var(--text-muted)">@maria.rodriguez</div></div>
-            <button onclick="navigator.clipboard.writeText('@maria.rodriguez');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
-          </div>
-          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
-            <span style="font-size:22px">💙</span>
-            <div style="flex:1"><div style="font-weight:600;font-size:14px">PayPal</div><div style="font-size:13px;color:var(--text-muted)">maria.rodriguez@email.com</div></div>
-            <button onclick="navigator.clipboard.writeText('maria.rodriguez@email.com');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
-          </div>
-          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
-            <span style="font-size:22px">💚</span>
-            <div style="flex:1"><div style="font-weight:600;font-size:14px">Zelle</div><div style="font-size:13px;color:var(--text-muted)">+1 (206) 555-0123</div></div>
-            <button onclick="navigator.clipboard.writeText('+12065550123');showToast('✅ Copiado!')" style="background:var(--orange);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
-          </div>
-          <!-- QR -->
-          <div style="background:white;border-radius:10px;padding:12px 14px">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-              <span style="font-size:22px">📱</span>
-              <div style="flex:1"><div style="font-weight:600;font-size:14px">Código QR</div><div style="font-size:13px;color:var(--text-muted)">Escanea para pagar directo</div></div>
-              <button onclick="toggleQR()" style="background:var(--warm);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600" id="qr-toggle-btn">Ver QR</button>
-            </div>
-            <div id="qr-code-display" style="display:none;text-align:center;padding:12px;background:var(--warm);border-radius:10px">
-              <svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg" style="border:4px solid white;border-radius:8px;background:white">
-                <rect width="140" height="140" fill="white"/>
-                <rect x="10" y="10" width="40" height="40" fill="none" stroke="#111" stroke-width="4"/>
-                <rect x="16" y="16" width="28" height="28" fill="#111"/>
-                <rect x="90" y="10" width="40" height="40" fill="none" stroke="#111" stroke-width="4"/>
-                <rect x="96" y="16" width="28" height="28" fill="#111"/>
-                <rect x="10" y="90" width="40" height="40" fill="none" stroke="#111" stroke-width="4"/>
-                <rect x="16" y="96" width="28" height="28" fill="#111"/>
-                <rect x="55" y="10" width="6" height="6" fill="#111"/><rect x="65" y="10" width="6" height="6" fill="#111"/>
-                <rect x="55" y="20" width="6" height="6" fill="#111"/><rect x="75" y="20" width="6" height="6" fill="#111"/>
-                <rect x="65" y="30" width="6" height="6" fill="#111"/><rect x="55" y="40" width="6" height="6" fill="#111"/>
-                <rect x="55" y="55" width="6" height="6" fill="#111"/><rect x="65" y="55" width="6" height="6" fill="#111"/>
-                <rect x="75" y="55" width="6" height="6" fill="#111"/><rect x="55" y="65" width="6" height="6" fill="#111"/>
-                <rect x="75" y="65" width="6" height="6" fill="#111"/><rect x="55" y="75" width="6" height="6" fill="#111"/>
-              </svg>
-              <div style="font-size:12px;color:var(--text-muted);margin-top:8px">Escanea con tu app de pagos</div>
-            </div>
-          </div>
-          <div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
-            <span style="font-size:22px">💬</span>
-            <div style="flex:1"><div style="font-weight:600;font-size:14px">WhatsApp</div><div style="font-size:13px;color:var(--text-muted)">+1 (206) 555-0123</div></div>
-            <a href="https://wa.me/12065550123" target="_blank" style="background:#25D366;color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;text-decoration:none">Escribir</a>
-          </div>
+        <!-- Dynamic payment methods loaded from cook profile -->
+        <div id="checkout-payment-methods" style="display:flex;flex-direction:column;gap:10px">
+          <div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Cargando métodos de pago...</div>
         </div>
       </div>
 
@@ -1627,7 +1565,7 @@
         <div style="font-size:24px;margin-bottom:8px">👆</div>
         <strong>¿Cómo pagar?</strong><br>
         1️⃣ Copia el usuario o número de arriba<br>
-        2️⃣ Sal a tu app de pago (Venmo, PayPal, etc.)<br>
+        2️⃣ Sal a tu app de pago (Yappy, Nequi, PayPal, etc.)<br>
         3️⃣ Haz el pago al cocinero<br>
         4️⃣ <strong>Regresa a Micasero</strong> — verás un aviso verde para certificar tu pago al cocinero ✅
       </div>
@@ -2251,16 +2189,16 @@
         <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--brown);margin-bottom:14px">💳 Métodos de Pago</div>
         <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px">Pon tu usuario o número para cada método que aceptes:</div>
         <div class="form-group">
-          <label class="form-label">📲 Venmo</label>
-          <input class="form-input" type="text" id="config-venmo" placeholder="@tu-usuario">
+          <label class="form-label">📱 Yappy / Venmo</label>
+          <input class="form-input" type="text" id="config-venmo" placeholder="Ej: +507 6000-0000 o @usuario">
         </div>
         <div class="form-group">
-          <label class="form-label">💙 PayPal</label>
-          <input class="form-input" type="text" id="config-paypal" placeholder="tu@email.com o @usuario">
+          <label class="form-label">📲 Nequi / PayPal móvil</label>
+          <input class="form-input" type="text" id="config-paypal" placeholder="Ej: +507 6000-0000">
         </div>
         <div class="form-group">
-          <label class="form-label">💚 Zelle</label>
-          <input class="form-input" type="text" id="config-zelle" placeholder="Teléfono o email">
+          <label class="form-label">💙 Zinli / PayPal email</label>
+          <input class="form-input" type="text" id="config-zelle" placeholder="tu@email.com">
         </div>
         <div class="form-group">
           <label class="form-label">💵 Efectivo</label>
@@ -4698,8 +4636,53 @@ function coStep(n) {
     const st = document.getElementById('summary-total');
     if (st && ct2) st.textContent = ct2.textContent;
 
-    // Save the order NOW (before customer leaves to pay)
-    saveOrderToSupabase(cook4);
+    // Load cook payment methods dynamically
+    if (selectedCookId) {
+      sbFetch('cooks', `id=eq.${selectedCookId}&select=name,kitchen_name,payment_methods`).then(function(data) {
+        const cook4 = data && data[0] ? data[0] : null;
+        const pmEl = document.getElementById('checkout-payment-methods');
+        if (!pmEl || !cook4) return;
+        
+        try {
+          const pm = cook4.payment_methods ? 
+            (typeof cook4.payment_methods === 'string' ? JSON.parse(cook4.payment_methods) : cook4.payment_methods) 
+            : {};
+          
+          const methods = [
+            { key: 'venmo', icon: '📱', label: 'Yappy / Venmo', deeplink: 'venmo://paycharge?txn=pay&recipients=' },
+            { key: 'paypal', icon: '📲', label: 'Nequi / PayPal', deeplink: 'https://paypal.me/' },
+            { key: 'zelle', icon: '💙', label: 'Zinli / PayPal Email', deeplink: null },
+          ];
+
+          const total = Object.values(cart).reduce((s,v) => s+v.price*v.qty, 0).toFixed(2);
+          let html = '';
+          
+          methods.forEach(function(m) {
+            if (!pm[m.key]) return;
+            const val = pm[m.key];
+            const deeplink = m.deeplink ? m.deeplink + encodeURIComponent(val) + '&amount=' + total + '&note=Pedido+Micasero' : null;
+            html += `<div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+              <span style="font-size:22px">${m.icon}</span>
+              <div style="flex:1"><div style="font-weight:600;font-size:14px">${m.label}</div><div style="font-size:13px;color:var(--text-muted)">${val}</div></div>
+              <div style="display:flex;gap:6px">
+                <button onclick="navigator.clipboard?.writeText('${val}');showToast('✅ Copiado!')" style="background:var(--warm);border:1px solid var(--border);color:var(--brown);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
+                ${deeplink ? `<a href="${deeplink}" target="_blank" style="background:var(--orange);color:white;border-radius:8px;padding:6px 10px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:600;text-decoration:none;display:flex;align-items:center">Abrir →</a>` : ''}
+              </div>
+            </div>`;
+          });
+
+          if (pm.cash) html += `<div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">💵</span>
+            <div style="flex:1"><div style="font-weight:600;font-size:14px">Efectivo</div><div style="font-size:13px;color:var(--text-muted)">Paga al recibir tu pedido</div></div>
+          </div>`;
+
+          if (!html) html = '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">El cocinero configurará sus métodos de pago pronto.</div>';
+          pmEl.innerHTML = html;
+        } catch(e) {
+          console.log('Payment methods error:', e);
+        }
+      });
+    }
 
     // Save pending payment state so user can return after paying
     try {

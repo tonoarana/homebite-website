@@ -4649,14 +4649,17 @@ function coStep(n) {
           let html = '';
           
           methods.forEach(function(m) {
-            if (!pm[m.key]) return;
+            if (!(m.key in pm)) return; // not offered
             const val = pm[m.key];
-            const deeplink = m.deeplink ? m.deeplink + encodeURIComponent(val) + '&amount=' + total + '&note=Pedido+Micasero' : null;
+            const deeplink = (m.deeplink && val) ? m.deeplink + encodeURIComponent(val) + '&amount=' + total + '&note=Pedido+Micasero' : null;
             html += `<div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
               <span style="font-size:22px">${m.icon}</span>
-              <div style="flex:1"><div style="font-weight:600;font-size:14px">${m.label}</div><div style="font-size:13px;color:var(--text-muted)">${val}</div></div>
+              <div style="flex:1">
+                <div style="font-weight:600;font-size:14px">${m.label}</div>
+                ${val ? `<div style="font-size:13px;color:var(--text-muted)">${val}</div>` : ''}
+              </div>
               <div style="display:flex;gap:6px">
-                <button onclick="navigator.clipboard?.writeText('${val}');showToast('✅ Copiado!')" style="background:var(--warm);border:1px solid var(--border);color:var(--brown);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>
+                ${val ? `<button onclick="navigator.clipboard?.writeText('${val}');showToast('✅ Copiado!')" style="background:var(--warm);border:1px solid var(--border);color:var(--brown);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>` : ''}
                 ${deeplink ? `<a href="${deeplink}" target="_blank" style="background:var(--orange);color:white;border-radius:8px;padding:6px 10px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:600;text-decoration:none;display:flex;align-items:center">Abrir →</a>` : ''}
               </div>
             </div>`;
@@ -4743,28 +4746,22 @@ function prepararRegistro() {
   // Collect payment methods from step 6 using specific IDs
   const pm = {};
   if (document.getElementById('pm-yappy-check')?.checked) {
-    const v = document.getElementById('pm-yappy')?.value.trim();
-    if (v) pm.yappy = v;
+    pm.yappy = document.getElementById('pm-yappy')?.value.trim() || '';
   }
   if (document.getElementById('pm-nequi-check')?.checked) {
-    const v = document.getElementById('pm-nequi')?.value.trim();
-    if (v) pm.nequi = v;
+    pm.nequi = document.getElementById('pm-nequi')?.value.trim() || '';
   }
   if (document.getElementById('pm-zinli-check')?.checked) {
-    const v = document.getElementById('pm-zinli')?.value.trim();
-    if (v) pm.zinli = v;
+    pm.zinli = document.getElementById('pm-zinli')?.value.trim() || '';
   }
   if (document.getElementById('pm-venmo-check')?.checked) {
-    const v = document.getElementById('pm-venmo')?.value.trim();
-    if (v) pm.venmo = v;
+    pm.venmo = document.getElementById('pm-venmo')?.value.trim() || '';
   }
   if (document.getElementById('pm-zelle-check')?.checked) {
-    const v = document.getElementById('pm-zelle')?.value.trim();
-    if (v) pm.zelle = v;
+    pm.zelle = document.getElementById('pm-zelle')?.value.trim() || '';
   }
   if (document.getElementById('pm-paypal-check')?.checked) {
-    const v = document.getElementById('pm-paypal')?.value.trim();
-    if (v) pm.paypal = v;
+    pm.paypal = document.getElementById('pm-paypal')?.value.trim() || '';
   }
   if (document.getElementById('pm-cash-check')?.checked) pm.cash = true;
 

@@ -3323,6 +3323,56 @@ function updateServices() {
   const pickup = document.getElementById('svc-pickup')?.checked;
   const cena = document.getElementById('svc-cena')?.checked;
 
+  const el = document.getElementById('profile-services');
+  if (el) {
+    let html = '';
+    if (delivery) html += '<div>🛵 Delivery — hasta 5km</div>';
+    if (pickup) html += '<div>🏠 Recogida en domicilio</div>';
+    if (cena) html += '<div>🕯️ Cena privada en casa del cocinero</div>';
+    if (!html) html = '<div style="color:var(--text-muted);font-style:italic">No hay servicios activos</div>';
+    el.innerHTML = html;
+  }
+
+  const services = [];
+  if (delivery) services.push('delivery');
+  if (pickup) services.push('pickup');
+  if (cena) services.push('cena');
+
+  const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
+  if (loggedCookId) {
+    sbPatch('cooks', 'id=eq.' + loggedCookId, { services: services })
+      .then(function(ok) { if (ok) showToast('✅ Servicios guardados'); });
+  }
+}
+function copyToClipboard(text) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function() {
+        showToast('✅ Copiado: ' + text);
+      });
+    } else {
+      // Fallback for iOS Safari
+      const el = document.createElement('textarea');
+      el.value = text;
+      el.style.position = 'fixed';
+      el.style.opacity = '0';
+      document.body.appendChild(el);
+      el.focus();
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast('✅ Copiado: ' + text);
+    }
+  } catch(e) {
+    showToast('📋 ' + text);
+  }
+}
+
+function updateServices() {
+  const delivery = document.getElementById('svc-delivery')?.checked;
+  const pickup = document.getElementById('svc-pickup')?.checked;
+  const cena = document.getElementById('svc-cena')?.checked;
+
   // Update profile sidebar
   const el = document.getElementById('profile-services');
   if (el) {
@@ -3346,6 +3396,29 @@ function updateServices() {
       .then(function(ok) {
         if (ok) showToast('✅ Servicios guardados');
       });
+  }
+}
+
+function copyToClipboard(text) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function() {
+        showToast('✅ Copiado: ' + text);
+      });
+    } else {
+      const el = document.createElement('textarea');
+      el.value = text;
+      el.style.position = 'fixed';
+      el.style.opacity = '0';
+      document.body.appendChild(el);
+      el.focus();
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast('✅ Copiado: ' + text);
+    }
+  } catch(e) {
+    showToast('📋 ' + text);
   }
 }
 
@@ -4663,7 +4736,7 @@ function coStep(n) {
                 ${val ? `<div style="font-size:13px;color:var(--text-muted)">${val}</div>` : ''}
               </div>
               <div style="display:flex;gap:6px">
-                ${val ? `<button onclick="navigator.clipboard?.writeText('${val}');showToast('✅ Copiado!')" style="background:var(--warm);border:1px solid var(--border);color:var(--brown);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Copiar</button>` : ''}
+                ${val ? `<button onclick="copyToClipboard('${val}')" style="background:var(--warm);border:1px solid var(--border);color:var(--brown);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;-webkit-appearance:none">📋 Copiar</button>` : ''}
                 ${deeplink ? `<a href="${deeplink}" target="_blank" style="background:var(--orange);color:white;border-radius:8px;padding:6px 10px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:600;text-decoration:none;display:flex;align-items:center">Abrir →</a>` : ''}
               </div>
             </div>`;

@@ -4838,6 +4838,27 @@ function confirmarMembresia() {
 
   if (!pendingCookData) { showToast('🎉 ¡Plan activado!'); return; }
 
+  // Re-collect payment methods and services NOW (DOM still available)
+  const pm = {};
+  if (document.getElementById('pm-yappy-check')?.checked) pm.yappy = document.getElementById('pm-yappy')?.value.trim() || '';
+  if (document.getElementById('pm-nequi-check')?.checked) pm.nequi = document.getElementById('pm-nequi')?.value.trim() || '';
+  if (document.getElementById('pm-zinli-check')?.checked) pm.zinli = document.getElementById('pm-zinli')?.value.trim() || '';
+  if (document.getElementById('pm-venmo-check')?.checked) pm.venmo = document.getElementById('pm-venmo')?.value.trim() || '';
+  if (document.getElementById('pm-zelle-check')?.checked) pm.zelle = document.getElementById('pm-zelle')?.value.trim() || '';
+  if (document.getElementById('pm-paypal-check')?.checked) pm.paypal = document.getElementById('pm-paypal')?.value.trim() || '';
+  if (document.getElementById('pm-cash-check')?.checked) pm.cash = true;
+
+  const services = [];
+  if (document.getElementById('creg-svc-delivery')?.checked) services.push('delivery');
+  if (document.getElementById('creg-svc-pickup')?.checked) services.push('pickup');
+  if (document.getElementById('creg-svc-cena')?.checked) services.push('cena');
+
+  pendingCookData.payment_methods = pm;
+  pendingCookData.services = services;
+
+  console.log('Final PM:', JSON.stringify(pm));
+  console.log('Final Services:', services);
+
   var dishesToSave = savedDishesData.slice();
   var cookToSave = pendingCookData;
   pendingCookData = null;

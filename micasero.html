@@ -3191,9 +3191,9 @@ function showCookTab(tab) {
               const pm = typeof data[0].payment_methods === 'string' 
                 ? JSON.parse(data[0].payment_methods) 
                 : data[0].payment_methods;
-              if (document.getElementById('config-venmo')) document.getElementById('config-venmo').value = pm.venmo || '';
-              if (document.getElementById('config-paypal')) document.getElementById('config-paypal').value = pm.paypal || '';
-              if (document.getElementById('config-zelle')) document.getElementById('config-zelle').value = pm.zelle || '';
+              if (document.getElementById('config-venmo')) document.getElementById('config-venmo').value = pm.yappy || pm.venmo || '';
+              if (document.getElementById('config-paypal')) document.getElementById('config-paypal').value = pm.nequi || pm.paypal || '';
+              if (document.getElementById('config-zelle')) document.getElementById('config-zelle').value = pm.zinli || pm.zelle || '';
               if (document.getElementById('config-cash')) document.getElementById('config-cash').checked = pm.cash || false;
             } catch(e) {}
           }
@@ -3302,18 +3302,19 @@ async function savePaymentMethods() {
   const loggedCookId = localStorage.getItem('micasero_logged_cook_id');
   if (!loggedCookId) { showToast('⚠️ Inicia sesión primero'); return; }
 
-  const venmo = document.getElementById('config-venmo')?.value.trim() || '';
-  const paypal = document.getElementById('config-paypal')?.value.trim() || '';
-  const zelle = document.getElementById('config-zelle')?.value.trim() || '';
-  const cash = document.getElementById('config-cash')?.checked || false;
-
-  const payment_methods = JSON.stringify({ venmo, paypal, zelle, cash });
+  const payment_methods = {
+    yappy:  document.getElementById('config-venmo')?.value.trim() || '',
+    nequi:  document.getElementById('config-paypal')?.value.trim() || '',
+    zinli:  document.getElementById('config-zelle')?.value.trim() || '',
+    cash:   document.getElementById('config-cash')?.checked || false
+  };
 
   const ok = await sbPatch('cooks', 'id=eq.' + loggedCookId, { payment_methods });
   const msg = document.getElementById('save-payment-msg');
   if (ok && msg) {
     msg.style.display = 'block';
     setTimeout(() => msg.style.display = 'none', 3000);
+    showToast('✅ Métodos de pago guardados');
   }
 }
 
@@ -4637,20 +4638,23 @@ function coStep(n) {
             : {};
           
           const methods = [
-            { key: 'yappy',  icon: '📱', label: 'Yappy',  deeplink: null },
-            { key: 'nequi',  icon: '📲', label: 'Nequi',  deeplink: null },
-            { key: 'zinli',  icon: '💳', label: 'Zinli',  deeplink: null },
-            { key: 'venmo',  icon: '💜', label: 'Venmo',  deeplink: 'venmo://paycharge?txn=pay&recipients=' },
-            { key: 'zelle',  icon: '💚', label: 'Zelle',  deeplink: null },
-            { key: 'paypal', icon: '💙', label: 'PayPal', deeplink: 'https://paypal.me/' },
+            { key: 'yappy',  fallback: 'venmo',  icon: '📱', label: 'Yappy',  deeplink: null },
+            { key: 'nequi',  fallback: 'paypal',  icon: '📲', label: 'Nequi',  deeplink: null },
+            { key: 'zinli',  fallback: 'zelle',  icon: '💳', label: 'Zinli',  deeplink: null },
+            { key: 'venmo',  fallback: null, icon: '💜', label: 'Venmo',  deeplink: 'venmo://paycharge?txn=pay&recipients=' },
+            { key: 'zelle',  fallback: null, icon: '💚', label: 'Zelle',  deeplink: null },
+            { key: 'paypal', fallback: null, icon: '💙', label: 'PayPal', deeplink: 'https://paypal.me/' },
           ];
 
           const total = Object.values(cart).reduce((s,v) => s+v.price*v.qty, 0).toFixed(2);
           let html = '';
           
           methods.forEach(function(m) {
-            if (!(m.key in pm)) return; // not offered
-            const val = pm[m.key];
+            const val = pm[m.key] || (m.fallback ? pm[m.fallback] : null) || '';
+            if (m.key === 'venmo' && pm.yappy !== undefined) return;
+            if (m.key === 'paypal' && pm.nequi !== undefined) return;
+            if (m.key === 'zelle' && pm.zinli !== undefined) return;
+            if (!(m.key in pm) && !(m.fallback && m.fallback in pm)) return;
             const deeplink = (m.deeplink && val) ? m.deeplink + encodeURIComponent(val) + '&amount=' + total + '&note=Pedido+Micasero' : null;
             html += `<div style="background:white;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px">
               <span style="font-size:22px">${m.icon}</span>

@@ -1366,69 +1366,55 @@
         <h2 style="margin-bottom:4px">💳 Paso 6 — Cómo Cobras</h2>
         <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px">El cliente verá esta info para pagarte directo</p>
         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
           <!-- Panamá -->
           <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:4px">🇵🇦 Panamá</div>
           <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" checked style="accent-color:var(--orange)"> <strong>📱 Yappy (Banco General)</strong>
+              <input type="checkbox" id="pm-yappy-check" checked style="accent-color:var(--orange)"> <strong>📱 Yappy (Banco General)</strong>
             </label>
-            <input class="form-input" type="tel" placeholder="+507 6000-0000" style="font-size:13px">
+            <input class="form-input" type="tel" id="pm-yappy" placeholder="+507 6000-0000" style="font-size:13px">
           </div>
           <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" style="accent-color:var(--orange)"> <strong>📲 Nequi (Banistmo)</strong>
+              <input type="checkbox" id="pm-nequi-check" style="accent-color:var(--orange)"> <strong>📲 Nequi (Banistmo)</strong>
             </label>
-            <input class="form-input" type="tel" placeholder="+507 6000-0000" style="font-size:13px">
+            <input class="form-input" type="tel" id="pm-nequi" placeholder="+507 6000-0000" style="font-size:13px">
           </div>
           <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" style="accent-color:var(--orange)"> <strong>💳 Zinli</strong>
+              <input type="checkbox" id="pm-zinli-check" style="accent-color:var(--orange)"> <strong>💳 Zinli</strong>
             </label>
-            <input class="form-input" type="email" placeholder="tu@email.com" style="font-size:13px">
+            <input class="form-input" type="email" id="pm-zinli" placeholder="tu@email.com" style="font-size:13px">
           </div>
-
           <!-- USA -->
           <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:12px">🇺🇸 Estados Unidos</div>
           <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" style="accent-color:var(--orange)"> <strong>📲 Venmo</strong>
+              <input type="checkbox" id="pm-venmo-check" style="accent-color:var(--orange)"> <strong>📲 Venmo</strong>
             </label>
-            <input class="form-input" type="text" placeholder="@tu-usuario-venmo" style="font-size:13px">
+            <input class="form-input" type="text" id="pm-venmo" placeholder="@tu-usuario-venmo" style="font-size:13px">
           </div>
           <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" style="accent-color:var(--orange)"> <strong>💚 Zelle</strong>
+              <input type="checkbox" id="pm-zelle-check" style="accent-color:var(--orange)"> <strong>💚 Zelle</strong>
             </label>
-            <input class="form-input" type="tel" placeholder="+1 (206) 555-0123" style="font-size:13px">
+            <input class="form-input" type="tel" id="pm-zelle" placeholder="+1 (206) 555-0123" style="font-size:13px">
           </div>
-
           <!-- Universal -->
           <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px;margin-top:12px">🌍 Universal</div>
           <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
-              <input type="checkbox" checked style="accent-color:var(--orange)"> <strong>💙 PayPal</strong>
+              <input type="checkbox" id="pm-paypal-check" checked style="accent-color:var(--orange)"> <strong>💙 PayPal</strong>
             </label>
-            <input class="form-input" type="email" placeholder="tu@paypal.com" style="font-size:13px">
-          </div>
-          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
-            <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:10px">
-              <input type="checkbox" id="qr-check" style="accent-color:var(--orange)" onchange="document.getElementById('qr-upload-area').style.display=this.checked?'block':'none'"> <strong>📱 Código QR</strong>
-            </label>
-            <div id="qr-upload-area" style="display:none">
-              <input type="file" id="creg-qr-input" accept="image/*" style="display:none" onchange="previewQR(this)">
-              <div onclick="document.getElementById('creg-qr-input').click()" id="qr-drop-area" style="border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;background:white">
-                <div style="font-size:28px;margin-bottom:6px" id="qr-icon">📱</div>
-                <div style="font-size:12px;color:var(--text-muted)" id="qr-label">Toca para subir tu código QR</div>
-              </div>
-              <img id="qr-preview" style="display:none;width:160px;height:160px;object-fit:contain;border-radius:10px;margin:10px auto;border:1px solid var(--border)">
-            </div>
+            <input class="form-input" type="email" id="pm-paypal" placeholder="tu@paypal.com" style="font-size:13px">
           </div>
           <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px">
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer">
-              <input type="checkbox" style="accent-color:var(--orange)"> <strong>💳 Tarjeta de crédito/débito</strong>
+              <input type="checkbox" id="pm-cash-check" style="accent-color:var(--orange)"> <strong>💵 Efectivo al entregar</strong>
             </label>
           </div>
-          <div style="background:var(--warm);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px">
+        </div>
             <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-bottom:8px">
               <input type="checkbox" style="accent-color:var(--orange)"> <strong>💵 Efectivo al entregar</strong>
             </label>
@@ -4651,9 +4637,12 @@ function coStep(n) {
             : {};
           
           const methods = [
-            { key: 'venmo', icon: '📱', label: 'Yappy / Venmo', deeplink: 'venmo://paycharge?txn=pay&recipients=' },
-            { key: 'paypal', icon: '📲', label: 'Nequi / PayPal', deeplink: 'https://paypal.me/' },
-            { key: 'zelle', icon: '💙', label: 'Zinli / PayPal Email', deeplink: null },
+            { key: 'yappy',  icon: '📱', label: 'Yappy',  deeplink: null },
+            { key: 'nequi',  icon: '📲', label: 'Nequi',  deeplink: null },
+            { key: 'zinli',  icon: '💳', label: 'Zinli',  deeplink: null },
+            { key: 'venmo',  icon: '💜', label: 'Venmo',  deeplink: 'venmo://paycharge?txn=pay&recipients=' },
+            { key: 'zelle',  icon: '💚', label: 'Zelle',  deeplink: null },
+            { key: 'paypal', icon: '💙', label: 'PayPal', deeplink: 'https://paypal.me/' },
           ];
 
           const total = Object.values(cart).reduce((s,v) => s+v.price*v.qty, 0).toFixed(2);
@@ -4751,29 +4740,33 @@ function processPayment() {
 let pendingCookData = null;
 
 function prepararRegistro() {
-  // Collect payment methods from step 5 checkboxes
-  const pmInputs = document.querySelectorAll('#creg-step-5 input[type="text"], #creg-step-5 input[type="email"], #creg-step-5 input[type="tel"]');
-  const pmChecks = document.querySelectorAll('#creg-step-5 input[type="checkbox"]');
-  
-  // Build payment methods object from checked items and their inputs
+  // Collect payment methods from step 6 using specific IDs
   const pm = {};
-  const pmKeys = ['venmo', 'paypal', 'zelle', 'cash'];
-  let inputIdx = 0;
-  pmChecks.forEach(function(chk, i) {
-    if (chk.id === 'qr-check') return;
-    const key = pmKeys[i] || ('method' + i);
-    if (chk.checked) {
-      if (key === 'cash') {
-        pm.cash = true;
-      } else {
-        const input = pmInputs[inputIdx];
-        if (input && input.value.trim()) pm[key] = input.value.trim();
-        inputIdx++;
-      }
-    } else {
-      inputIdx++;
-    }
-  });
+  if (document.getElementById('pm-yappy-check')?.checked) {
+    const v = document.getElementById('pm-yappy')?.value.trim();
+    if (v) pm.yappy = v;
+  }
+  if (document.getElementById('pm-nequi-check')?.checked) {
+    const v = document.getElementById('pm-nequi')?.value.trim();
+    if (v) pm.nequi = v;
+  }
+  if (document.getElementById('pm-zinli-check')?.checked) {
+    const v = document.getElementById('pm-zinli')?.value.trim();
+    if (v) pm.zinli = v;
+  }
+  if (document.getElementById('pm-venmo-check')?.checked) {
+    const v = document.getElementById('pm-venmo')?.value.trim();
+    if (v) pm.venmo = v;
+  }
+  if (document.getElementById('pm-zelle-check')?.checked) {
+    const v = document.getElementById('pm-zelle')?.value.trim();
+    if (v) pm.zelle = v;
+  }
+  if (document.getElementById('pm-paypal-check')?.checked) {
+    const v = document.getElementById('pm-paypal')?.value.trim();
+    if (v) pm.paypal = v;
+  }
+  if (document.getElementById('pm-cash-check')?.checked) pm.cash = true;
 
   // Collect services from step 3
   const services = [];

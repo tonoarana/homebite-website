@@ -4692,7 +4692,8 @@ function coStep(n) {
   window.scrollTo(0,0);
 }
 
-let orderSavedForCheckout = false;
+let savedPaymentMethods = {};
+let savedServices = [];
 
 function saveOrderToSupabase(cook) {
   if (orderSavedForCheckout) return; // avoid duplicate saves
@@ -4770,11 +4771,15 @@ function prepararRegistro() {
   console.log('pm-yappy-check checked:', document.getElementById('pm-yappy-check')?.checked);
   console.log('pm-yappy value:', document.getElementById('pm-yappy')?.value);
 
+  // Save to globals immediately
+  savedPaymentMethods = pm;
+
   // Collect services from step 3
   const services = [];
   if (document.getElementById('creg-svc-delivery')?.checked) services.push('delivery');
   if (document.getElementById('creg-svc-pickup')?.checked) services.push('pickup');
   if (document.getElementById('creg-svc-cena')?.checked) services.push('cena');
+  savedServices = services;
 
   pendingCookData = {
     name: document.getElementById('creg-name') ? document.getElementById('creg-name').value : 'Cocinero',
@@ -4838,27 +4843,12 @@ function confirmarMembresia() {
 
   if (!pendingCookData) { showToast('🎉 ¡Plan activado!'); return; }
 
-  // Re-collect payment methods and services NOW (DOM still available)
-  const pm = {};
-  if (document.getElementById('pm-yappy-check')?.checked) pm.yappy = document.getElementById('pm-yappy')?.value.trim() || '';
-  if (document.getElementById('pm-nequi-check')?.checked) pm.nequi = document.getElementById('pm-nequi')?.value.trim() || '';
-  if (document.getElementById('pm-zinli-check')?.checked) pm.zinli = document.getElementById('pm-zinli')?.value.trim() || '';
-  if (document.getElementById('pm-venmo-check')?.checked) pm.venmo = document.getElementById('pm-venmo')?.value.trim() || '';
-  if (document.getElementById('pm-zelle-check')?.checked) pm.zelle = document.getElementById('pm-zelle')?.value.trim() || '';
-  if (document.getElementById('pm-paypal-check')?.checked) pm.paypal = document.getElementById('pm-paypal')?.value.trim() || '';
-  if (document.getElementById('pm-cash-check')?.checked) pm.cash = true;
+  // Use globals saved in prepararRegistro
+  pendingCookData.payment_methods = savedPaymentMethods;
+  pendingCookData.services = savedServices;
 
-  const services = [];
-  if (document.getElementById('creg-svc-delivery')?.checked) services.push('delivery');
-  if (document.getElementById('creg-svc-pickup')?.checked) services.push('pickup');
-  if (document.getElementById('creg-svc-cena')?.checked) services.push('cena');
-
-  pendingCookData.payment_methods = pm;
-  pendingCookData.services = services;
-
-  console.log('page-register-cocinero visible:', document.getElementById('page-register-cocinero')?.style.display);
-  console.log('pm-yappy-check at confirmar:', document.getElementById('pm-yappy-check')?.checked);
-  console.log('pm-yappy at confirmar:', document.getElementById('pm-yappy')?.value);
+  console.log('Final PM from globals:', JSON.stringify(savedPaymentMethods));
+  console.log('Final Services from globals:', savedServices);
 
   var dishesToSave = savedDishesData.slice();
   var cookToSave = pendingCookData;

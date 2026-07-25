@@ -4677,7 +4677,7 @@ function coStep(n) {
                 ${val ? `<div style="font-size:13px;color:var(--text-muted);font-family:monospace">${val}</div>` : ''}
               </div>
               ${deeplink ? `<a href="${deeplink}" target="_blank" onclick="savePendingAndOpenPayment()" style="background:var(--orange);color:white;border-radius:10px;padding:10px 16px;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:700;text-decoration:none;white-space:nowrap;-webkit-appearance:none">Pagar →</a>` : 
-              val ? `<button onclick="copyToClipboard('${val}')" style="background:var(--warm);border:1px solid var(--border);color:var(--brown);border-radius:10px;padding:10px 14px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;-webkit-appearance:none">📋 Copiar</button>` : ''}
+              val ? `<div style="background:#FFF3E0;border:1.5px solid var(--orange);border-radius:8px;padding:8px 12px;font-size:13px;font-family:monospace;color:#333;min-width:80px;text-align:center" onclick="this.focus()" contenteditable="false" style="-webkit-user-select:all;user-select:all">${val}</div>` : ''}
             </div>`;
           });
 

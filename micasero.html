@@ -4765,6 +4765,11 @@ function prepararRegistro() {
   }
   if (document.getElementById('pm-cash-check')?.checked) pm.cash = true;
 
+  console.log('Payment methods collected:', JSON.stringify(pm));
+  console.log('pm-yappy-check exists:', !!document.getElementById('pm-yappy-check'));
+  console.log('pm-yappy-check checked:', document.getElementById('pm-yappy-check')?.checked);
+  console.log('pm-yappy value:', document.getElementById('pm-yappy')?.value);
+
   // Collect services from step 3
   const services = [];
   if (document.getElementById('creg-svc-delivery')?.checked) services.push('delivery');

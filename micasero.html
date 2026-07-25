@@ -4856,8 +4856,9 @@ function confirmarMembresia() {
   pendingCookData.payment_methods = pm;
   pendingCookData.services = services;
 
-  console.log('Final PM:', JSON.stringify(pm));
-  console.log('Final Services:', services);
+  console.log('page-register-cocinero visible:', document.getElementById('page-register-cocinero')?.style.display);
+  console.log('pm-yappy-check at confirmar:', document.getElementById('pm-yappy-check')?.checked);
+  console.log('pm-yappy at confirmar:', document.getElementById('pm-yappy')?.value);
 
   var dishesToSave = savedDishesData.slice();
   var cookToSave = pendingCookData;

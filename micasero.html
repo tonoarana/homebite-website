@@ -4536,6 +4536,7 @@ function updateProfileCTA() {
 
 function goToCheckout() {
   orderSavedForCheckout = false;
+  savedCartSnapshot = Object.values(cart); // Save before cart clears
   toggleCart();
   showPage('checkout');
   renderCheckout();
@@ -4753,13 +4754,23 @@ function coStep(n) {
 
 let savedPaymentMethods = {};
 let savedServices = [];
+let orderSavedForCheckout = false;
+let savedCartSnapshot = [];
 
 function saveOrderToSupabase(cook) {
-  if (orderSavedForCheckout) return; // avoid duplicate saves
-  const items = Object.values(cart);
-  if (items.length === 0) return;
+  if (orderSavedForCheckout) return;
+  
+  // Use saved cart snapshot if cart is already empty
+  const items = Object.keys(cart).length > 0 ? Object.values(cart) : savedCartSnapshot;
+  if (!items || items.length === 0) {
+    console.log('⚠️ No items to save');
+    return;
+  }
+  
   const total = items.reduce((s,v) => s+v.price*v.qty, 0);
-  const custName = document.getElementById('checkout-name')?.value || 'Cliente';
+  const custName = document.getElementById('checkout-name')?.value || 
+    (() => { try { return JSON.parse(localStorage.getItem('micasero_client') || '{}').name || 'Cliente'; } catch(e) { return 'Cliente'; } })();
+
   const order = {
     cook_id: selectedCookId,
     customer_name: custName,
@@ -4767,21 +4778,22 @@ function saveOrderToSupabase(cook) {
     delivery_address: document.getElementById('del-address')?.value || '',
     notes: document.getElementById('del-notes')?.value || '',
     total: total,
-    payment_method: currentPayMethod || 'venmo',
+    payment_method: currentPayMethod || 'yappy',
     status: 'nuevo',
     city: 'Bainbridge Island'
   };
 
+  console.log('Saving order:', order);
   orderSavedForCheckout = true;
   sbPost('orders', order).then(data => {
     if (data && data[0]) {
       console.log('✅ Pedido guardado:', data[0].id);
     } else {
-      console.log('⚠️ Order save returned no data:', data);
+      console.log('⚠️ Order save error:', data);
       orderSavedForCheckout = false;
     }
   }).catch(e => {
-    console.log('Error guardando pedido:', e);
+    console.log('Error:', e);
     orderSavedForCheckout = false;
   });
 }

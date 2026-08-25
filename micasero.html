@@ -1672,7 +1672,7 @@
     <div style="display:inline-block;background:rgba(255,255,255,0.15);color:#FFD9B8;font-size:12px;font-weight:600;padding:6px 16px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;border:1px solid rgba(255,255,255,0.2)">👨‍🍳 Para Cocineros</div>
     <h1 style="font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);font-weight:900;color:white;margin-bottom:12px">Haz crecer tu negocio<br>de comida casera</h1>
     <p style="color:rgba(255,255,255,0.8);font-size:16px;max-width:500px;margin:0 auto 28px">Micasero te da visibilidad y clientes. Tú cobras el 100% directo — sin comisiones.</p>
-    <button onclick="showPage('pago-membresia')" style="background:white;color:var(--orange);border:none;border-radius:14px;padding:16px 36px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
+    <button onclick="selectPlan('pro');showPage('register-cocinero');cookRegStep(2)" style="background:white;color:var(--orange);border:none;border-radius:14px;padding:16px 36px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
       💳 Activar Plan Pro — 2 meses gratis · luego $10/mes
     </button>
     <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:10px">o 2 meses gratis ↓</div>
@@ -4665,6 +4665,11 @@ function coStep(n) {
     if (sumCook) sumCook.textContent = cook ? (cook.kitchen_name || cook.name) : 'Cocinero';
   }
   if (n===4) {
+    // Save the order to Supabase as soon as the customer reaches the payment
+    // screen — don't depend on them tapping a deep-link button, since Yappy,
+    // Nequi, Zinli and cash (our main Panama payment methods) don't render one.
+    saveOrderToSupabase();
+
     const cook4 = dbCooks.find(c => c.id === selectedCookId);
     const cn4 = document.getElementById('pay-step-cook-name');
     if (cn4) cn4.textContent = cook4 ? (cook4.kitchen_name || cook4.name) : 'Cocinero';
@@ -4909,17 +4914,24 @@ async function geocodeAddress(address) {
 function confirmarMembresia() {
   const form = document.getElementById('pago-form');
   const confirmed = document.getElementById('pago-confirmado');
-  if (form) form.style.display = 'none';
-  if (confirmed) confirmed.style.display = 'block';
+  const btn = document.getElementById('pay-btn');
+  const originalBtnText = btn ? btn.textContent : '';
 
-  if (!pendingCookData) { showToast('🎉 ¡Plan activado!'); return; }
+  // Don't fake success — if there's nothing to save (e.g. this page was
+  // reached without completing the registration wizard), send the cook
+  // back instead of showing "¡Plan activado!" with no data behind it.
+  if (!pendingCookData) {
+    showToast('⚠️ Primero completa tu registro de cocinero');
+    showPage('register-cocinero');
+    cookRegStep(2);
+    return;
+  }
+
+  if (btn) { btn.disabled = true; btn.textContent = '💾 Guardando...'; }
 
   // Use globals saved in prepararRegistro
   pendingCookData.payment_methods = savedPaymentMethods;
   pendingCookData.services = savedServices;
-
-  console.log('Final PM from globals:', JSON.stringify(savedPaymentMethods));
-  console.log('Final Services from globals:', savedServices);
 
   var dishesToSave = savedDishesData.slice();
   var cookToSave = pendingCookData;
@@ -4941,17 +4953,29 @@ function confirmarMembresia() {
     savePromise = sbPost('cooks', cookToSave);
   }
 
+  function saveFailed() {
+    // Restore state so the cook can retry without redoing the whole wizard
+    pendingCookData = cookToSave;
+    if (btn) { btn.disabled = false; btn.textContent = originalBtnText || '🔒 Activar Plan →'; }
+    showToast('⚠️ No se pudo guardar tu perfil. Intenta de nuevo.');
+  }
+
   savePromise.then(function(data) {
-    // Handle 409 duplicate email
+    // Retry once with a unique email in case this was a duplicate-email conflict
     if (!data) {
       cookToSave.email = 'cook_' + Date.now() + '@micasero.app';
       return sbPost('cooks', cookToSave);
     }
-    return Promise.resolve(data);
+    return data;
   }).then(function(data) {
     var cook = data && data[0] ? data[0] : null;
-    if (!cook || !cook.id) { console.log('No cook saved'); return; }
+    if (!cook || !cook.id) { saveFailed(); return; }
     setCookId(cook.id);
+
+    // Only now — with the cook actually saved in Supabase — show success
+    if (form) form.style.display = 'none';
+    if (confirmed) confirmed.style.display = 'block';
+    if (btn) { btn.disabled = false; btn.textContent = originalBtnText || '🔒 Activar Plan →'; }
     showToast('✅ Cocinero guardado!');
 
     var i = 0;
@@ -4970,6 +4994,7 @@ function confirmarMembresia() {
       }).then(function(r) { return r.json(); })
       .then(function(res) {
         if (res && res[0]) showToast('🍽️ ' + res[0].name);
+        else console.log('⚠️ Dish save error:', JSON.stringify(res));
         setTimeout(next, 800);
       }).catch(function(e) {
         showToast('❌ ' + e.message);
@@ -4977,7 +5002,10 @@ function confirmarMembresia() {
       });
     }
     setTimeout(next, 500);
-  }).catch(function(e) { showToast('⚠️ Error: ' + e.message); });
+  }).catch(function(e) {
+    console.log('confirmarMembresia error:', e.message);
+    saveFailed();
+  });
 }
 
 

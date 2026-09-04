@@ -1578,28 +1578,28 @@
     <!-- PASO 5: ¡Pedido Confirmado! -->
     <div id="co-step-5" style="display:none;text-align:center;padding:40px 20px">
       <div style="font-size:64px;margin-bottom:16px">🎉</div>
-      <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--brown);margin-bottom:8px">¡Pedido en Camino!</div>
-      <p style="color:var(--text-muted);font-size:15px;line-height:1.7;max-width:400px;margin:0 auto 24px">El cocinero recibió tu notificación de pago y está preparando tu pedido.</p>
+      <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--brown);margin-bottom:8px">¡Pedido Enviado!</div>
+      <p style="color:var(--text-muted);font-size:15px;line-height:1.7;max-width:400px;margin:0 auto 24px">Tu pedido fue enviado al cocinero. Te avisaremos cuando lo acepte.</p>
       <div style="background:#F0FFF4;border:1.5px solid #4CAF50;border-radius:16px;padding:20px;max-width:360px;margin:0 auto 20px;text-align:left">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-          <span style="font-size:28px">👩‍🍳</span>
+          <span style="font-size:28px">👨‍🍳</span>
           <div>
             <div style="font-weight:700;color:var(--brown)" id="confirm-step-cook-name">Cocinero</div>
-            <div style="font-size:12px;color:var(--green);font-weight:600">✅ Pago notificado</div>
+            <div style="font-size:12px;color:var(--green);font-weight:600">✅ Pedido recibido</div>
           </div>
         </div>
         <div style="font-size:13px;color:var(--text-muted);line-height:1.8">
-          ⏱️ Tiempo estimado: <strong>35 minutos</strong><br>
-          📞 Contacto: +1 (206) 555-0123
+          ⏳ Esperando confirmación del cocinero
         </div>
       </div>
       <div style="background:var(--warm);border-radius:16px;padding:20px;max-width:360px;margin:0 auto 28px;text-align:left;font-size:14px">
         <div style="font-weight:700;color:var(--brown);margin-bottom:10px">¿Qué sigue?</div>
-        <div style="display:flex;gap:10px;margin-bottom:8px"><span>1️⃣</span> El cocinero confirma que recibió tu pago</div>
-        <div style="display:flex;gap:10px;margin-bottom:8px"><span>2️⃣</span> Prepara tu pedido con amor 🍽️</div>
+        <div style="display:flex;gap:10px;margin-bottom:8px"><span>1️⃣</span> El cocinero revisa y acepta tu pedido</div>
+        <div style="display:flex;gap:10px;margin-bottom:8px"><span>2️⃣</span> Prepara tu comida con amor 🍽️</div>
         <div style="display:flex;gap:10px"><span>3️⃣</span> ¡Disfruta tu comida casera!</div>
       </div>
-      <button class="btn-order" style="padding:14px 32px;font-size:15px" onclick="showPage('home')">Volver al inicio</button>
+      <button class="btn-order" style="width:100%;background:var(--orange);padding:14px;font-size:15px;margin-bottom:10px" onclick="showPage('mis-pedidos')">📦 Ver estado de mi pedido</button>
+      <button style="width:100%;background:none;border:1px solid var(--border);border-radius:12px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;color:var(--text-muted)" onclick="showPage('home')">Volver al inicio</button>
     </div>
 
   </div>
@@ -2802,7 +2802,7 @@ function showPage(name) {
   if (name === 'cocina') { renderDashboard(); showCookTab('pedidos'); }
   if (name === 'profile') { renderMenu(); loadCookReviews(); }
   if (name === 'membresia') { updateFounderUI(); }
-  if (name === 'reviews') { refreshCooks().then(renderReviews); }
+  if (name === 'mis-pedidos') { loadClientOrders(); }
   if (name === 'cooks') { renderCooksList(); }
   if (name === 'pago-membresia') {
     updatePaymentPage();
@@ -4587,6 +4587,70 @@ function selectDelivery2(type) {
   }
 }
 
+async function loadClientOrders() {
+  const el = document.getElementById('client-orders-list');
+  if (!el) return;
+
+  try {
+    const myOrders = JSON.parse(localStorage.getItem('micasero_my_orders') || '[]');
+    if (myOrders.length === 0) return; // Keep empty state
+
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">Cargando pedidos...</div>';
+
+    // Fetch each order status from Supabase
+    const orderIds = myOrders.map(o => o.id).join(',');
+    const orders = await sbFetch('orders', `id=in.(${orderIds})&order=created_at.desc`);
+
+    if (!orders || orders.length === 0) {
+      el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted)">No se encontraron pedidos</div>';
+      return;
+    }
+
+    const statusMap = {
+      'nuevo': { icon: '⏳', label: 'En revisión', color: '#F59E0B', bg: '#FFFBEB' },
+      'pending': { icon: '⏳', label: 'En revisión', color: '#F59E0B', bg: '#FFFBEB' },
+      'aceptado': { icon: '👨‍🍳', label: 'Aprobado — preparando', color: '#10B981', bg: '#F0FFF4' },
+      'preparando': { icon: '🍳', label: 'En preparación', color: '#10B981', bg: '#F0FFF4' },
+      'listo': { icon: '✅', label: 'Listo para recoger', color: '#2D5016', bg: '#F0FFF4' },
+      'entregado': { icon: '🎉', label: 'Entregado', color: '#6B7280', bg: '#F9FAFB' },
+      'rechazado': { icon: '❌', label: 'No disponible', color: '#EF4444', bg: '#FEF2F2' },
+    };
+
+    el.innerHTML = orders.map(o => {
+      const st = statusMap[o.status] || statusMap['nuevo'];
+      const cook = dbCooks.find(c => c.id === o.cook_id);
+      const cookName = cook ? (cook.kitchen_name || cook.name) : 'Cocinero';
+      const date = new Date(o.created_at).toLocaleDateString('es', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+      return `
+        <div style="background:white;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,0.08)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+            <div>
+              <div style="font-weight:700;font-size:15px;color:var(--brown)">👨‍🍳 ${cookName}</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${date}</div>
+            </div>
+            <div style="background:${st.bg};color:${st.color};padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap">
+              ${st.icon} ${st.label}
+            </div>
+          </div>
+          <div style="background:var(--warm);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:13px;color:var(--text-muted)">${o.delivery_type === 'delivery' ? '🛵 Delivery' : o.delivery_type === 'cena' ? '🕯️ Cena' : '🏠 Recogida'}</div>
+            <div style="font-weight:700;color:var(--orange);font-size:15px">$${parseFloat(o.total).toFixed(2)}</div>
+          </div>
+          ${o.status === 'rechazado' ? `
+            <div style="margin-top:10px;background:#FEF2F2;border-radius:8px;padding:10px;font-size:13px;color:#EF4444">
+              😔 Lo sentimos, el cocinero no puede atender este pedido. <a onclick="showPage('cooks')" style="color:var(--orange);cursor:pointer;font-weight:600">Busca otro cocinero</a>
+            </div>` : ''}
+          ${(o.status === 'aceptado' || o.status === 'preparando') ? `
+            <div style="margin-top:10px;background:#F0FFF4;border-radius:8px;padding:10px;font-size:13px;color:#10B981">
+              🎉 ¡Tu pedido fue aceptado! El cocinero está preparando tu comida.
+            </div>` : ''}
+        </div>`;
+    }).join('');
+  } catch(e) {
+    console.log('loadClientOrders error:', e);
+  }
+}
+
 function registerCliente() {
   const name = document.getElementById('client-name')?.value.trim();
   const email = document.getElementById('client-email')?.value.trim();
@@ -4788,6 +4852,12 @@ function saveOrderToSupabase(cook) {
   sbPost('orders', order).then(data => {
     if (data && data[0]) {
       console.log('✅ Pedido guardado:', data[0].id);
+      // Save order ID for client to track
+      try {
+        const myOrders = JSON.parse(localStorage.getItem('micasero_my_orders') || '[]');
+        myOrders.unshift({ id: data[0].id, cook_id: selectedCookId, total: total, ts: Date.now() });
+        localStorage.setItem('micasero_my_orders', JSON.stringify(myOrders.slice(0, 10)));
+      } catch(e) {}
     } else {
       console.log('⚠️ Order save error:', data);
       orderSavedForCheckout = false;
@@ -5038,12 +5108,23 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- MOBILE MORE MENU -->
 <div id="mobile-more-menu" style="display:none;position:fixed;bottom:70px;left:0;right:0;max-height:80vh;z-index:9998;background:white;border-top:2px solid var(--orange);box-shadow:0 -4px 24px rgba(0,0,0,0.15);border-radius:20px 20px 0 0;padding:16px 16px 8px;-webkit-transform:translateZ(0);transform:translateZ(0);overflow-y:auto;-webkit-overflow-scrolling:touch">
   <!-- Mi Menu - solo cocineros -->
-  <div style="margin-bottom:16px">
+  <div style="margin-bottom:12px">
     <button onclick="showCookAccess();closeMobileMenu()" style="width:100%;background:linear-gradient(135deg,#2D1507,#5C2810);border:1px solid #F4A020;border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:12px;color:#F4A020;-webkit-appearance:none">
       <span style="font-size:24px">🍳</span>
       <div style="text-align:left">
         <div>Mi Menu — Panel del Cocinero</div>
         <div style="font-size:11px;color:rgba(255,200,80,0.7);margin-top:2px">Gestiona tu menú y pedidos</div>
+      </div>
+    </button>
+  </div>
+
+  <!-- Mis Pedidos - clientes -->
+  <div style="margin-bottom:16px">
+    <button onclick="showPage('mis-pedidos');closeMobileMenu()" style="width:100%;background:linear-gradient(135deg,#2D5016,#4CAF50);border:none;border-radius:12px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:12px;color:white;-webkit-appearance:none">
+      <span style="font-size:24px">📦</span>
+      <div style="text-align:left">
+        <div>Mis Pedidos</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px">Ver estado de tus pedidos</div>
       </div>
     </button>
   </div>
@@ -5105,6 +5186,27 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- dish form is inline in dashboard -->
 </div>
 </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MIS PEDIDOS — Cliente
+══════════════════════════════════════════ -->
+<div id="page-mis-pedidos" class="page">
+  <div style="max-width:600px;margin:0 auto;padding:20px">
+    <button onclick="showPage('home')" style="background:none;border:none;color:var(--orange);font-size:14px;font-weight:600;cursor:pointer;padding:0;margin-bottom:16px;-webkit-appearance:none">← Volver</button>
+    <h2 style="font-family:'Playfair Display',serif;color:var(--brown);margin-bottom:4px">📦 Mis Pedidos</h2>
+    <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">Estado actualizado de tus pedidos</p>
+
+    <div id="client-orders-list">
+      <div style="text-align:center;padding:40px;color:var(--text-muted)">
+        <div style="font-size:48px;margin-bottom:12px">📭</div>
+        <div style="font-weight:600">No tienes pedidos aún</div>
+        <div style="font-size:13px;margin-top:6px">Cuando hagas un pedido aparecerá aquí</div>
+        <button onclick="showPage('map')" style="margin-top:16px;background:var(--orange);color:white;border:none;border-radius:10px;padding:12px 24px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none">Buscar Cocineros →</button>
+      </div>
+    </div>
+    <div style="height:80px"></div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════
